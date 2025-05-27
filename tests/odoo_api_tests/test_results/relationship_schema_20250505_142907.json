@@ -1,0 +1,2824 @@
+{
+  "models": [
+    {
+      "name": "res.partner",
+      "fields": []
+    },
+    {
+      "name": "sale.order",
+      "fields": [
+        {
+          "name": "access_token",
+          "string": "Access Token",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "access_url",
+          "string": "Access Url",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "access_warning",
+          "string": "Access Warning",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_calendar_event_id",
+          "string": "Activity Calendar Event Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_date_deadline",
+          "string": "Activity Date Deadline",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_exception_decoration",
+          "string": "Activity Exception Decoration",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_exception_icon",
+          "string": "Activity Exception Icon",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_ids",
+          "string": "Activity Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_state",
+          "string": "Activity State",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_summary",
+          "string": "Activity Summary",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_type_icon",
+          "string": "Activity Type Icon",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_type_id",
+          "string": "Activity Type Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "activity_user_id",
+          "string": "Activity User Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "address_format",
+          "string": "Address Format",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "address_html",
+          "string": "Address Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "amount_invoiced",
+          "string": "Amount Invoiced",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "amount_paid",
+          "string": "Amount Paid",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "amount_tax",
+          "string": "Amount Tax",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "amount_to_invoice",
+          "string": "Amount To Invoice",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "amount_total",
+          "string": "Amount Total",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "amount_undiscounted",
+          "string": "Amount Undiscounted",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "amount_untaxed",
+          "string": "Amount Untaxed",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "are_walls_sheeted_html",
+          "string": "Are Walls Sheeted Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "attachment_copy_ids",
+          "string": "Attachment Copy Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "attachment_count",
+          "string": "Attachment Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "attachment_ids",
+          "string": "Attachment Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "attachment_po_ids",
+          "string": "Attachment Po Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "authorized_transaction_ids",
+          "string": "Authorized Transaction Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "balustrade",
+          "string": "Balustrade",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "beam_height_html",
+          "string": "Beam Height Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "bracket_colour",
+          "string": "Bracket Colour",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "callups_request_date",
+          "string": "Callups Request Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "campaign_id",
+          "string": "Campaign Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "carrier",
+          "string": "Carrier",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "carrier_id",
+          "string": "Carrier Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "category",
+          "string": "Category",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_email",
+          "string": "Client Email",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_fax",
+          "string": "Client Fax",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_name",
+          "string": "Client Name",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_note",
+          "string": "Client Note",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_order_ref",
+          "string": "Client Order Ref",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_phone",
+          "string": "Client Phone",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_state",
+          "string": "Client State",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_state_id",
+          "string": "Client State Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_status",
+          "string": "Client Status",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_street",
+          "string": "Client Street",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_suburb",
+          "string": "Client Suburb",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_tag",
+          "string": "Client Tag",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "client_zip",
+          "string": "Client Zip",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "closed_task_count",
+          "string": "Closed Task Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "combined_document_ids",
+          "string": "Combined Document Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "commitment_date",
+          "string": "Commitment Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "company_id",
+          "string": "Company Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "company_number",
+          "string": "Company Number",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "company_price_include",
+          "string": "Company Price Include",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "completed_task_percentage",
+          "string": "Completed Task Percentage",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "contact_name",
+          "string": "Contact Name",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "country_code",
+          "string": "Country Code",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "create_date",
+          "string": "Create Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "create_uid",
+          "string": "Create Uid",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "critical_note",
+          "string": "Critical Note",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "currency_id",
+          "string": "Currency Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "currency_rate",
+          "string": "Currency Rate",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "cust_id",
+          "string": "Cust Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "customer_job_number",
+          "string": "Customer Job Number",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "date_order",
+          "string": "Date Order",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "def_contact",
+          "string": "Def Contact",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "delivery_count",
+          "string": "Delivery Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "delivery_message",
+          "string": "Delivery Message",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "delivery_set",
+          "string": "Delivery Set",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "delivery_status",
+          "string": "Delivery Status",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "designer_id",
+          "string": "Designer Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "detail_handrail",
+          "string": "Detail Handrail",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "discount",
+          "string": "Discount",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "display_name",
+          "string": "Display Name",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "duplicated_order_ids",
+          "string": "Duplicated Order Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "effective_date",
+          "string": "Effective Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "expected_date",
+          "string": "Expected Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "expense_count",
+          "string": "Expense Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "expense_ids",
+          "string": "Expense Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "fiscal_position_id",
+          "string": "Fiscal Position Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "flag",
+          "string": "Flag",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "floor_to_ceiling_html",
+          "string": "Floor To Ceiling Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "floor_to_floor_html",
+          "string": "Floor To Floor Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "handrail_application",
+          "string": "Handrail Application",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "handrail_colour",
+          "string": "Handrail Colour",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "handrail_finish",
+          "string": "Handrail Finish",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "handrail_style",
+          "string": "Handrail Style",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "has_active_pricelist",
+          "string": "Has Active Pricelist",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "has_archived_products",
+          "string": "Has Archived Products",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "has_message",
+          "string": "Has Message",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "house_type_id",
+          "string": "House Type Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "house_type_price_ids",
+          "string": "House Type Price Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "house_type_specific_id",
+          "string": "House Type Specific Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "id",
+          "string": "Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "image",
+          "string": "Image",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "incoterm",
+          "string": "Incoterm",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "incoterm_location",
+          "string": "Incoterm Location",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "invoice_count",
+          "string": "Invoice Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "invoice_ids",
+          "string": "Invoice Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "invoice_status",
+          "string": "Invoice Status",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_address_modified",
+          "string": "Is Address Modified",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_all_service",
+          "string": "Is All Service",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_callups",
+          "string": "Is Callups",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_expired",
+          "string": "Is Expired",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_house_design",
+          "string": "Is House Design",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_invisible",
+          "string": "Is Invisible",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_measure_sheet",
+          "string": "Is Measure Sheet",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_order",
+          "string": "Is Order",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_po_invisible",
+          "string": "Is Po Invisible",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_product_milestone",
+          "string": "Is Product Milestone",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_quote",
+          "string": "Is Quote",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_sent_quote_to_customer",
+          "string": "Is Sent Quote To Customer",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_site_specific",
+          "string": "Is Site Specific",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_stairbiz",
+          "string": "Is Stairbiz",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "is_stairbiz_quote_team",
+          "string": "Is Stairbiz Quote Team",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "job_date",
+          "string": "Job Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "job_name",
+          "string": "Job Name",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "job_number",
+          "string": "Job Number",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "job_number_html",
+          "string": "Job Number Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "job_status",
+          "string": "Job Status",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "journal_id",
+          "string": "Journal Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "json_popover",
+          "string": "Json Popover",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "locked",
+          "string": "Locked",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_sheet_doc_id",
+          "string": "Measure Sheet Doc Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_sheet_request_data",
+          "string": "Measure Sheet Request Data",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_sheet_request_id",
+          "string": "Measure Sheet Request Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_sheet_request_url",
+          "string": "Measure Sheet Request Url",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_sheet_template_exist",
+          "string": "Measure Sheet Template Exist",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_sheet_template_id",
+          "string": "Measure Sheet Template Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_sheet_template_id_data",
+          "string": "Measure Sheet Template Id Data",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_sheet_template_item_ids",
+          "string": "Measure Sheet Template Item Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "measure_staff_id",
+          "string": "Measure Staff Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "medium_id",
+          "string": "Medium Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_attachment_count",
+          "string": "Message Attachment Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_follower_ids",
+          "string": "Message Follower Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_has_error",
+          "string": "Message Has Error",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_has_error_counter",
+          "string": "Message Has Error Counter",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_has_sms_error",
+          "string": "Message Has Sms Error",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_ids",
+          "string": "Message Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_is_follower",
+          "string": "Message Is Follower",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_needaction",
+          "string": "Message Needaction",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_needaction_counter",
+          "string": "Message Needaction Counter",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "message_partner_ids",
+          "string": "Message Partner Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "milestone_count",
+          "string": "Milestone Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "mrp_production_count",
+          "string": "Mrp Production Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "mrp_production_ids",
+          "string": "Mrp Production Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "my_activity_date_deadline",
+          "string": "My Activity Date Deadline",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "name",
+          "string": "Order Reference",
+          "type": "char",
+          "required": true,
+          "readonly": false,
+          "store": true,
+          "searchable": true,
+          "sortable": true
+        },
+        {
+          "name": "new_lead",
+          "string": "New Lead",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "nib_wall_html",
+          "string": "Nib Wall Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "note",
+          "string": "Note",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "opportunity_id",
+          "string": "Opportunity Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "option",
+          "string": "Option",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "order_line",
+          "string": "Order Line",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "origin",
+          "string": "Origin",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "partner_child_ids",
+          "string": "Partner Child Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "partner_credit_warning",
+          "string": "Partner Credit Warning",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "partner_id",
+          "string": "Customer",
+          "type": "many2one",
+          "relation": "res.partner",
+          "required": true,
+          "readonly": false,
+          "store": true,
+          "searchable": true,
+          "sortable": true
+        },
+        {
+          "name": "partner_invoice_id",
+          "string": "Partner Invoice Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "partner_shipping_id",
+          "string": "Partner Shipping Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "payment_term_id",
+          "string": "Payment Term Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "pending_email_template_id",
+          "string": "Pending Email Template Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "photo",
+          "string": "Photo",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "photo_purchase",
+          "string": "Photo Purchase",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "picking_ids",
+          "string": "Picking Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "picking_policy",
+          "string": "Picking Policy",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "pickup_location_data",
+          "string": "Pickup Location Data",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "prepayment_percent",
+          "string": "Prepayment Percent",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "pricelist_id",
+          "string": "Pricelist Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "priority",
+          "string": "Priority",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "procurement_group_id",
+          "string": "Procurement Group Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "product_house_type_id",
+          "string": "Product House Type Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "project_account_id",
+          "string": "Project Account Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "project_count",
+          "string": "Project Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "project_id",
+          "string": "Project Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "project_ids",
+          "string": "Project Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "purchase_order_count",
+          "string": "Purchase Order Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "quote_received_from_stairbiz_stage",
+          "string": "Quote Received From Stairbiz Stage",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "quote_request_type_id",
+          "string": "Quote Request Type Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "raking_wall_html",
+          "string": "Raking Wall Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "range_option_series",
+          "string": "Range Option Series",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "rating_ids",
+          "string": "Rating Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "recompute_delivery_price",
+          "string": "Recompute Delivery Price",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "reference",
+          "string": "Reference",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "require_payment",
+          "string": "Require Payment",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "require_signature",
+          "string": "Require Signature",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "requote_sale_order_id",
+          "string": "Requote Sale Order Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sale_order_option_ids",
+          "string": "Sale Order Option Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sale_order_template_id",
+          "string": "Sale Order Template Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sale_type",
+          "string": "Sale Type",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sent_quote_to_customer_stage",
+          "string": "Sent Quote To Customer Stage",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sh_contact_google_location",
+          "string": "Sh Contact Google Location",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sh_contact_place_text",
+          "string": "Sh Contact Place Text",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sh_contact_place_text_main_string",
+          "string": "Sh Contact Place Text Main String",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "shipping_weight",
+          "string": "Shipping Weight",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_colour_selections",
+          "string": "Show Colour Selections",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_create_project_button",
+          "string": "Show Create Project Button",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_designer",
+          "string": "Show Designer",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_document_type",
+          "string": "Show Document Type",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_general_information",
+          "string": "Show General Information",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_hours_recorded_button",
+          "string": "Show Hours Recorded Button",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_house_type",
+          "string": "Show House Type",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_job_detail",
+          "string": "Show Job Detail",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_job_type",
+          "string": "Show Job Type",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_json_popover",
+          "string": "Show Json Popover",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_measure_sheet",
+          "string": "Show Measure Sheet",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_order_lines",
+          "string": "Show Order Lines",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_project_button",
+          "string": "Show Project Button",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_project_detail",
+          "string": "Show Project Detail",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_requote",
+          "string": "Show Requote",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_site_address",
+          "string": "Show Site Address",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_site_contact",
+          "string": "Show Site Contact",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_stairbiz_detail",
+          "string": "Show Stairbiz Detail",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_task_button",
+          "string": "Show Task Button",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_update_fpos",
+          "string": "Show Update Fpos",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "show_update_pricelist",
+          "string": "Show Update Pricelist",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "signature",
+          "string": "Signature",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "signed_by",
+          "string": "Signed By",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "signed_on",
+          "string": "Signed On",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_address_id",
+          "string": "Site Address Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_contact",
+          "string": "Site Contact",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_country",
+          "string": "Site Country",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_mobile",
+          "string": "Site Mobile",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_phone",
+          "string": "Site Phone",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_state",
+          "string": "Site State",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_street",
+          "string": "Site Street",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_suburb",
+          "string": "Site Suburb",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "site_zip",
+          "string": "Site Zip",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sla_deadline",
+          "string": "Sla Deadline",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sla_failed",
+          "string": "Sla Failed",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sla_remaining_hours",
+          "string": "Sla Remaining Hours",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sla_remaining_percentage",
+          "string": "Sla Remaining Percentage",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sla_status",
+          "string": "Sla Status",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sla_status_ids",
+          "string": "Sla Status Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "sla_success",
+          "string": "Sla Success",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "source_id",
+          "string": "Source Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "stage_id",
+          "string": "Stage Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "stair_balustrade_html",
+          "string": "Stair Balustrade Html",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "stair_calculator_id",
+          "string": "Stair Calculator Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "stairbiz_ids",
+          "string": "Stairbiz Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "stairbiz_job_generated",
+          "string": "Stairbiz Job Generated",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "stairbiz_quote_count",
+          "string": "Stairbiz Quote Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "stairbiz_quotes_job_ids",
+          "string": "Stairbiz Quotes Job Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "state",
+          "string": "Status",
+          "type": "selection",
+          "required": false,
+          "readonly": true,
+          "store": true,
+          "searchable": true,
+          "sortable": true
+        },
+        {
+          "name": "supervisor_contact_id",
+          "string": "Supervisor Contact Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "tag_ids",
+          "string": "Tag Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "tasks_count",
+          "string": "Tasks Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "tasks_ids",
+          "string": "Tasks Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "tax_calculation_rounding_method",
+          "string": "Tax Calculation Rounding Method",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "tax_country_id",
+          "string": "Tax Country Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "tax_totals",
+          "string": "Tax Totals",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "team_id",
+          "string": "Team Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "terms_type",
+          "string": "Terms Type",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "timber_newel_post",
+          "string": "Timber Newel Post",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "timber_newel_post_toppers",
+          "string": "Timber Newel Post Toppers",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "timesheet_count",
+          "string": "Timesheet Count",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "timesheet_encode_uom_id",
+          "string": "Timesheet Encode Uom Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "timesheet_total_duration",
+          "string": "Timesheet Total Duration",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "transaction_ids",
+          "string": "Transaction Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "transport_note",
+          "string": "Transport Note",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "type_name",
+          "string": "Type Name",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "user_id",
+          "string": "User Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "validity_date",
+          "string": "Validity Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "vat",
+          "string": "Vat",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "visible_project",
+          "string": "Visible Project",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "warehouse_id",
+          "string": "Warehouse Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "website_message_ids",
+          "string": "Website Message Ids",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "write_date",
+          "string": "Write Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "write_uid",
+          "string": "Write Uid",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_sa_city",
+          "string": "X Sa City",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_sa_country_id",
+          "string": "X Sa Country Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_sa_state_id",
+          "string": "X Sa State Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_sa_street",
+          "string": "X Sa Street",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_sa_street2",
+          "string": "X Sa Street2",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_sa_zip",
+          "string": "X Sa Zip",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_site_contact_name",
+          "string": "X Site Contact Name",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_site_contact_phone",
+          "string": "X Site Contact Phone",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_stairbiz_id",
+          "string": "X Stairbiz Id",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_stairbiz_migrated",
+          "string": "X Stairbiz Migrated",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        },
+        {
+          "name": "x_stairbiz_migration_date",
+          "string": "X Stairbiz Migration Date",
+          "type": "unknown",
+          "required": false,
+          "readonly": false,
+          "store": true,
+          "searchable": false,
+          "sortable": false
+        }
+      ]
+    }
+  ]
+}

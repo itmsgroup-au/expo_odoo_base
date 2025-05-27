@@ -1,0 +1,2613 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "MuK REST API for Odoo 18",
+    "version": "1.0.0",
+    "description": "REST API for Odoo server with routes for authentication and server interaction."
+  },
+  "servers": [
+    {
+      "url": "http://stairmaster18.odoo-sandbox.com"
+    }
+  ],
+  "paths": {
+    "/api/v2/company": {
+      "get": {
+        "summary": "Company Information",
+        "tags": ["Common"]
+      }
+    },
+    "/api/v2/database": {
+      "get": {
+        "summary": "Database",
+        "tags": ["Common"]
+      }
+    },
+    "/api/v2/modules": {
+      "get": {
+        "summary": "Modules",
+        "tags": ["Common"]
+      }
+    },
+    "/api/v2/session": {
+      "get": {
+        "summary": "Session Information",
+        "tags": ["Common"]
+      }
+    },
+    "/api/v2/user": {
+      "get": {
+        "summary": "User",
+        "tags": ["Common"]
+      }
+    },
+    "/api/v2/userinfo": {
+      "get": {
+        "summary": "User Information",
+        "tags": ["Common"]
+      }
+    },
+    "/api/v2/xmlid": {
+      "get": {
+        "summary": "XML ID",
+        "tags": ["Common"]
+      }
+    },
+    "/api/v2/xmlid/{xmlid}": {
+      "get": {
+        "summary": "XML ID",
+        "tags": ["Common"],
+        "parameters": [
+          {
+            "name": "xmlid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/custom/contacts/companies": {
+      "get": {
+        "summary": "All Companies",
+        "tags": ["Custom"]
+      }
+    },
+    "/api/v2/custom/contacts/create": {
+      "post": {
+        "summary": "Create Contact",
+        "tags": ["Custom"]
+      }
+    },
+    "/api/v2/database/list": {
+      "get": {
+        "summary": "Database List",
+        "tags": ["Database"]
+      }
+    },
+    "/api/v2/database/size": {
+      "get": {
+        "summary": "Database Size",
+        "tags": ["Database"]
+      }
+    },
+    "/api/v2/database/size/{database_name}": {
+      "get": {
+        "summary": "Database Size",
+        "tags": ["Database"],
+        "parameters": [
+          {
+            "name": "database_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/database/backup": {
+      "post": {
+        "summary": "Backup Database",
+        "tags": ["Database"]
+      }
+    },
+    "/api/v2/database/create": {
+      "post": {
+        "summary": "Create Database",
+        "tags": ["Database"]
+      }
+    },
+    "/api/v2/database/drop": {
+      "post": {
+        "summary": "Drop Database",
+        "tags": ["Database"]
+      }
+    },
+    "/api/v2/database/duplicate": {
+      "post": {
+        "summary": "Duplicate Database",
+        "tags": ["Database"]
+      }
+    },
+    "/api/v2/database/restore": {
+      "post": {
+        "summary": "Restore Database",
+        "tags": ["Database"]
+      }
+    },
+    "/api/v2/download": {
+      "get": {
+        "summary": "File Download",
+        "tags": ["File"]
+      }
+    },
+    "/api/v2/download/{id}": {
+      "get": {
+        "summary": "File Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/download/{id}/{filename}": {
+      "get": {
+        "summary": "File Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/download/{model}/{id}/{field}": {
+      "get": {
+        "summary": "File Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "field",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/download/{model}/{id}/{field}/{filename}": {
+      "get": {
+        "summary": "File Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "field",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/download/{xmlid}": {
+      "get": {
+        "summary": "File Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "xmlid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/download/{xmlid}/{filename}": {
+      "get": {
+        "summary": "File Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "xmlid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"]
+      }
+    },
+    "/api/v2/image/{id}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{id}-{unique}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "unique",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{id}-{unique}/{filename}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "unique",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{id}-{unique}/{width}x{height}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "unique",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "width",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{id}-{unique}/{width}x{height}/{filename}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "unique",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "width",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{id}/{filename}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{id}/{width}x{height}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "width",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{id}/{width}x{height}/{filename}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "width",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{model}/{id}/{field}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "field",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{model}/{id}/{field}/{filename}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "field",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{model}/{id}/{field}/{width}x{height}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "field",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "width",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{model}/{id}/{field}/{width}x{height}/{filename}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "field",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "width",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{xmlid}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "xmlid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{xmlid}/{filename}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "xmlid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{xmlid}/{width}x{height}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "xmlid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "width",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/image/{xmlid}/{width}x{height}/{filename}": {
+      "get": {
+        "summary": "Image Download",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "xmlid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "width",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "height",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/upload": {
+      "post": {
+        "summary": "File Upload",
+        "tags": ["File"]
+      }
+    },
+    "/api/v2/upload/{model}/{id}": {
+      "post": {
+        "summary": "File Upload",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/upload/{model}/{id}/{field}": {
+      "post": {
+        "summary": "File Upload",
+        "tags": ["File"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "field",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/export": {
+      "get": {
+        "summary": "Export",
+        "tags": ["Model"]
+      },
+      "post": {
+        "summary": "Export",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/export/{model}": {
+      "get": {
+        "summary": "Export",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Export",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/export/{model}/{type}": {
+      "get": {
+        "summary": "Export",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Export",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/extract": {
+      "get": {
+        "summary": "Extract",
+        "tags": ["Model"]
+      },
+      "post": {
+        "summary": "Extract",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/extract/{model}": {
+      "get": {
+        "summary": "Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/name": {
+      "get": {
+        "summary": "Names",
+        "tags": ["Model"]
+      },
+      "post": {
+        "summary": "Names",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/name/{model}": {
+      "get": {
+        "summary": "Names",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Names",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/read": {
+      "get": {
+        "summary": "Read",
+        "tags": ["Model"]
+      },
+      "post": {
+        "summary": "Read",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/read_group": {
+      "get": {
+        "summary": "Read Group",
+        "tags": ["Model"]
+      },
+      "post": {
+        "summary": "Read Group",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/read_group/{model}": {
+      "get": {
+        "summary": "Read Group",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Read Group",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/read_group/{model}/{limit}/{offset}/{orderby}": {
+      "get": {
+        "summary": "Read Group",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderby",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Read Group",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderby",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/read_group/{model}/{limit}/{orderby}": {
+      "get": {
+        "summary": "Read Group",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderby",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Read Group",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderby",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/read_group/{model}/{orderby}": {
+      "get": {
+        "summary": "Read Group",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderby",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Read Group",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "orderby",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/read/{model}": {
+      "get": {
+        "summary": "Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search": {
+      "get": {
+        "summary": "Search",
+        "tags": ["Model"]
+      },
+      "post": {
+        "summary": "Search",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/search_extract": {
+      "get": {
+        "summary": "Search Extract",
+        "tags": ["Model"]
+      },
+      "post": {
+        "summary": "Search Extract",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/search_extract/{model}": {
+      "get": {
+        "summary": "Search Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search_extract/{model}/{limit}/{offset}/{order}": {
+      "get": {
+        "summary": "Search Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search_extract/{model}/{limit}/{order}": {
+      "get": {
+        "summary": "Search Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search_extract/{model}/{order}": {
+      "get": {
+        "summary": "Search Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search Extract",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search_read": {
+      "get": {
+        "summary": "Search Read",
+        "tags": ["Model"]
+      },
+      "post": {
+        "summary": "Search Read",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/search_read/{model}": {
+      "get": {
+        "summary": "Search Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search_read/{model}/{limit}/{offset}/{order}": {
+      "get": {
+        "summary": "Search Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search_read/{model}/{limit}/{order}": {
+      "get": {
+        "summary": "Search Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search_read/{model}/{order}": {
+      "get": {
+        "summary": "Search Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search Read",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search/{model}": {
+      "get": {
+        "summary": "Search",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search/{model}/{limit}/{offset}/{order}": {
+      "get": {
+        "summary": "Search",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search/{model}/{limit}/{order}": {
+      "get": {
+        "summary": "Search",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/search/{model}/{order}": {
+      "get": {
+        "summary": "Search",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      },
+      "post": {
+        "summary": "Search",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "order",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/call": {
+      "post": {
+        "summary": "Call",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/call/{model}": {
+      "post": {
+        "summary": "Call",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/call/{model}/{method}": {
+      "post": {
+        "summary": "Call",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "method",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/create": {
+      "post": {
+        "summary": "Create",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/create_update": {
+      "post": {
+        "summary": "Create or Update",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/create_update/{model}": {
+      "post": {
+        "summary": "Create or Update",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/create/{model}": {
+      "post": {
+        "summary": "Create",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/write": {
+      "put": {
+        "summary": "Write",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/write_multi": {
+      "put": {
+        "summary": "Write",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/write_multi/{model}": {
+      "put": {
+        "summary": "Write",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/write/{model}": {
+      "put": {
+        "summary": "Write",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/unlink": {
+      "delete": {
+        "summary": "Delete",
+        "tags": ["Model"]
+      }
+    },
+    "/api/v2/unlink/{model}": {
+      "delete": {
+        "summary": "Delete",
+        "tags": ["Model"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/report": {
+      "get": {
+        "summary": "Report Download",
+        "tags": ["Report"]
+      }
+    },
+    "/api/v2/report/{report}": {
+      "get": {
+        "summary": "Report Download",
+        "tags": ["Report"],
+        "parameters": [
+          {
+            "name": "report",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/report/{report}/{type}": {
+      "get": {
+        "summary": "Report Download",
+        "tags": ["Report"],
+        "parameters": [
+          {
+            "name": "report",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/reports": {
+      "get": {
+        "summary": "Reports List",
+        "tags": ["Report"]
+      }
+    },
+    "/api/v2/reports/{name}": {
+      "get": {
+        "summary": "Reports List",
+        "tags": ["Report"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/reports/{name}/{model}": {
+      "get": {
+        "summary": "Reports List",
+        "tags": ["Report"],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/access": {
+      "get": {
+        "summary": "Access",
+        "tags": ["Security"]
+      }
+    },
+    "/api/v2/access/{model}": {
+      "get": {
+        "summary": "Access",
+        "tags": ["Security"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/access/{model}/{operation}": {
+      "get": {
+        "summary": "Access",
+        "tags": ["Security"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "operation",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/access/fields": {
+      "get": {
+        "summary": "Access Fields",
+        "tags": ["Security"]
+      }
+    },
+    "/api/v2/access/fields/{model}": {
+      "get": {
+        "summary": "Access Fields",
+        "tags": ["Security"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/access/fields/{model}/{operation}": {
+      "get": {
+        "summary": "Access Fields",
+        "tags": ["Security"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "operation",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/access/rights": {
+      "get": {
+        "summary": "Access Rights",
+        "tags": ["Security"]
+      }
+    },
+    "/api/v2/access/rights/{model}": {
+      "get": {
+        "summary": "Access Rights",
+        "tags": ["Security"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/access/rights/{model}/{operation}": {
+      "get": {
+        "summary": "Access Rights",
+        "tags": ["Security"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "operation",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/access/rules": {
+      "get": {
+        "summary": "Access Rules",
+        "tags": ["Security"]
+      }
+    },
+    "/api/v2/access/rules/{model}": {
+      "get": {
+        "summary": "Access Rules",
+        "tags": ["Security"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/access/rules/{model}/{operation}": {
+      "get": {
+        "summary": "Access Rules",
+        "tags": ["Security"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "operation",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/groups": {
+      "get": {
+        "summary": "Access Groups",
+        "tags": ["Security"]
+      }
+    },
+    "/api/v2/has_group": {
+      "get": {
+        "summary": "Access Group",
+        "tags": ["Security"]
+      }
+    },
+    "/api/v2/": {
+      "get": {
+        "summary": "Version Information",
+        "tags": ["Server"]
+      }
+    },
+    "/api/v2/countries": {
+      "get": {
+        "summary": "Countries",
+        "tags": ["Server"]
+      }
+    },
+    "/api/v2/languages": {
+      "get": {
+        "summary": "Languages",
+        "tags": ["Server"]
+      }
+    },
+    "/api/v2/change_master_password": {
+      "post": {
+        "summary": "Change Master Password",
+        "tags": ["Server"]
+      }
+    },
+    "/api/v2/field_names": {
+      "get": {
+        "summary": "Field Names",
+        "tags": ["System"]
+      }
+    },
+    "/api/v2/field_names/{model}": {
+      "get": {
+        "summary": "Field Names",
+        "tags": ["System"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/fields": {
+      "get": {
+        "summary": "Field Attributes",
+        "tags": ["System"]
+      }
+    },
+    "/api/v2/fields/{model}": {
+      "get": {
+        "summary": "Field Attributes",
+        "tags": ["System"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/function_names": {
+      "get": {
+        "summary": "Function Names",
+        "tags": ["System"]
+      }
+    },
+    "/api/v2/function_names/{model}": {
+      "get": {
+        "summary": "Function Names",
+        "tags": ["System"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/functions": {
+      "get": {
+        "summary": "Function Attributes",
+        "tags": ["System"]
+      }
+    },
+    "/api/v2/functions/{model}": {
+      "get": {
+        "summary": "Function Attributes",
+        "tags": ["System"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/metadata": {
+      "get": {
+        "summary": "Metadata",
+        "tags": ["System"]
+      }
+    },
+    "/api/v2/metadata/{model}": {
+      "get": {
+        "summary": "Metadata",
+        "tags": ["System"],
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v2/model_names": {
+      "get": {
+        "summary": "Model Names",
+        "tags": ["System"]
+      }
+    },
+    "/api/v2/models": {
+      "get": {
+        "summary": "Models",
+        "tags": ["System"]
+      }
+    }
+  }
+}

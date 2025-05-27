@@ -1,0 +1,59 @@
+{
+  "expo": {
+    "name": "ExoMobile",
+    "slug": "itmsodoobase",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./src/assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./src/assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.exomobile.app",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Allow ExoMobile to access your photos to upload attachments",
+        "NSCameraUsageDescription": "Allow ExoMobile to use your camera to take photos for attachments",
+        "NSDocumentPickerUsageDescription": "Allow ExoMobile to access documents for attachments",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./src/assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "permissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.exomobile.app",
+      "versionCode": 1
+    },
+    "web": {
+      "favicon": "./src/assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-document-picker",
+      "expo-image-picker"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1b9f1730-f28b-42b3-a17f-0916ec64d122"
+      }
+    },
+    "owner": "itmsadmin"
+  }
+}

@@ -1,0 +1,9 @@
+{
+    "base_url": "https://stairmaster18.odoo-sandbox.com",
+    "database": "STAIRMASTER_18_24032025",
+    "username": "ptadmin",
+    "password": "++Uke52br++",
+    "client_id": "ZqUAbvS6PIcOobKIjz4G4OuaKgm6pK9cpcpxBz1p",
+    "client_secret": "ZDfR6WHORSfrGSl424G9zNu5yXhfle6PRMGpC69M",
+    "endpoints_file": "muk_rest_endpoints.json"
+  }

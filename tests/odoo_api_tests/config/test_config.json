@@ -1,0 +1,11 @@
+{
+  "server_url": "https://stairmaster18.odoo-sandbox.com",
+  "database": "STAIRMASTER_18_24032025",
+  "client_id": "ZqUAbvS6PIcOobKIjz4G4OuaKgm6pK9cpcpxBz1p",
+  "client_secret": "ZDfR6WHORSfrGSl424G9zNu5yXhfle6PRMGpC69M",
+  "username": "ptadmin",
+  "password": "++Uke52br++",
+  "auth_endpoint": "/api/v2/authentication/oauth2/token",
+  "models_to_test": ["res.partner", "sale.order"],
+  "output_dir": "test_results"
+}

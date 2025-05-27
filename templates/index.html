@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odoo Model Explorer Builder</title>
+    <!-- Prism.js for syntax highlighting -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px; /* Increased max-width for wider content */
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        .collapsible {
+            cursor: pointer;
+            padding: 10px 20px;
+            background: #ecf0f1;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+        }
+        .collapsible:hover {
+            background: #dfe6e9;
+        }
+        .content {
+            padding: 20px;
+            display: none;
+        }
+        .content.active {
+            display: block;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: 500;
+            position: relative;
+        }
+        label .tooltip {
+            visibility: hidden;
+            background: #34495e;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            position: absolute;
+            top: -30px;
+            left: 0;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        label:hover .tooltip {
+            visibility: visible;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input:focus, select:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52,152,219,0.3);
+        }
+        button {
+            background: #3498db;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        #output-section {
+            width: 100%; /* Full page width */
+            padding: 20px;
+            background: #f9f9f9;
+            border-top: 1px solid #ddd;
+            box-sizing: border-box;
+        }
+        #output-container {
+            position: relative;
+            width: 100%;
+            margin: 0 auto;
+        }
+        #output {
+            background: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+            max-height: 800px; /* Increased height */
+            overflow-y: auto;
+            font-size: 13px;
+            width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+        }
+        #copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            display: none; /* Hidden until output appears */
+        }
+        #copy-btn:hover {
+            background: #27ae60;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+        .loading.active {
+            display: block;
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 5px;
+            }
+            header h1 {
+                font-size: 20px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Odoo Model Explorer Builder</h1>
+            <span>Local Tool</span>
+        </header>
+        <div class="collapsible" onclick="toggleSection('connection-details')">Connection Details ▼</div>
+        <div id="connection-details" class="content active">
+            <form id="explorer-form" method="POST" action="/run" onsubmit="showLoading()">
+                <label>Odoo Server URL <span class="tooltip">e.g., http://localhost:8069</span></label>
+                <input type="text" name="url" value="http://localhost:8069" required>
+
+                <label>Database Name <span class="tooltip">e.g., loneworker</span></label>
+                <input type="text" name="db" value="loneworker">
+
+                <label>Username <span class="tooltip">e.g., mark</span></label>
+                <input type="text" name="username" value="mark">
+
+                <label>Password <span class="tooltip">e.g., mark</span></label>
+                <input type="password" name="password" value="mark">
+
+                <label>Select Option <span class="tooltip">Choose an action to perform</span></label>
+                <select name="option" onchange="toggleModelField(this.value)" required>
+                    <option value="1">1. List models</option>
+                    <option value="2">2. Search models</option>
+                    <option value="3">3. View model fields</option>
+                    <option value="4">4. Analyze model</option>
+                    <option value="5" selected>5. View sample record</option>
+                    <option value="6">6. Select models for export</option>
+                    <option value="7">7. Select fields for model</option>
+                    <option value="8">8. View selected models and fields</option>
+                    <option value="9">9. Generate model selection file</option>
+                    <option value="10">10. Generate React Native component</option>
+                    <option value="11">11. Export LLM prompt</option>
+                    <option value="12">12. Show model relationships</option>
+                    <option value="13">13. Analyze for mobile app development</option>
+                    <option value="14">14. Generate API endpoints summary</option>
+                    <option value="15">15. Export mobile app LLM prompt</option>
+                    <option value="16">16. Refresh cache</option>
+                    <option value="17">17. Exit</option>
+                    <option value="18">18. Export Mobile App Development Package</option>
+                </select>
+
+                <div id="model-name-field">
+                    <label>Model Name <span class="tooltip">Required for options 3-5, 7, 10, 12-15, 18</span></label>
+                    <input type="text" name="model_name" value="hr.employee" placeholder="e.g., hr.employee">
+                </div>
+
+                <button type="submit">Run Script</button>
+            </form>
+        </div>
+        <div id="output-section">
+            <div id="loading" class="loading">Processing... <span style="display:inline-block; animation: spin 1s linear infinite;">⏳</span></div>
+            {% if output %}
+            <div id="output-container">
+                <h2>Output:</h2>
+                <pre id="output"><code class="language-json">{{ output | e }}</code></pre>
+                <button id="copy-btn" onclick="copyOutput()">Copy</button>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function toggleSection(sectionId) {
+            const content = document.getElementById(sectionId);
+            content.classList.toggle('active');
+            const collapsible = content.previousElementSibling;
+            collapsible.textContent = collapsible.textContent.replace(/[▼▲]/, content.classList.contains('active') ? '▼' : '▲');
+        }
+
+        function toggleModelField(option) {
+            const modelField = document.getElementById('model-name-field');
+            const modelRequired = ['3', '4', '5', '7', '10', '12', '13', '14', '15', '18'];
+            modelField.style.display = modelRequired.includes(option) ? 'block' : 'none';
+        }
+
+        function showLoading() {
+            const loading = document.getElementById('loading');
+            loading.classList.add('active');
+            const outputContainer = document.getElementById('output-container');
+            if (outputContainer) outputContainer.remove();
+        }
+
+        function copyOutput() {
+            const outputText = document.getElementById('output').innerText;
+            navigator.clipboard.writeText(outputText).then(() => {
+                alert('Output copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy: ' + err);
+            });
+        }
+
+        // Initialize model field visibility and copy button
+        toggleModelField(document.querySelector('select[name="option"]').value);
+        if (document.getElementById('output')) {
+            document.getElementById('copy-btn').style.display = 'block';
+        }
+
+        // Add animation for loading spinner
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    </script>
+</body>
+</html>

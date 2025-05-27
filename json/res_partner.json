@@ -1,0 +1,2119 @@
+{
+  "model": "res.partner",
+  "fields": [
+    {
+      "name": "is_blacklisted",
+      "type": "boolean",
+      "label": "Blacklist",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "customer_rank",
+      "type": "integer",
+      "label": "Customer Rank",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "active_lang_count",
+      "type": "integer",
+      "label": "Active Lang Count",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "signup_expiration",
+      "type": "datetime",
+      "label": "Signup Expiration",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_has_sms_error",
+      "type": "boolean",
+      "label": "SMS Delivery error",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "title",
+      "type": "many2one",
+      "label": "Title",
+      "required": false,
+      "relation": "res.partner.title"
+    },
+    {
+      "name": "fiscal_country_codes",
+      "type": "char",
+      "label": "Fiscal Country Codes",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "avatar_1920",
+      "type": "binary",
+      "label": "Avatar",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "ref_company_ids",
+      "type": "one2many",
+      "label": "Companies that refers to partner",
+      "required": false,
+      "relation": "res.company"
+    },
+    {
+      "name": "website_id",
+      "type": "many2one",
+      "label": "Website",
+      "required": false,
+      "relation": "website"
+    },
+    {
+      "name": "bank_ids",
+      "type": "one2many",
+      "label": "Banks",
+      "required": false,
+      "relation": "res.partner.bank"
+    },
+    {
+      "name": "phone_sanitized",
+      "type": "char",
+      "label": "Sanitized Number",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "color",
+      "type": "integer",
+      "label": "Color Index",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "signup_url",
+      "type": "char",
+      "label": "Signup URL",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "phone_mobile_search",
+      "type": "char",
+      "label": "Phone/Mobile",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "task_count",
+      "type": "integer",
+      "label": "# Tasks",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "image_512",
+      "type": "binary",
+      "label": "Image 512",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "signup_type",
+      "type": "char",
+      "label": "Signup Token Type",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "supplier_rank",
+      "type": "integer",
+      "label": "Supplier Rank",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "activity_user_id",
+      "type": "many2one",
+      "label": "Responsible User",
+      "required": false,
+      "relation": "res.users"
+    },
+    {
+      "name": "additional_info",
+      "type": "char",
+      "label": "Additional info",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_has_error",
+      "type": "boolean",
+      "label": "Message Delivery error",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "plan_to_change_bike",
+      "type": "boolean",
+      "label": "Plan To Change Bike",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "website",
+      "type": "char",
+      "label": "Website Link",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "mobile_blacklisted",
+      "type": "boolean",
+      "label": "Blacklisted Phone Is Mobile",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "journal_item_count",
+      "type": "integer",
+      "label": "Journal Items",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "property_account_payable_id",
+      "type": "many2one",
+      "label": "Account Payable",
+      "required": true,
+      "relation": "account.account"
+    },
+    {
+      "name": "activity_summary",
+      "type": "char",
+      "label": "Next Activity Summary",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "calendar_last_notif_ack",
+      "type": "datetime",
+      "label": "Last notification marked as read from base Calendar",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "is_public",
+      "type": "boolean",
+      "label": "Is Public",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "image_1920",
+      "type": "binary",
+      "label": "Image",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "debit",
+      "type": "monetary",
+      "label": "Total Payable",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "contact_address_inline",
+      "type": "char",
+      "label": "Inlined Complete Address",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "mobile",
+      "type": "char",
+      "label": "Mobile",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "tz_offset",
+      "type": "char",
+      "label": "Timezone offset",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "country_id",
+      "type": "many2one",
+      "label": "Country",
+      "required": false,
+      "relation": "res.country"
+    },
+    {
+      "name": "activity_exception_decoration",
+      "type": "selection",
+      "label": "Activity Exception Decoration",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "user_id",
+      "type": "many2one",
+      "label": "Salesperson",
+      "required": false,
+      "relation": "res.users"
+    },
+    {
+      "name": "total_invoiced",
+      "type": "monetary",
+      "label": "Total Invoiced",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "visitor_ids",
+      "type": "one2many",
+      "label": "Visitors",
+      "required": false,
+      "relation": "website.visitor"
+    },
+    {
+      "name": "company_type",
+      "type": "selection",
+      "label": "Company Type",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "active",
+      "type": "boolean",
+      "label": "Active",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "email_normalized",
+      "type": "char",
+      "label": "Normalized Email",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_is_follower",
+      "type": "boolean",
+      "label": "Is Follower",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "peppol_endpoint",
+      "type": "char",
+      "label": "Peppol Endpoint",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "website_message_ids",
+      "type": "one2many",
+      "label": "Website Messages",
+      "required": false,
+      "relation": "mail.message"
+    },
+    {
+      "name": "same_vat_partner_id",
+      "type": "many2one",
+      "label": "Partner with same Tax ID",
+      "required": false,
+      "relation": "res.partner"
+    },
+    {
+      "name": "meeting_ids",
+      "type": "many2many",
+      "label": "Meetings",
+      "required": false,
+      "relation": "calendar.event"
+    },
+    {
+      "name": "contract_ids",
+      "type": "one2many",
+      "label": "Partner Contracts",
+      "required": false,
+      "relation": "account.analytic.account"
+    },
+    {
+      "name": "last_time_entries_checked",
+      "type": "datetime",
+      "label": "Latest Invoices & Payments Matching Date",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "show_credit_limit",
+      "type": "boolean",
+      "label": "Show Credit Limit",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "is_published",
+      "type": "boolean",
+      "label": "Is Published",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "write_uid",
+      "type": "many2one",
+      "label": "Last Updated by",
+      "required": false,
+      "relation": "res.users"
+    },
+    {
+      "name": "self",
+      "type": "many2one",
+      "label": "Self",
+      "required": false,
+      "relation": "res.partner"
+    },
+    {
+      "name": "meeting_count",
+      "type": "integer",
+      "label": "# Meetings",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "credit_limit",
+      "type": "float",
+      "label": "Credit Limit",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "lang",
+      "type": "selection",
+      "label": "Language",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "activity_state",
+      "type": "selection",
+      "label": "Activity State",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "partner_latitude",
+      "type": "float",
+      "label": "Geo Latitude",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "payment_token_count",
+      "type": "integer",
+      "label": "Payment Token Count",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "avatar_512",
+      "type": "binary",
+      "label": "Avatar 512",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "email",
+      "type": "char",
+      "label": "Email",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "function",
+      "type": "char",
+      "label": "Job Position",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_bounce",
+      "type": "integer",
+      "label": "Bounce",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "days_sales_outstanding",
+      "type": "float",
+      "label": "Days Sales Outstanding (DSO)",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "partner_share",
+      "type": "boolean",
+      "label": "Share Partner",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "credit",
+      "type": "monetary",
+      "label": "Total Receivable",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "signup_token",
+      "type": "char",
+      "label": "Signup Token",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "tz",
+      "type": "selection",
+      "label": "Timezone",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "create_date",
+      "type": "datetime",
+      "label": "Created on",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "complete_name",
+      "type": "char",
+      "label": "Complete Name",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_needaction_counter",
+      "type": "integer",
+      "label": "Number of Actions",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "has_unreconciled_entries",
+      "type": "boolean",
+      "label": "Has Unreconciled Entries",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "ref",
+      "type": "char",
+      "label": "Reference",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_needaction",
+      "type": "boolean",
+      "label": "Action Needed",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "my_activity_date_deadline",
+      "type": "date",
+      "label": "My Activity Deadline",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "activity_ids",
+      "type": "one2many",
+      "label": "Activities",
+      "required": false,
+      "relation": "mail.activity"
+    },
+    {
+      "name": "trust",
+      "type": "selection",
+      "label": "Degree of trust you have in this debtor",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "parent_name",
+      "type": "char",
+      "label": "Parent name",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "payment_token_ids",
+      "type": "one2many",
+      "label": "Payment Tokens",
+      "required": false,
+      "relation": "payment.token"
+    },
+    {
+      "name": "avatar_128",
+      "type": "binary",
+      "label": "Avatar 128",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "country_code",
+      "type": "char",
+      "label": "Country Code",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "can_publish",
+      "type": "boolean",
+      "label": "Can Publish",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "activity_type_icon",
+      "type": "char",
+      "label": "Activity Type Icon",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "city",
+      "type": "char",
+      "label": "City",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "currency_id",
+      "type": "many2one",
+      "label": "Currency",
+      "required": false,
+      "relation": "res.currency"
+    },
+    {
+      "name": "avatar_1024",
+      "type": "binary",
+      "label": "Avatar 1024",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "credit_to_invoice",
+      "type": "monetary",
+      "label": "Credit To Invoice",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "activity_calendar_event_id",
+      "type": "many2one",
+      "label": "Next Activity Calendar Event",
+      "required": false,
+      "relation": "calendar.event"
+    },
+    {
+      "name": "property_product_pricelist",
+      "type": "many2one",
+      "label": "Pricelist",
+      "required": false,
+      "relation": "product.pricelist"
+    },
+    {
+      "name": "same_company_registry_partner_id",
+      "type": "many2one",
+      "label": "Partner with same Company Registry",
+      "required": false,
+      "relation": "res.partner"
+    },
+    {
+      "name": "project_ids",
+      "type": "one2many",
+      "label": "Projects",
+      "required": false,
+      "relation": "project.project"
+    },
+    {
+      "name": "im_status",
+      "type": "char",
+      "label": "IM Status",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "bank_account_count",
+      "type": "integer",
+      "label": "Bank",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "vat",
+      "type": "char",
+      "label": "Tax ID",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "invoice_ids",
+      "type": "one2many",
+      "label": "Invoices",
+      "required": false,
+      "relation": "account.move"
+    },
+    {
+      "name": "image_128",
+      "type": "binary",
+      "label": "Image 128",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "peppol_eas",
+      "type": "selection",
+      "label": "Peppol e-address (EAS)",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_attachment_count",
+      "type": "integer",
+      "label": "Attachment Count",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_has_error_counter",
+      "type": "integer",
+      "label": "Number of errors",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "street2",
+      "type": "char",
+      "label": "Street2",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "user_ids",
+      "type": "one2many",
+      "label": "Users",
+      "required": false,
+      "relation": "res.users"
+    },
+    {
+      "name": "task_ids",
+      "type": "one2many",
+      "label": "Tasks",
+      "required": false,
+      "relation": "project.task"
+    },
+    {
+      "name": "message_ids",
+      "type": "one2many",
+      "label": "Messages",
+      "required": false,
+      "relation": "mail.message"
+    },
+    {
+      "name": "property_payment_term_id",
+      "type": "many2one",
+      "label": "Customer Payment Terms",
+      "required": false,
+      "relation": "account.payment.term"
+    },
+    {
+      "name": "image_1024",
+      "type": "binary",
+      "label": "Image 1024",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_partner_ids",
+      "type": "many2many",
+      "label": "Followers (Partners)",
+      "required": false,
+      "relation": "res.partner"
+    },
+    {
+      "name": "duplicated_bank_account_partners_count",
+      "type": "integer",
+      "label": "Duplicated Bank Account Partners Count",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "company_id",
+      "type": "many2one",
+      "label": "Company",
+      "required": false,
+      "relation": "res.company"
+    },
+    {
+      "name": "activity_type_id",
+      "type": "many2one",
+      "label": "Next Activity Type",
+      "required": false,
+      "relation": "mail.activity.type"
+    },
+    {
+      "name": "website_published",
+      "type": "boolean",
+      "label": "Visible on current website",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "write_date",
+      "type": "datetime",
+      "label": "Last Updated on",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "employee_ids",
+      "type": "one2many",
+      "label": "Employees",
+      "required": false,
+      "relation": "hr.employee"
+    },
+    {
+      "name": "date",
+      "type": "date",
+      "label": "Date",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "property_supplier_payment_term_id",
+      "type": "many2one",
+      "label": "Vendor Payment Terms",
+      "required": false,
+      "relation": "account.payment.term"
+    },
+    {
+      "name": "state_id",
+      "type": "many2one",
+      "label": "State",
+      "required": false,
+      "relation": "res.country.state"
+    },
+    {
+      "name": "email_formatted",
+      "type": "char",
+      "label": "Formatted Email",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "invoice_warn_msg",
+      "type": "text",
+      "label": "Message for Invoice",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "property_account_position_id",
+      "type": "many2one",
+      "label": "Fiscal Position",
+      "required": false,
+      "relation": "account.fiscal.position"
+    },
+    {
+      "name": "barcode",
+      "type": "char",
+      "label": "Barcode",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "id",
+      "type": "integer",
+      "label": "ID",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "invoice_warn",
+      "type": "selection",
+      "label": "Invoice",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "comment",
+      "type": "html",
+      "label": "Notes",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "category_id",
+      "type": "many2many",
+      "label": "Tags",
+      "required": false,
+      "relation": "res.partner.category"
+    },
+    {
+      "name": "company_name",
+      "type": "char",
+      "label": "Company Name",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "parent_id",
+      "type": "many2one",
+      "label": "Related Company",
+      "required": false,
+      "relation": "res.partner"
+    },
+    {
+      "name": "type",
+      "type": "selection",
+      "label": "Address Type",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "phone",
+      "type": "char",
+      "label": "Phone",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "company_registry",
+      "type": "char",
+      "label": "Company ID",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "child_ids",
+      "type": "one2many",
+      "label": "Contact",
+      "required": false,
+      "relation": "res.partner"
+    },
+    {
+      "name": "rating_ids",
+      "type": "one2many",
+      "label": "Ratings",
+      "required": false,
+      "relation": "rating.rating"
+    },
+    {
+      "name": "partner_gid",
+      "type": "integer",
+      "label": "Company database ID",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "industry_id",
+      "type": "many2one",
+      "label": "Industry",
+      "required": false,
+      "relation": "res.partner.industry"
+    },
+    {
+      "name": "ubl_cii_format",
+      "type": "selection",
+      "label": "Format",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "image_256",
+      "type": "binary",
+      "label": "Image 256",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "signup_valid",
+      "type": "boolean",
+      "label": "Signup Token is Valid",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "create_uid",
+      "type": "many2one",
+      "label": "Created by",
+      "required": false,
+      "relation": "res.users"
+    },
+    {
+      "name": "is_company",
+      "type": "boolean",
+      "label": "Is a Company",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "partner_longitude",
+      "type": "float",
+      "label": "Geo Longitude",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "has_message",
+      "type": "boolean",
+      "label": "Has Message",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "commercial_company_name",
+      "type": "char",
+      "label": "Company Name Entity",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "commercial_partner_id",
+      "type": "many2one",
+      "label": "Commercial Entity",
+      "required": false,
+      "relation": "res.partner"
+    },
+    {
+      "name": "contact_address",
+      "type": "char",
+      "label": "Complete Address",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "website_url",
+      "type": "char",
+      "label": "Website URL",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "zip",
+      "type": "char",
+      "label": "Zip",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "plan_to_change_car",
+      "type": "boolean",
+      "label": "Plan To Change Car",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "property_account_receivable_id",
+      "type": "many2one",
+      "label": "Account Receivable",
+      "required": true,
+      "relation": "account.account"
+    },
+    {
+      "name": "employee",
+      "type": "boolean",
+      "label": "Employee",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "street",
+      "type": "char",
+      "label": "Street",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "phone_sanitized_blacklisted",
+      "type": "boolean",
+      "label": "Phone Blacklisted",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "activity_date_deadline",
+      "type": "date",
+      "label": "Next Activity Deadline",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "avatar_256",
+      "type": "binary",
+      "label": "Avatar 256",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "channel_ids",
+      "type": "many2many",
+      "label": "Channels",
+      "required": false,
+      "relation": "discuss.channel"
+    },
+    {
+      "name": "employees_count",
+      "type": "integer",
+      "label": "Employees Count",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "phone_blacklisted",
+      "type": "boolean",
+      "label": "Blacklisted Phone is Phone",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "message_follower_ids",
+      "type": "one2many",
+      "label": "Followers",
+      "required": false,
+      "relation": "mail.followers"
+    },
+    {
+      "name": "starred_message_ids",
+      "type": "many2many",
+      "label": "Starred Message",
+      "required": false,
+      "relation": "mail.message"
+    },
+    {
+      "name": "use_partner_credit_limit",
+      "type": "boolean",
+      "label": "Partner Limit",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "name",
+      "type": "char",
+      "label": "Name",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "activity_exception_icon",
+      "type": "char",
+      "label": "Icon",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "display_name",
+      "type": "char",
+      "label": "Display Name",
+      "required": false,
+      "relation": ""
+    },
+    {
+      "name": "debit_limit",
+      "type": "monetary",
+      "label": "Payable Limit",
+      "required": false,
+      "relation": ""
+    }
+  ],
+  "relationships": [
+    {
+      "from_model": "res.partner",
+      "to_model": "calendar.event",
+      "field": "activity_calendar_event_id",
+      "type": "many2one",
+      "label": "Next Activity Calendar Event"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "mail.activity.type",
+      "field": "activity_type_id",
+      "type": "many2one",
+      "label": "Next Activity Type"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.users",
+      "field": "activity_user_id",
+      "type": "many2one",
+      "label": "Responsible User"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner",
+      "field": "commercial_partner_id",
+      "type": "many2one",
+      "label": "Commercial Entity"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.company",
+      "field": "company_id",
+      "type": "many2one",
+      "label": "Company"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.country",
+      "field": "country_id",
+      "type": "many2one",
+      "label": "Country"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.users",
+      "field": "create_uid",
+      "type": "many2one",
+      "label": "Created by"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.currency",
+      "field": "currency_id",
+      "type": "many2one",
+      "label": "Currency"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner.industry",
+      "field": "industry_id",
+      "type": "many2one",
+      "label": "Industry"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner",
+      "field": "parent_id",
+      "type": "many2one",
+      "label": "Related Company"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "account.account",
+      "field": "property_account_payable_id",
+      "type": "many2one",
+      "label": "Account Payable"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "account.fiscal.position",
+      "field": "property_account_position_id",
+      "type": "many2one",
+      "label": "Fiscal Position"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "account.account",
+      "field": "property_account_receivable_id",
+      "type": "many2one",
+      "label": "Account Receivable"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "account.payment.term",
+      "field": "property_payment_term_id",
+      "type": "many2one",
+      "label": "Customer Payment Terms"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "product.pricelist",
+      "field": "property_product_pricelist",
+      "type": "many2one",
+      "label": "Pricelist"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "account.payment.term",
+      "field": "property_supplier_payment_term_id",
+      "type": "many2one",
+      "label": "Vendor Payment Terms"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner",
+      "field": "same_company_registry_partner_id",
+      "type": "many2one",
+      "label": "Partner with same Company Registry"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner",
+      "field": "same_vat_partner_id",
+      "type": "many2one",
+      "label": "Partner with same Tax ID"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner",
+      "field": "self",
+      "type": "many2one",
+      "label": "Self"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.country.state",
+      "field": "state_id",
+      "type": "many2one",
+      "label": "State"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner.title",
+      "field": "title",
+      "type": "many2one",
+      "label": "Title"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.users",
+      "field": "user_id",
+      "type": "many2one",
+      "label": "Salesperson"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "website",
+      "field": "website_id",
+      "type": "many2one",
+      "label": "Website"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.users",
+      "field": "write_uid",
+      "type": "many2one",
+      "label": "Last Updated by"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "mail.activity",
+      "field": "activity_ids",
+      "type": "one2many",
+      "label": "Activities"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner.bank",
+      "field": "bank_ids",
+      "type": "one2many",
+      "label": "Banks"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner",
+      "field": "child_ids",
+      "type": "one2many",
+      "label": "Contact"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "account.analytic.account",
+      "field": "contract_ids",
+      "type": "one2many",
+      "label": "Partner Contracts"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "hr.employee",
+      "field": "employee_ids",
+      "type": "one2many",
+      "label": "Employees"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "account.move",
+      "field": "invoice_ids",
+      "type": "one2many",
+      "label": "Invoices"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "mail.followers",
+      "field": "message_follower_ids",
+      "type": "one2many",
+      "label": "Followers"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "mail.message",
+      "field": "message_ids",
+      "type": "one2many",
+      "label": "Messages"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "payment.token",
+      "field": "payment_token_ids",
+      "type": "one2many",
+      "label": "Payment Tokens"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "project.project",
+      "field": "project_ids",
+      "type": "one2many",
+      "label": "Projects"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "rating.rating",
+      "field": "rating_ids",
+      "type": "one2many",
+      "label": "Ratings"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.company",
+      "field": "ref_company_ids",
+      "type": "one2many",
+      "label": "Companies that refers to partner"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "project.task",
+      "field": "task_ids",
+      "type": "one2many",
+      "label": "Tasks"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.users",
+      "field": "user_ids",
+      "type": "one2many",
+      "label": "Users"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "website.visitor",
+      "field": "visitor_ids",
+      "type": "one2many",
+      "label": "Visitors"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "mail.message",
+      "field": "website_message_ids",
+      "type": "one2many",
+      "label": "Website Messages"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner.category",
+      "field": "category_id",
+      "type": "many2many",
+      "label": "Tags"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "discuss.channel",
+      "field": "channel_ids",
+      "type": "many2many",
+      "label": "Channels"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "calendar.event",
+      "field": "meeting_ids",
+      "type": "many2many",
+      "label": "Meetings"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "res.partner",
+      "field": "message_partner_ids",
+      "type": "many2many",
+      "label": "Followers (Partners)"
+    },
+    {
+      "from_model": "res.partner",
+      "to_model": "mail.message",
+      "field": "starred_message_ids",
+      "type": "many2many",
+      "label": "Starred Message"
+    }
+  ],
+  "sample_record": {
+    "active": true,
+    "active_lang_count": 1,
+    "activity_calendar_event_id": false,
+    "activity_date_deadline": false,
+    "activity_exception_decoration": false,
+    "activity_exception_icon": false,
+    "activity_ids": [],
+    "activity_state": false,
+    "activity_summary": false,
+    "activity_type_icon": false,
+    "activity_type_id": false,
+    "activity_user_id": false,
+    "additional_info": false,
+    "avatar_1024": "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",
+    "avatar_128": "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",
+    "avatar_1920": "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",
+    "avatar_256": "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",
+    "avatar_512": "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",
+    "bank_account_count": 0,
+    "bank_ids": [],
+    "barcode": false,
+    "calendar_last_notif_ack": "2025-03-13 02:54:13",
+    "can_publish": true,
+    "category_id": [],
+    "channel_ids": [],
+    "child_ids": [],
+    "city": "",
+    "color": 0,
+    "comment": "",
+    "commercial_company_name": false,
+    "commercial_partner_id": [
+      11,
+      "Master Dudly"
+    ],
+    "company_id": false,
+    "company_name": false,
+    "company_registry": false,
+    "company_type": "person",
+    "complete_name": "Master Dudly",
+    "contact_address": "\n\n  \n",
+    "contact_address_inline": "",
+    "contract_ids": [],
+    "country_code": false,
+    "country_id": false,
+    "create_date": "2025-03-13 02:54:13",
+    "create_uid": [
+      2,
+      "Administrator"
+    ],
+    "credit": 0.0,
+    "credit_limit": 0.0,
+    "credit_to_invoice": 0.0,
+    "currency_id": [
+      1,
+      "USD"
+    ],
+    "customer_rank": 0,
+    "date": false,
+    "days_sales_outstanding": 0.0,
+    "debit": 0.0,
+    "debit_limit": 0.0,
+    "display_name": "Master Dudly",
+    "duplicated_bank_account_partners_count": 0,
+    "email": "",
+    "email_formatted": false,
+    "email_normalized": false,
+    "employee": false,
+    "employee_ids": [],
+    "employees_count": 0,
+    "fiscal_country_codes": "US",
+    "function": "Cleaner",
+    "has_message": true,
+    "has_unreconciled_entries": false,
+    "id": 11,
+    "im_status": "im_partner",
+    "image_1024": false,
+    "image_128": false,
+    "image_1920": false,
+    "image_256": false,
+    "image_512": false,
+    "industry_id": false,
+    "invoice_ids": [],
+    "invoice_warn": "no-message",
+    "invoice_warn_msg": false,
+    "is_blacklisted": false,
+    "is_company": false,
+    "is_public": false,
+    "is_published": false,
+    "journal_item_count": 0,
+    "lang": "en_US",
+    "last_time_entries_checked": false,
+    "meeting_count": 0,
+    "meeting_ids": [],
+    "message_attachment_count": 0,
+    "message_bounce": 0,
+    "message_follower_ids": [
+      108
+    ],
+    "message_has_error": false,
+    "message_has_error_counter": 0,
+    "message_has_sms_error": false,
+    "message_ids": [
+      1323
+    ],
+    "message_is_follower": true,
+    "message_needaction": false,
+    "message_needaction_counter": 0,
+    "message_partner_ids": [
+      3
+    ],
+    "mobile": "",
+    "mobile_blacklisted": false,
+    "my_activity_date_deadline": false,
+    "name": "Master Dudly",
+    "parent_id": false,
+    "parent_name": false,
+    "partner_gid": 0,
+    "partner_latitude": 0.0,
+    "partner_longitude": 0.0,
+    "partner_share": true,
+    "payment_token_count": 0,
+    "payment_token_ids": [],
+    "peppol_eas": false,
+    "peppol_endpoint": false,
+    "phone": "",
+    "phone_blacklisted": false,
+    "phone_mobile_search": false,
+    "phone_sanitized": false,
+    "phone_sanitized_blacklisted": false,
+    "plan_to_change_bike": false,
+    "plan_to_change_car": false,
+    "project_ids": [],
+    "property_account_payable_id": [
+      14,
+      "211000 Account Payable"
+    ],
+    "property_account_position_id": false,
+    "property_account_receivable_id": [
+      6,
+      "121000 Account Receivable"
+    ],
+    "property_payment_term_id": false,
+    "property_product_pricelist": false,
+    "property_supplier_payment_term_id": false,
+    "rating_ids": [],
+    "ref": false,
+    "ref_company_ids": [],
+    "same_company_registry_partner_id": false,
+    "same_vat_partner_id": false,
+    "self": [
+      11,
+      "Master Dudly"
+    ],
+    "show_credit_limit": false,
+    "signup_expiration": false,
+    "signup_token": false,
+    "signup_type": false,
+    "signup_url": false,
+    "signup_valid": false,
+    "starred_message_ids": [],
+    "state_id": false,
+    "street": "",
+    "street2": "",
+    "supplier_rank": 0,
+    "task_count": 0,
+    "task_ids": [],
+    "title": false,
+    "total_invoiced": 0.0,
+    "trust": "normal",
+    "type": "contact",
+    "tz": false,
+    "tz_offset": "+0000",
+    "ubl_cii_format": false,
+    "use_partner_credit_limit": false,
+    "user_id": false,
+    "user_ids": [],
+    "vat": "",
+    "visitor_ids": [],
+    "website": "",
+    "website_id": false,
+    "website_message_ids": [],
+    "website_published": false,
+    "website_url": "#",
+    "write_date": "2025-03-13 02:54:13",
+    "write_uid": [
+      2,
+      "Administrator"
+    ],
+    "zip": "",
+    "commercial_partner_id_expanded": {
+      "display_name": "Master Dudly",
+      "id": 11,
+      "name": "Master Dudly",
+      "property_account_payable_id": [
+        14,
+        "211000 Account Payable"
+      ],
+      "property_account_receivable_id": [
+        6,
+        "121000 Account Receivable"
+      ]
+    },
+    "create_uid_expanded": {
+      "company_id": [
+        1,
+        "My Company"
+      ],
+      "display_name": "Administrator",
+      "id": 2,
+      "login": "mark",
+      "name": "Administrator",
+      "notification_type": "email",
+      "partner_id": [
+        3,
+        "Administrator"
+      ],
+      "property_account_payable_id": [
+        14,
+        "211000 Account Payable"
+      ],
+      "property_account_receivable_id": [
+        6,
+        "121000 Account Receivable"
+      ],
+      "sidebar_type": "large"
+    },
+    "currency_id_expanded": {
+      "display_name": "USD",
+      "id": 1,
+      "name": "USD",
+      "symbol": "$"
+    },
+    "message_follower_ids_expanded": [
+      {
+        "display_name": "Administrator",
+        "email": "admin@example.com",
+        "id": 108,
+        "is_active": true,
+        "name": "Administrator",
+        "partner_id": [
+          3,
+          "Administrator"
+        ],
+        "res_id": 11,
+        "res_model": "res.partner",
+        "subtype_ids": [
+          1
+        ]
+      }
+    ],
+    "message_ids_expanded": [
+      {
+        "attachment_ids": [],
+        "author_avatar": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "author_guest_id": false,
+        "author_id": [
+          3,
+          "Administrator"
+        ],
+        "body": "<p>Contact created</p>",
+        "child_ids": [],
+        "create_date": "2025-03-13 02:54:13",
+        "create_uid": [
+          2,
+          "Administrator"
+        ],
+        "date": "2025-03-13 02:54:13",
+        "description": "Contact created",
+        "display_name": false,
+        "email_add_signature": false,
+        "email_from": "\"Administrator\" <admin@example.com>",
+        "email_layout_xmlid": false,
+        "has_error": false,
+        "has_sms_error": false,
+        "id": 1323,
+        "is_current_user_or_guest_author": true,
+        "is_internal": true,
+        "letter_ids": [],
+        "link_preview_ids": [],
+        "mail_activity_type_id": false,
+        "mail_ids": [],
+        "mail_server_id": false,
+        "message_id": "<456777328568252.1741834453.972236394882202-openerp-message-notify@4b9448334aa5>",
+        "message_type": "notification",
+        "model": "res.partner",
+        "needaction": false,
+        "notification_ids": [],
+        "notified_partner_ids": [],
+        "parent_id": false,
+        "partner_ids": [],
+        "pinned_at": false,
+        "preview": "Contact created",
+        "rating_ids": [],
+        "rating_value": 0.0,
+        "reaction_ids": [],
+        "record_alias_domain_id": false,
+        "record_company_id": false,
+        "record_name": false,
+        "reply_to": "\"Administrator\" <admin@example.com>",
+        "reply_to_force_new": false,
+        "res_id": 11,
+        "snailmail_error": false,
+        "starred": false,
+        "starred_partner_ids": [],
+        "subject": false,
+        "subtype_id": [
+          2,
+          "Note"
+        ],
+        "tracking_value_ids": [],
+        "write_date": "2025-03-13 02:54:13",
+        "write_uid": [
+          2,
+          "Administrator"
+        ]
+      }
+    ],
+    "message_partner_ids_expanded": [
+      {
+        "active": true,
+        "active_lang_count": 1,
+        "activity_calendar_event_id": false,
+        "activity_date_deadline": false,
+        "activity_exception_decoration": false,
+        "activity_exception_icon": false,
+        "activity_ids": [],
+        "activity_state": false,
+        "activity_summary": false,
+        "activity_type_icon": false,
+        "activity_type_id": false,
+        "activity_user_id": false,
+        "additional_info": false,
+        "avatar_1024": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "avatar_128": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "avatar_1920": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "avatar_256": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "avatar_512": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "bank_account_count": 0,
+        "bank_ids": [],
+        "barcode": false,
+        "calendar_last_notif_ack": "2025-03-06 11:01:40",
+        "can_publish": true,
+        "category_id": [
+          1
+        ],
+        "channel_ids": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "child_ids": [],
+        "city": "Khlong Tan",
+        "color": 0,
+        "comment": "<p>abc123</p>",
+        "commercial_company_name": false,
+        "commercial_partner_id": [
+          3,
+          "Administrator"
+        ],
+        "company_id": [
+          1,
+          "My Company"
+        ],
+        "company_name": false,
+        "company_registry": false,
+        "company_type": "person",
+        "complete_name": "Administrator",
+        "contact_address": "55 Soi Sukhumvit 26\n\nKhlong Tan\nBangkok 10110\nThailand",
+        "contact_address_inline": "55 Soi Sukhumvit 26, Khlong Tan, Bangkok 10110, Thailand",
+        "contract_ids": [],
+        "country_code": "TH",
+        "country_id": [
+          217,
+          "Thailand"
+        ],
+        "create_date": "2025-03-06 10:20:54",
+        "create_uid": [
+          1,
+          "OdooBot"
+        ],
+        "credit": 0.0,
+        "credit_limit": 0.0,
+        "credit_to_invoice": 0.0,
+        "currency_id": [
+          1,
+          "USD"
+        ],
+        "customer_rank": 0,
+        "date": false,
+        "days_sales_outstanding": 0.0,
+        "debit": 0.0,
+        "debit_limit": 0.0,
+        "display_name": "Administrator",
+        "duplicated_bank_account_partners_count": 0,
+        "email": "admin@example.com",
+        "email_formatted": "\"Administrator\" <admin@example.com>",
+        "email_normalized": "admin@example.com",
+        "employee": false,
+        "employee_ids": [
+          1
+        ],
+        "employees_count": 1,
+        "fiscal_country_codes": "US",
+        "function": "CEO CFO",
+        "has_message": true,
+        "has_unreconciled_entries": false,
+        "id": 3,
+        "im_status": "offline",
+        "image_1024": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "image_128": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "image_1920": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "image_256": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "image_512": "PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==",
+        "industry_id": false,
+        "invoice_ids": [],
+        "invoice_warn": "no-message",
+        "invoice_warn_msg": false,
+        "is_blacklisted": false,
+        "is_company": false,
+        "is_public": false,
+        "is_published": false,
+        "journal_item_count": 0,
+        "lang": "en_US",
+        "last_time_entries_checked": false,
+        "meeting_count": 4,
+        "meeting_ids": [
+          6,
+          7,
+          12,
+          1
+        ],
+        "message_attachment_count": 0,
+        "message_bounce": 0,
+        "message_follower_ids": [],
+        "message_has_error": false,
+        "message_has_error_counter": 0,
+        "message_has_sms_error": false,
+        "message_ids": [
+          1324
+        ],
+        "message_is_follower": false,
+        "message_needaction": false,
+        "message_needaction_counter": 0,
+        "message_partner_ids": [],
+        "mobile": "0402851235",
+        "mobile_blacklisted": false,
+        "my_activity_date_deadline": false,
+        "name": "Administrator",
+        "parent_id": false,
+        "parent_name": false,
+        "partner_gid": 0,
+        "partner_latitude": 0.0,
+        "partner_longitude": 0.0,
+        "partner_share": false,
+        "payment_token_count": 0,
+        "payment_token_ids": [],
+        "peppol_eas": false,
+        "peppol_endpoint": false,
+        "phone": "+1 248-272-6209",
+        "phone_blacklisted": false,
+        "phone_mobile_search": false,
+        "phone_sanitized": "+12482726209",
+        "phone_sanitized_blacklisted": false,
+        "plan_to_change_bike": false,
+        "plan_to_change_car": false,
+        "project_ids": [],
+        "property_account_payable_id": [
+          14,
+          "211000 Account Payable"
+        ],
+        "property_account_position_id": false,
+        "property_account_receivable_id": [
+          6,
+          "121000 Account Receivable"
+        ],
+        "property_payment_term_id": false,
+        "property_product_pricelist": false,
+        "property_supplier_payment_term_id": false,
+        "rating_ids": [],
+        "ref": false,
+        "ref_company_ids": [],
+        "same_company_registry_partner_id": false,
+        "same_vat_partner_id": false,
+        "self": [
+          3,
+          "Administrator"
+        ],
+        "show_credit_limit": false,
+        "signup_expiration": false,
+        "signup_token": false,
+        "signup_type": false,
+        "signup_url": "http://localhost:8069/web/login?db=loneworker&login=mark",
+        "signup_valid": false,
+        "starred_message_ids": [],
+        "state_id": [
+          1498,
+          "Bangkok (TH)"
+        ],
+        "street": "55 Soi Sukhumvit 26",
+        "street2": "",
+        "supplier_rank": 0,
+        "task_count": 0,
+        "task_ids": [],
+        "title": [
+          3,
+          "Mister"
+        ],
+        "total_invoiced": 0.0,
+        "trust": "normal",
+        "type": "contact",
+        "tz": "Asia/Bangkok",
+        "tz_offset": "+0700",
+        "ubl_cii_format": false,
+        "use_partner_credit_limit": false,
+        "user_id": false,
+        "user_ids": [
+          2
+        ],
+        "vat": "",
+        "visitor_ids": [
+          1
+        ],
+        "website": "http://markshaw.com",
+        "website_id": false,
+        "website_message_ids": [],
+        "website_published": false,
+        "website_url": "#",
+        "write_date": "2025-03-13 04:34:26",
+        "write_uid": [
+          2,
+          "Administrator"
+        ],
+        "zip": "10110"
+      }
+    ],
+    "property_account_payable_id_expanded": {
+      "account_type": "liability_payable",
+      "code": "211000",
+      "company_id": [
+        1,
+        "My Company"
+      ],
+      "display_name": "211000 Account Payable",
+      "id": 14,
+      "name": "Account Payable"
+    },
+    "property_account_receivable_id_expanded": {
+      "account_type": "asset_receivable",
+      "code": "121000",
+      "company_id": [
+        1,
+        "My Company"
+      ],
+      "display_name": "121000 Account Receivable",
+      "id": 6,
+      "name": "Account Receivable"
+    },
+    "self_expanded": {
+      "display_name": "Master Dudly",
+      "id": 11,
+      "name": "Master Dudly",
+      "property_account_payable_id": [
+        14,
+        "211000 Account Payable"
+      ],
+      "property_account_receivable_id": [
+        6,
+        "121000 Account Receivable"
+      ]
+    },
+    "write_uid_expanded": {
+      "company_id": [
+        1,
+        "My Company"
+      ],
+      "display_name": "Administrator",
+      "id": 2,
+      "login": "mark",
+      "name": "Administrator",
+      "notification_type": "email",
+      "partner_id": [
+        3,
+        "Administrator"
+      ],
+      "property_account_payable_id": [
+        14,
+        "211000 Account Payable"
+      ],
+      "property_account_receivable_id": [
+        6,
+        "121000 Account Receivable"
+      ],
+      "sidebar_type": "large"
+    }
+  },
+  "react_native_component": "// screens/res_partner/ResPartnerDetailsScreen.js\n\nimport React, { useState, useEffect, useContext } from 'react';\nimport {\n  View,\n  Text,\n  StyleSheet,\n  ScrollView,\n  TouchableOpacity,\n  Alert,\n  ActivityIndicator,\n  Linking\n} from 'react-native';\nimport { Ionicons } from '@expo/vector-icons';\nimport { AuthContext } from '../../context/AuthContext';\nimport { apiRequest } from '../../api/odooApi';\n\nconst ResPartnerDetailsScreen = ({ route, navigation }) => {\n  const { recordId } = route.params;\n  const { authToken, serverConfig } = useContext(AuthContext);\n  const [record, setRecord] = useState(null);\n  const [loading, setLoading] = useState(true);\n\n  useEffect(() => {\n    fetchRecordDetails();\n  }, [recordId]);\n\n  const fetchRecordDetails = async () => {\n    try {\n      setLoading(true);\n      \n      // Comprehensive field list to match the form\n      const fields = [\n        'is_blacklisted',\n        'customer_rank',\n        'active_lang_count',\n        'signup_expiration',\n        'message_has_sms_error',\n        'title',\n        'fiscal_country_codes',\n        'avatar_1920',\n        'ref_company_ids',\n        'website_id',\n        'bank_ids',\n        'phone_sanitized',\n        'color',\n        'signup_url',\n        'phone_mobile_search',\n        'task_count',\n        'image_512',\n        'signup_type',\n        'supplier_rank',\n        'activity_user_id',\n        'additional_info',\n        'message_has_error',\n        'plan_to_change_bike',\n        'website',\n        'mobile_blacklisted',\n        'journal_item_count',\n        'property_account_payable_id',\n        'activity_summary',\n        'calendar_last_notif_ack',\n        'is_public',\n        'image_1920',\n        'debit',\n        'contact_address_inline',\n        'mobile',\n        'tz_offset',\n        'country_id',\n        'activity_exception_decoration',\n        'user_id',\n        'total_invoiced',\n        'visitor_ids',\n        'company_type',\n        'active',\n        'email_normalized',\n        'message_is_follower',\n        'peppol_endpoint',\n        'website_message_ids',\n        'same_vat_partner_id',\n        'meeting_ids',\n        'contract_ids',\n        'last_time_entries_checked',\n        'show_credit_limit',\n        'is_published',\n        'write_uid',\n        'self',\n        'meeting_count',\n        'credit_limit',\n        'lang',\n        'activity_state',\n        'partner_latitude',\n        'payment_token_count',\n        'avatar_512',\n        'email',\n        'function',\n        'message_bounce',\n        'days_sales_outstanding',\n        'partner_share',\n        'credit',\n        'signup_token',\n        'tz',\n        'create_date',\n        'complete_name',\n        'message_needaction_counter',\n        'has_unreconciled_entries',\n        'ref',\n        'message_needaction',\n        'my_activity_date_deadline',\n        'activity_ids',\n        'trust',\n        'parent_name',\n        'payment_token_ids',\n        'avatar_128',\n        'country_code',\n        'can_publish',\n        'activity_type_icon',\n        'city',\n        'currency_id',\n        'avatar_1024',\n        'credit_to_invoice',\n        'activity_calendar_event_id',\n        'property_product_pricelist',\n        'same_company_registry_partner_id',\n        'project_ids',\n        'im_status',\n        'bank_account_count',\n        'vat',\n        'invoice_ids',\n        'image_128',\n        'peppol_eas',\n        'message_attachment_count',\n        'message_has_error_counter',\n        'street2',\n        'user_ids',\n        'task_ids',\n        'message_ids',\n        'property_payment_term_id',\n        'image_1024',\n        'message_partner_ids',\n        'duplicated_bank_account_partners_count',\n        'company_id',\n        'activity_type_id',\n        'website_published',\n        'write_date',\n        'employee_ids',\n        'date',\n        'property_supplier_payment_term_id',\n        'state_id',\n        'email_formatted',\n        'invoice_warn_msg',\n        'property_account_position_id',\n        'barcode',\n        'id',\n        'invoice_warn',\n        'comment',\n        'category_id',\n        'company_name',\n        'parent_id',\n        'type',\n        'phone',\n        'company_registry',\n        'child_ids',\n        'rating_ids',\n        'partner_gid',\n        'industry_id',\n        'ubl_cii_format',\n        'image_256',\n        'signup_valid',\n        'create_uid',\n        'is_company',\n        'partner_longitude',\n        'has_message',\n        'commercial_company_name',\n        'commercial_partner_id',\n        'contact_address',\n        'website_url',\n        'zip',\n        'plan_to_change_car',\n        'property_account_receivable_id',\n        'employee',\n        'street',\n        'phone_sanitized_blacklisted',\n        'activity_date_deadline',\n        'avatar_256',\n        'channel_ids',\n        'employees_count',\n        'phone_blacklisted',\n        'message_follower_ids',\n        'starred_message_ids',\n        'use_partner_credit_limit',\n        'name',\n        'activity_exception_icon',\n        'display_name',\n        'debit_limit'\n      ];\n      \n      // Use search_read instead of read for better compatibility\n      const response = await apiRequest(\n        serverConfig.baseUrl,\n        serverConfig.database,\n        authToken,\n        `/api/v2/search_read/res.partner`,\n        'POST',\n        {\n          domain: [['id', '=', recordId]],\n          fields,\n          limit: 1\n        }\n      );\n      \n      console.log('Record details response:', response);\n      \n      if (response && response.length > 0) {\n        setRecord(response[0]);\n      } else {\n        Alert.alert('Error', 'Could not find record details');\n        navigation.goBack();\n      }\n    } catch (error) {\n      console.error('Error fetching record details:', error);\n      Alert.alert('Error', 'Failed to load record details');\n      navigation.goBack();\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  const handleEdit = () => {\n    navigation.navigate('ResPartnerForm', { recordId, record });\n  };\n\n  const handleDelete = () => {\n    Alert.alert(\n      'Delete Record',\n      'Are you sure you want to delete this record? This action cannot be undone.',\n      [\n        { text: 'Cancel', style: 'cancel' },\n        { \n          text: 'Delete', \n          style: 'destructive',\n          onPress: async () => {\n            try {\n              await apiRequest(\n                serverConfig.baseUrl,\n                serverConfig.database,\n                authToken,\n                `/api/v2/unlink/res.partner`,\n                'DELETE',\n                { ids: [recordId] }\n              );\n              navigation.goBack();\n            } catch (error) {\n              console.error('Error deleting record:', error);\n              Alert.alert('Error', 'Failed to delete record');\n            }\n          }\n        },\n      ]\n    );\n  };\n\n  // Generate initials for avatar\n  const getInitials = (name) => {\n    if (!name) return '?';\n    return name\n      .split(' ')\n      .map(part => part[0])\n      .join('')\n      .toUpperCase()\n      .substring(0, 2);\n  };\n\n  const formatDate = (dateString) => {\n    if (!dateString) return 'Not specified';\n    try {\n      return new Date(dateString).toLocaleDateString();\n    } catch (e) {\n      return dateString;\n    }\n  };\n\n  if (loading || !record) {\n    return (\n      <View style={styles.loadingContainer}>\n        <ActivityIndicator size=\"large\" color=\"#3498db\" />\n        <Text style={styles.loadingText}>Loading record details...</Text>\n      </View>\n    );\n  }\n\n  return (\n    <ScrollView style={styles.container}>\n      // Header with basic info\n      <View style={styles.header}>\n        <View style={styles.avatar}>\n          <Text style={styles.avatarText}>{getInitials(record.name || record.display_name || \"\")}</Text>\n        </View>\n        \n        <Text style={styles.name}>{record.name || record.display_name || `Record #${record.id}`}</Text>\n      </View>\n      \n      // Action buttons\n      <View style={styles.actions}>\n        <TouchableOpacity style={styles.actionButton} onPress={handleEdit}>\n          <Ionicons name=\"create-outline\" size={22} color=\"#3498db\" />\n          <Text style={styles.actionText}>Edit</Text>\n        </TouchableOpacity>\n        \n        <TouchableOpacity style={styles.actionButton} onPress={handleDelete}>\n          <Ionicons name=\"trash-outline\" size={22} color=\"#e74c3c\" />\n          <Text style={styles.actionText}>Delete</Text>\n        </TouchableOpacity>\n      </View>\n      \n      // Record Information Section\n      <View style={styles.section}>\n        <Text style={styles.sectionTitle}>Record Information</Text>\n        \n        // Generate field rows dynamically based on field type\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Blacklist</Text>\n          <Text style={styles.infoValue}>{record.is_blacklisted ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.customer_rank !== undefined && record.customer_rank !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Customer Rank</Text>\n            <Text style={styles.infoValue}>{record.customer_rank}</Text>\n          </View>\n        )}\n        {record.active_lang_count !== undefined && record.active_lang_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"checkmark-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Active Lang Count</Text>\n            <Text style={styles.infoValue}>{record.active_lang_count}</Text>\n          </View>\n        )}\n        {record.signup_expiration && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calendar-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Signup Expiration</Text>\n            <Text style={styles.infoValue}>{formatDate(record.signup_expiration)}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>SMS Delivery error</Text>\n          <Text style={styles.infoValue}>{record.message_has_sms_error ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.title && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Title</Text>\n            <Text style={styles.infoValue}>{'title' === 'display_name' ? record.title : (record.title ? record.title[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.fiscal_country_codes !== undefined && record.fiscal_country_codes !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"flag-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Fiscal Country Codes</Text>\n            <Text style={styles.infoValue}>{record.fiscal_country_codes}</Text>\n          </View>\n        )}\n        {record.avatar_1920 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"document-attach-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Avatar</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.ref_company_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Companies that refers to partner</Text>\n            <Text style={styles.infoValue}>{`record.$ref_company_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.website_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Website</Text>\n            <Text style={styles.infoValue}>{'website_id' === 'display_name' ? record.website_id : (record.website_id ? record.website_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.bank_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Banks</Text>\n            <Text style={styles.infoValue}>{`record.$bank_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.phone_sanitized !== undefined && record.phone_sanitized !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"call-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Sanitized Number</Text>\n            <Text style={styles.infoValue}>{record.phone_sanitized}</Text>\n          </View>\n        )}\n        {record.color !== undefined && record.color !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Color Index</Text>\n            <Text style={styles.infoValue}>{record.color}</Text>\n          </View>\n        )}\n        {record.signup_url !== undefined && record.signup_url !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Signup URL</Text>\n            <Text style={styles.infoValue}>{record.signup_url}</Text>\n          </View>\n        )}\n        {record.phone_mobile_search !== undefined && record.phone_mobile_search !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"call-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Phone/Mobile</Text>\n            <Text style={styles.infoValue}>{record.phone_mobile_search}</Text>\n          </View>\n        )}\n        {record.task_count !== undefined && record.task_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}># Tasks</Text>\n            <Text style={styles.infoValue}>{record.task_count}</Text>\n          </View>\n        )}\n        {record.image_512 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"image-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Image 512</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.signup_type !== undefined && record.signup_type !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Signup Token Type</Text>\n            <Text style={styles.infoValue}>{record.signup_type}</Text>\n          </View>\n        )}\n        {record.supplier_rank !== undefined && record.supplier_rank !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Supplier Rank</Text>\n            <Text style={styles.infoValue}>{record.supplier_rank}</Text>\n          </View>\n        )}\n        {record.activity_user_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Responsible User</Text>\n            <Text style={styles.infoValue}>{'activity_user_id' === 'display_name' ? record.activity_user_id : (record.activity_user_id ? record.activity_user_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.additional_info !== undefined && record.additional_info !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Additional info</Text>\n            <Text style={styles.infoValue}>{record.additional_info}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Message Delivery error</Text>\n          <Text style={styles.infoValue}>{record.message_has_error ? 'Yes' : 'No'}</Text>\n        </View>\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Plan To Change Bike</Text>\n          <Text style={styles.infoValue}>{record.plan_to_change_bike ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.website !== undefined && record.website !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Website Link</Text>\n            <Text style={styles.infoValue}>{record.website}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"call-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Blacklisted Phone Is Mobile</Text>\n          <Text style={styles.infoValue}>{record.mobile_blacklisted ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.journal_item_count !== undefined && record.journal_item_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Journal Items</Text>\n            <Text style={styles.infoValue}>{record.journal_item_count}</Text>\n          </View>\n        )}\n        {record.property_account_payable_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Account Payable</Text>\n            <Text style={styles.infoValue}>{'property_account_payable_id' === 'display_name' ? record.property_account_payable_id : (record.property_account_payable_id ? record.property_account_payable_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.activity_summary !== undefined && record.activity_summary !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Next Activity Summary</Text>\n            <Text style={styles.infoValue}>{record.activity_summary}</Text>\n          </View>\n        )}\n        {record.calendar_last_notif_ack && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calendar-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Last notification marked as read from base Calendar</Text>\n            <Text style={styles.infoValue}>{formatDate(record.calendar_last_notif_ack)}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Is Public</Text>\n          <Text style={styles.infoValue}>{record.is_public ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.image_1920 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"image-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Image</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.debit !== undefined && record.debit !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Total Payable</Text>\n            <Text style={styles.infoValue}>{record.debit}</Text>\n          </View>\n        )}\n        {record.contact_address_inline !== undefined && record.contact_address_inline !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"home-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Inlined Complete Address</Text>\n            <Text style={styles.infoValue}>{record.contact_address_inline}</Text>\n          </View>\n        )}\n        {record.mobile !== undefined && record.mobile !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"call-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Mobile</Text>\n            <Text style={styles.infoValue}>{record.mobile}</Text>\n          </View>\n        )}\n        {record.tz_offset !== undefined && record.tz_offset !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Timezone offset</Text>\n            <Text style={styles.infoValue}>{record.tz_offset}</Text>\n          </View>\n        )}\n        {record.country_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"flag-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Country</Text>\n            <Text style={styles.infoValue}>{'country_id' === 'display_name' ? record.country_id : (record.country_id ? record.country_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.activity_exception_decoration && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Activity Exception Decoration</Text>\n            <Text style={styles.infoValue}>{record.activity_exception_decoration.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.activity_exception_decoration.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.user_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Salesperson</Text>\n            <Text style={styles.infoValue}>{'user_id' === 'display_name' ? record.user_id : (record.user_id ? record.user_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.total_invoiced !== undefined && record.total_invoiced !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Total Invoiced</Text>\n            <Text style={styles.infoValue}>{record.total_invoiced}</Text>\n          </View>\n        )}\n        {record.visitor_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Visitors</Text>\n            <Text style={styles.infoValue}>{`record.$visitor_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.company_type && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Company Type</Text>\n            <Text style={styles.infoValue}>{record.company_type.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.company_type.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Active</Text>\n          <Text style={styles.infoValue}>{record.active ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.email_normalized !== undefined && record.email_normalized !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"mail-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Normalized Email</Text>\n            <Text style={styles.infoValue}>{record.email_normalized}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Is Follower</Text>\n          <Text style={styles.infoValue}>{record.message_is_follower ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.peppol_endpoint !== undefined && record.peppol_endpoint !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Peppol Endpoint</Text>\n            <Text style={styles.infoValue}>{record.peppol_endpoint}</Text>\n          </View>\n        )}\n        {record.website_message_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Website Messages</Text>\n            <Text style={styles.infoValue}>{`record.$website_message_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.same_vat_partner_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Partner with same Tax ID</Text>\n            <Text style={styles.infoValue}>{'same_vat_partner_id' === 'display_name' ? record.same_vat_partner_id : (record.same_vat_partner_id ? record.same_vat_partner_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.meeting_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Meetings</Text>\n            <Text style={styles.infoValue}>{`record.$meeting_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.contract_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Partner Contracts</Text>\n            <Text style={styles.infoValue}>{`record.$contract_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.last_time_entries_checked && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calendar-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Latest Invoices & Payments Matching Date</Text>\n            <Text style={styles.infoValue}>{formatDate(record.last_time_entries_checked)}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Show Credit Limit</Text>\n          <Text style={styles.infoValue}>{record.show_credit_limit ? 'Yes' : 'No'}</Text>\n        </View>\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Is Published</Text>\n          <Text style={styles.infoValue}>{record.is_published ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.write_uid && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Last Updated by</Text>\n            <Text style={styles.infoValue}>{'write_uid' === 'display_name' ? record.write_uid : (record.write_uid ? record.write_uid[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.self && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Self</Text>\n            <Text style={styles.infoValue}>{'self' === 'display_name' ? record.self : (record.self ? record.self[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.meeting_count !== undefined && record.meeting_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}># Meetings</Text>\n            <Text style={styles.infoValue}>{record.meeting_count}</Text>\n          </View>\n        )}\n        {record.credit_limit !== undefined && record.credit_limit !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Credit Limit</Text>\n            <Text style={styles.infoValue}>{record.credit_limit}</Text>\n          </View>\n        )}\n        {record.lang && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Language</Text>\n            <Text style={styles.infoValue}>{record.lang.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.lang.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.activity_state && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"flag-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Activity State</Text>\n            <Text style={styles.infoValue}>{record.activity_state.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.activity_state.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.partner_latitude !== undefined && record.partner_latitude !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Geo Latitude</Text>\n            <Text style={styles.infoValue}>{record.partner_latitude}</Text>\n          </View>\n        )}\n        {record.payment_token_count !== undefined && record.payment_token_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Payment Token Count</Text>\n            <Text style={styles.infoValue}>{record.payment_token_count}</Text>\n          </View>\n        )}\n        {record.avatar_512 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"document-attach-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Avatar 512</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.email !== undefined && record.email !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"mail-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Email</Text>\n            <Text style={styles.infoValue}>{record.email}</Text>\n          </View>\n        )}\n        {record.function !== undefined && record.function !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Job Position</Text>\n            <Text style={styles.infoValue}>{record.function}</Text>\n          </View>\n        )}\n        {record.message_bounce !== undefined && record.message_bounce !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Bounce</Text>\n            <Text style={styles.infoValue}>{record.message_bounce}</Text>\n          </View>\n        )}\n        {record.days_sales_outstanding !== undefined && record.days_sales_outstanding !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Days Sales Outstanding (DSO)</Text>\n            <Text style={styles.infoValue}>{record.days_sales_outstanding}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Share Partner</Text>\n          <Text style={styles.infoValue}>{record.partner_share ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.credit !== undefined && record.credit !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Total Receivable</Text>\n            <Text style={styles.infoValue}>{record.credit}</Text>\n          </View>\n        )}\n        {record.signup_token !== undefined && record.signup_token !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Signup Token</Text>\n            <Text style={styles.infoValue}>{record.signup_token}</Text>\n          </View>\n        )}\n        {record.tz && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Timezone</Text>\n            <Text style={styles.infoValue}>{record.tz.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.tz.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.create_date && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calendar-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Created on</Text>\n            <Text style={styles.infoValue}>{formatDate(record.create_date)}</Text>\n          </View>\n        )}\n        {record.complete_name !== undefined && record.complete_name !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"person-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Complete Name</Text>\n            <Text style={styles.infoValue}>{record.complete_name}</Text>\n          </View>\n        )}\n        {record.message_needaction_counter !== undefined && record.message_needaction_counter !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Number of Actions</Text>\n            <Text style={styles.infoValue}>{record.message_needaction_counter}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Has Unreconciled Entries</Text>\n          <Text style={styles.infoValue}>{record.has_unreconciled_entries ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.ref !== undefined && record.ref !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Reference</Text>\n            <Text style={styles.infoValue}>{record.ref}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Action Needed</Text>\n          <Text style={styles.infoValue}>{record.message_needaction ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.my_activity_date_deadline && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calendar-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>My Activity Deadline</Text>\n            <Text style={styles.infoValue}>{formatDate(record.my_activity_date_deadline)}</Text>\n          </View>\n        )}\n        {record.activity_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Activities</Text>\n            <Text style={styles.infoValue}>{`record.$activity_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.trust && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Degree of trust you have in this debtor</Text>\n            <Text style={styles.infoValue}>{record.trust.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.trust.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.parent_name !== undefined && record.parent_name !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"person-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Parent name</Text>\n            <Text style={styles.infoValue}>{record.parent_name}</Text>\n          </View>\n        )}\n        {record.payment_token_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Payment Tokens</Text>\n            <Text style={styles.infoValue}>{`record.$payment_token_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.avatar_128 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"document-attach-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Avatar 128</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.country_code !== undefined && record.country_code !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"flag-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Country Code</Text>\n            <Text style={styles.infoValue}>{record.country_code}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Can Publish</Text>\n          <Text style={styles.infoValue}>{record.can_publish ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.activity_type_icon !== undefined && record.activity_type_icon !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Activity Type Icon</Text>\n            <Text style={styles.infoValue}>{record.activity_type_icon}</Text>\n          </View>\n        )}\n        {record.city !== undefined && record.city !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"business-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>City</Text>\n            <Text style={styles.infoValue}>{record.city}</Text>\n          </View>\n        )}\n        {record.currency_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Currency</Text>\n            <Text style={styles.infoValue}>{'currency_id' === 'display_name' ? record.currency_id : (record.currency_id ? record.currency_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.avatar_1024 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"document-attach-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Avatar 1024</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.credit_to_invoice !== undefined && record.credit_to_invoice !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Credit To Invoice</Text>\n            <Text style={styles.infoValue}>{record.credit_to_invoice}</Text>\n          </View>\n        )}\n        {record.activity_calendar_event_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Next Activity Calendar Event</Text>\n            <Text style={styles.infoValue}>{'activity_calendar_event_id' === 'display_name' ? record.activity_calendar_event_id : (record.activity_calendar_event_id ? record.activity_calendar_event_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.property_product_pricelist && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Pricelist</Text>\n            <Text style={styles.infoValue}>{'property_product_pricelist' === 'display_name' ? record.property_product_pricelist : (record.property_product_pricelist ? record.property_product_pricelist[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.same_company_registry_partner_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Partner with same Company Registry</Text>\n            <Text style={styles.infoValue}>{'same_company_registry_partner_id' === 'display_name' ? record.same_company_registry_partner_id : (record.same_company_registry_partner_id ? record.same_company_registry_partner_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.project_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Projects</Text>\n            <Text style={styles.infoValue}>{`record.$project_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.im_status !== undefined && record.im_status !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>IM Status</Text>\n            <Text style={styles.infoValue}>{record.im_status}</Text>\n          </View>\n        )}\n        {record.bank_account_count !== undefined && record.bank_account_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Bank</Text>\n            <Text style={styles.infoValue}>{record.bank_account_count}</Text>\n          </View>\n        )}\n        {record.vat !== undefined && record.vat !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Tax ID</Text>\n            <Text style={styles.infoValue}>{record.vat}</Text>\n          </View>\n        )}\n        {record.invoice_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Invoices</Text>\n            <Text style={styles.infoValue}>{`record.$invoice_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.image_128 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"image-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Image 128</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.peppol_eas && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Peppol e-address (EAS)</Text>\n            <Text style={styles.infoValue}>{record.peppol_eas.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.peppol_eas.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.message_attachment_count !== undefined && record.message_attachment_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Attachment Count</Text>\n            <Text style={styles.infoValue}>{record.message_attachment_count}</Text>\n          </View>\n        )}\n        {record.message_has_error_counter !== undefined && record.message_has_error_counter !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Number of errors</Text>\n            <Text style={styles.infoValue}>{record.message_has_error_counter}</Text>\n          </View>\n        )}\n        {record.street2 !== undefined && record.street2 !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"home-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Street2</Text>\n            <Text style={styles.infoValue}>{record.street2}</Text>\n          </View>\n        )}\n        {record.user_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Users</Text>\n            <Text style={styles.infoValue}>{`record.$user_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.task_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Tasks</Text>\n            <Text style={styles.infoValue}>{`record.$task_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.message_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Messages</Text>\n            <Text style={styles.infoValue}>{`record.$message_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.property_payment_term_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Customer Payment Terms</Text>\n            <Text style={styles.infoValue}>{'property_payment_term_id' === 'display_name' ? record.property_payment_term_id : (record.property_payment_term_id ? record.property_payment_term_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.image_1024 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"image-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Image 1024</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.message_partner_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Followers (Partners)</Text>\n            <Text style={styles.infoValue}>{`record.$message_partner_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.duplicated_bank_account_partners_count !== undefined && record.duplicated_bank_account_partners_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Duplicated Bank Account Partners Count</Text>\n            <Text style={styles.infoValue}>{record.duplicated_bank_account_partners_count}</Text>\n          </View>\n        )}\n        {record.company_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Company</Text>\n            <Text style={styles.infoValue}>{'company_id' === 'display_name' ? record.company_id : (record.company_id ? record.company_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.activity_type_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Next Activity Type</Text>\n            <Text style={styles.infoValue}>{'activity_type_id' === 'display_name' ? record.activity_type_id : (record.activity_type_id ? record.activity_type_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Visible on current website</Text>\n          <Text style={styles.infoValue}>{record.website_published ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.write_date && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calendar-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Last Updated on</Text>\n            <Text style={styles.infoValue}>{formatDate(record.write_date)}</Text>\n          </View>\n        )}\n        {record.employee_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Employees</Text>\n            <Text style={styles.infoValue}>{`record.$employee_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.date && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calendar-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Date</Text>\n            <Text style={styles.infoValue}>{formatDate(record.date)}</Text>\n          </View>\n        )}\n        {record.property_supplier_payment_term_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Vendor Payment Terms</Text>\n            <Text style={styles.infoValue}>{'property_supplier_payment_term_id' === 'display_name' ? record.property_supplier_payment_term_id : (record.property_supplier_payment_term_id ? record.property_supplier_payment_term_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.state_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"flag-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>State</Text>\n            <Text style={styles.infoValue}>{'state_id' === 'display_name' ? record.state_id : (record.state_id ? record.state_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.email_formatted !== undefined && record.email_formatted !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"mail-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Formatted Email</Text>\n            <Text style={styles.infoValue}>{record.email_formatted}</Text>\n          </View>\n        )}\n        {record.invoice_warn_msg && (\n          <View style={styles.infoBlock}>\n            <View style={styles.infoBlockHeader}>\n              <Ionicons name=\"document-text-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n              <Text style={styles.infoBlockLabel}>Message for Invoice</Text>\n            </View>\n            <Text style={styles.infoBlockText}>{record.invoice_warn_msg}</Text>\n          </View>\n        )}\n        {record.property_account_position_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Fiscal Position</Text>\n            <Text style={styles.infoValue}>{'property_account_position_id' === 'display_name' ? record.property_account_position_id : (record.property_account_position_id ? record.property_account_position_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.barcode !== undefined && record.barcode !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Barcode</Text>\n            <Text style={styles.infoValue}>{record.barcode}</Text>\n          </View>\n        )}\n        {record.invoice_warn && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Invoice</Text>\n            <Text style={styles.infoValue}>{record.invoice_warn.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.invoice_warn.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.comment && (\n          <View style={styles.infoBlock}>\n            <View style={styles.infoBlockHeader}>\n              <Ionicons name=\"code-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n              <Text style={styles.infoBlockLabel}>Notes</Text>\n            </View>\n            <Text style={styles.infoBlockText}>[HTML content]</Text>\n          </View>\n        )}\n        {record.category_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Tags</Text>\n            <Text style={styles.infoValue}>{`record.$category_id.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.company_name !== undefined && record.company_name !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"person-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Company Name</Text>\n            <Text style={styles.infoValue}>{record.company_name}</Text>\n          </View>\n        )}\n        {record.parent_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Related Company</Text>\n            <Text style={styles.infoValue}>{'parent_id' === 'display_name' ? record.parent_id : (record.parent_id ? record.parent_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.type && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Address Type</Text>\n            <Text style={styles.infoValue}>{record.type.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.type.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.phone !== undefined && record.phone !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"call-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Phone</Text>\n            <Text style={styles.infoValue}>{record.phone}</Text>\n          </View>\n        )}\n        {record.company_registry !== undefined && record.company_registry !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Company ID</Text>\n            <Text style={styles.infoValue}>{record.company_registry}</Text>\n          </View>\n        )}\n        {record.child_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Contact</Text>\n            <Text style={styles.infoValue}>{`record.$child_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.rating_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Ratings</Text>\n            <Text style={styles.infoValue}>{`record.$rating_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.partner_gid !== undefined && record.partner_gid !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Company database ID</Text>\n            <Text style={styles.infoValue}>{record.partner_gid}</Text>\n          </View>\n        )}\n        {record.industry_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Industry</Text>\n            <Text style={styles.infoValue}>{'industry_id' === 'display_name' ? record.industry_id : (record.industry_id ? record.industry_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.ubl_cii_format && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"options-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Format</Text>\n            <Text style={styles.infoValue}>{record.ubl_cii_format.replace(/_/g, ' ').charAt(0).toUpperCase() + \n              record.ubl_cii_format.replace(/_/g, ' ').slice(1)}</Text>\n          </View>\n        )}\n        {record.image_256 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"image-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Image 256</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Signup Token is Valid</Text>\n          <Text style={styles.infoValue}>{record.signup_valid ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.create_uid && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Created by</Text>\n            <Text style={styles.infoValue}>{'create_uid' === 'display_name' ? record.create_uid : (record.create_uid ? record.create_uid[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Is a Company</Text>\n          <Text style={styles.infoValue}>{record.is_company ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.partner_longitude !== undefined && record.partner_longitude !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Geo Longitude</Text>\n            <Text style={styles.infoValue}>{record.partner_longitude}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Has Message</Text>\n          <Text style={styles.infoValue}>{record.has_message ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.commercial_company_name !== undefined && record.commercial_company_name !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"person-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Company Name Entity</Text>\n            <Text style={styles.infoValue}>{record.commercial_company_name}</Text>\n          </View>\n        )}\n        {record.commercial_partner_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Commercial Entity</Text>\n            <Text style={styles.infoValue}>{'commercial_partner_id' === 'display_name' ? record.commercial_partner_id : (record.commercial_partner_id ? record.commercial_partner_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        {record.contact_address !== undefined && record.contact_address !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"home-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Complete Address</Text>\n            <Text style={styles.infoValue}>{record.contact_address}</Text>\n          </View>\n        )}\n        {record.website_url !== undefined && record.website_url !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Website URL</Text>\n            <Text style={styles.infoValue}>{record.website_url}</Text>\n          </View>\n        )}\n        {record.zip !== undefined && record.zip !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"mail-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Zip</Text>\n            <Text style={styles.infoValue}>{record.zip}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Plan To Change Car</Text>\n          <Text style={styles.infoValue}>{record.plan_to_change_car ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.property_account_receivable_id && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"link-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Account Receivable</Text>\n            <Text style={styles.infoValue}>{'property_account_receivable_id' === 'display_name' ? record.property_account_receivable_id : (record.property_account_receivable_id ? record.property_account_receivable_id[1] : 'Not specified')}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Employee</Text>\n          <Text style={styles.infoValue}>{record.employee ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.street !== undefined && record.street !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"home-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Street</Text>\n            <Text style={styles.infoValue}>{record.street}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"call-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Phone Blacklisted</Text>\n          <Text style={styles.infoValue}>{record.phone_sanitized_blacklisted ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.activity_date_deadline && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calendar-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Next Activity Deadline</Text>\n            <Text style={styles.infoValue}>{formatDate(record.activity_date_deadline)}</Text>\n          </View>\n        )}\n        {record.avatar_256 && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"document-attach-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Avatar 256</Text>\n            <Text style={styles.infoValue}>[Binary data]</Text>\n          </View>\n        )}\n        {record.channel_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Channels</Text>\n            <Text style={styles.infoValue}>{`record.$channel_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.employees_count !== undefined && record.employees_count !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Employees Count</Text>\n            <Text style={styles.infoValue}>{record.employees_count}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"call-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Blacklisted Phone is Phone</Text>\n          <Text style={styles.infoValue}>{record.phone_blacklisted ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.message_follower_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Followers</Text>\n            <Text style={styles.infoValue}>{`record.$message_follower_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        {record.starred_message_ids && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"list-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Starred Message</Text>\n            <Text style={styles.infoValue}>{`record.$starred_message_ids.length + ' items'`}</Text>\n          </View>\n        )}\n        \n        <View style={styles.infoRow}>\n          <Ionicons name=\"checkmark-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n          <Text style={styles.infoLabel}>Partner Limit</Text>\n          <Text style={styles.infoValue}>{record.use_partner_credit_limit ? 'Yes' : 'No'}</Text>\n        </View>\n        {record.name !== undefined && record.name !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"person-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Name</Text>\n            <Text style={styles.infoValue}>{record.name}</Text>\n          </View>\n        )}\n        {record.activity_exception_icon !== undefined && record.activity_exception_icon !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"information-circle-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Icon</Text>\n            <Text style={styles.infoValue}>{record.activity_exception_icon}</Text>\n          </View>\n        )}\n        {record.display_name !== undefined && record.display_name !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"person-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Display Name</Text>\n            <Text style={styles.infoValue}>{record.display_name}</Text>\n          </View>\n        )}\n        {record.debit_limit !== undefined && record.debit_limit !== false && (\n          <View style={styles.infoRow}>\n            <Ionicons name=\"calculator-outline\" size={20} color=\"#333\" style={styles.infoIcon} />\n            <Text style={styles.infoLabel}>Payable Limit</Text>\n            <Text style={styles.infoValue}>{record.debit_limit}</Text>\n          </View>\n        )}\n      </View>\n    </ScrollView>\n  );\n};\n\nconst styles = StyleSheet.create({\n  container: {\n    flex: 1,\n    backgroundColor: '#f5f5f5',\n  },\n  loadingContainer: {\n    flex: 1,\n    justifyContent: 'center',\n    alignItems: 'center',\n    backgroundColor: '#f5f5f5',\n  },\n  loadingText: {\n    marginTop: 16,\n    fontSize: 16,\n    color: '#333',\n  },\n  header: {\n    alignItems: 'center',\n    backgroundColor: 'white',\n    paddingVertical: 20,\n    borderBottomWidth: 1,\n    borderBottomColor: '#eee',\n  },\n  avatar: {\n    width: 80,\n    height: 80,\n    borderRadius: 40,\n    backgroundColor: '#3498db',\n    justifyContent: 'center',\n    alignItems: 'center',\n    marginBottom: 10,\n  },\n  avatarText: {\n    color: 'white',\n    fontSize: 30,\n    fontWeight: 'bold',\n  },\n  name: {\n    fontSize: 22,\n    fontWeight: 'bold',\n    color: '#333',\n    marginBottom: 4,\n  },\n  actions: {\n    flexDirection: 'row',\n    justifyContent: 'space-around',\n    backgroundColor: 'white',\n    paddingVertical: 15,\n    borderBottomWidth: 1,\n    borderBottomColor: '#eee',\n    marginBottom: 15,\n  },\n  actionButton: {\n    alignItems: 'center',\n  },\n  actionText: {\n    marginTop: 5,\n    color: '#333',\n  },\n  section: {\n    backgroundColor: 'white',\n    borderRadius: 8,\n    marginHorizontal: 15,\n    marginBottom: 15,\n    padding: 15,\n    shadowColor: '#000',\n    shadowOffset: { width: 0, height: 1 },\n    shadowOpacity: 0.1,\n    shadowRadius: 2,\n    elevation: 2,\n  },\n  sectionTitle: {\n    fontSize: 18,\n    fontWeight: 'bold',\n    color: '#333',\n    marginBottom: 15,\n    borderBottomWidth: 1,\n    borderBottomColor: '#eee',\n    paddingBottom: 10,\n  },\n  infoRow: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    marginBottom: 12,\n  },\n  infoIcon: {\n    marginRight: 10,\n    width: 20,\n  },\n  infoLabel: {\n    width: 120,\n    fontSize: 16,\n    color: '#333',\n  },\n  infoValue: {\n    flex: 1,\n    fontSize: 16,\n    color: '#666',\n  },\n  linkValue: {\n    flex: 1,\n    fontSize: 16,\n    color: '#3498db',\n  },\n  infoBlock: {\n    marginBottom: 12,\n  },\n  infoBlockHeader: {\n    flexDirection: 'row',\n    alignItems: 'center',\n    marginBottom: 6,\n  },\n  infoBlockLabel: {\n    fontSize: 16,\n    color: '#333',\n  },\n  infoBlockText: {\n    fontSize: 16,\n    color: '#666',\n    marginLeft: 30,\n    lineHeight: 24,\n  }\n});\n\nexport default ResPartnerDetailsScreen;",
+  "next_steps": {
+    "navigator": "Set up a stack navigator using react-navigation to link the list and details screens.",
+    "list_screen": "Create a list screen with FlatList to display res.partner records and navigate to the details screen."
+  },
+  "sample_code": {
+    "navigator": "import { NavigationContainer } from '@react-navigation/native';\nimport { createStackNavigator } from '@react-navigation/stack';\nimport RespartnerListScreen from './RespartnerListScreen';\nimport RespartnerDetailsScreen from './RespartnerDetailsScreen';\n\nconst Stack = createStackNavigator();\n\nfunction App() {\n  return (\n    <NavigationContainer>\n      <Stack.Navigator>\n        <Stack.Screen name=\"RespartnerList\" component={RespartnerListScreen} />\n        <Stack.Screen name=\"RespartnerDetails\" component={RespartnerDetailsScreen} />\n      </Stack.Navigator>\n    </NavigationContainer>\n  );\n}\nexport default App;",
+    "list_screen": "import React from 'react';\nimport {\n  FlatList,\n  TouchableOpacity,\n  Text,\n  StyleSheet\n} from 'react-native';\n\nconst RespartnerListScreen = ({ navigation }) => {\n  const partners = [\n    {\n  \"active\": true,\n  \"active_lang_count\": 1,\n  \"activity_calendar_event_id\": false,\n  \"activity_date_deadline\": false,\n  \"activity_exception_decoration\": false,\n  \"activity_exception_icon\": false,\n  \"activity_ids\": [],\n  \"activity_state\": false,\n  \"activity_summary\": false,\n  \"activity_type_icon\": false,\n  \"activity_type_id\": false,\n  \"activity_user_id\": false,\n  \"additional_info\": false,\n  \"avatar_1024\": \"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\",\n  \"avatar_128\": \"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\",\n  \"avatar_1920\": \"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\",\n  \"avatar_256\": \"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\",\n  \"avatar_512\": \"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\",\n  \"bank_account_count\": 0,\n  \"bank_ids\": [],\n  \"barcode\": false,\n  \"calendar_last_notif_ack\": \"2025-03-13 02:54:13\",\n  \"can_publish\": true,\n  \"category_id\": [],\n  \"channel_ids\": [],\n  \"child_ids\": [],\n  \"city\": \"\",\n  \"color\": 0,\n  \"comment\": \"\",\n  \"commercial_company_name\": false,\n  \"commercial_partner_id\": [\n    11,\n    \"Master Dudly\"\n  ],\n  \"company_id\": false,\n  \"company_name\": false,\n  \"company_registry\": false,\n  \"company_type\": \"person\",\n  \"complete_name\": \"Master Dudly\",\n  \"contact_address\": \"\\n\\n  \\n\",\n  \"contact_address_inline\": \"\",\n  \"contract_ids\": [],\n  \"country_code\": false,\n  \"country_id\": false,\n  \"create_date\": \"2025-03-13 02:54:13\",\n  \"create_uid\": [\n    2,\n    \"Administrator\"\n  ],\n  \"credit\": 0.0,\n  \"credit_limit\": 0.0,\n  \"credit_to_invoice\": 0.0,\n  \"currency_id\": [\n    1,\n    \"USD\"\n  ],\n  \"customer_rank\": 0,\n  \"date\": false,\n  \"days_sales_outstanding\": 0.0,\n  \"debit\": 0.0,\n  \"debit_limit\": 0.0,\n  \"display_name\": \"Master Dudly\",\n  \"duplicated_bank_account_partners_count\": 0,\n  \"email\": \"\",\n  \"email_formatted\": false,\n  \"email_normalized\": false,\n  \"employee\": false,\n  \"employee_ids\": [],\n  \"employees_count\": 0,\n  \"fiscal_country_codes\": \"US\",\n  \"function\": \"Cleaner\",\n  \"has_message\": true,\n  \"has_unreconciled_entries\": false,\n  \"id\": 11,\n  \"im_status\": \"im_partner\",\n  \"image_1024\": false,\n  \"image_128\": false,\n  \"image_1920\": false,\n  \"image_256\": false,\n  \"image_512\": false,\n  \"industry_id\": false,\n  \"invoice_ids\": [],\n  \"invoice_warn\": \"no-message\",\n  \"invoice_warn_msg\": false,\n  \"is_blacklisted\": false,\n  \"is_company\": false,\n  \"is_public\": false,\n  \"is_published\": false,\n  \"journal_item_count\": 0,\n  \"lang\": \"en_US\",\n  \"last_time_entries_checked\": false,\n  \"meeting_count\": 0,\n  \"meeting_ids\": [],\n  \"message_attachment_count\": 0,\n  \"message_bounce\": 0,\n  \"message_follower_ids\": [\n    108\n  ],\n  \"message_has_error\": false,\n  \"message_has_error_counter\": 0,\n  \"message_has_sms_error\": false,\n  \"message_ids\": [\n    1323\n  ],\n  \"message_is_follower\": true,\n  \"message_needaction\": false,\n  \"message_needaction_counter\": 0,\n  \"message_partner_ids\": [\n    3\n  ],\n  \"mobile\": \"\",\n  \"mobile_blacklisted\": false,\n  \"my_activity_date_deadline\": false,\n  \"name\": \"Master Dudly\",\n  \"parent_id\": false,\n  \"parent_name\": false,\n  \"partner_gid\": 0,\n  \"partner_latitude\": 0.0,\n  \"partner_longitude\": 0.0,\n  \"partner_share\": true,\n  \"payment_token_count\": 0,\n  \"payment_token_ids\": [],\n  \"peppol_eas\": false,\n  \"peppol_endpoint\": false,\n  \"phone\": \"\",\n  \"phone_blacklisted\": false,\n  \"phone_mobile_search\": false,\n  \"phone_sanitized\": false,\n  \"phone_sanitized_blacklisted\": false,\n  \"plan_to_change_bike\": false,\n  \"plan_to_change_car\": false,\n  \"project_ids\": [],\n  \"property_account_payable_id\": [\n    14,\n    \"211000 Account Payable\"\n  ],\n  \"property_account_position_id\": false,\n  \"property_account_receivable_id\": [\n    6,\n    \"121000 Account Receivable\"\n  ],\n  \"property_payment_term_id\": false,\n  \"property_product_pricelist\": false,\n  \"property_supplier_payment_term_id\": false,\n  \"rating_ids\": [],\n  \"ref\": false,\n  \"ref_company_ids\": [],\n  \"same_company_registry_partner_id\": false,\n  \"same_vat_partner_id\": false,\n  \"self\": [\n    11,\n    \"Master Dudly\"\n  ],\n  \"show_credit_limit\": false,\n  \"signup_expiration\": false,\n  \"signup_token\": false,\n  \"signup_type\": false,\n  \"signup_url\": false,\n  \"signup_valid\": false,\n  \"starred_message_ids\": [],\n  \"state_id\": false,\n  \"street\": \"\",\n  \"street2\": \"\",\n  \"supplier_rank\": 0,\n  \"task_count\": 0,\n  \"task_ids\": [],\n  \"title\": false,\n  \"total_invoiced\": 0.0,\n  \"trust\": \"normal\",\n  \"type\": \"contact\",\n  \"tz\": false,\n  \"tz_offset\": \"+0000\",\n  \"ubl_cii_format\": false,\n  \"use_partner_credit_limit\": false,\n  \"user_id\": false,\n  \"user_ids\": [],\n  \"vat\": \"\",\n  \"visitor_ids\": [],\n  \"website\": \"\",\n  \"website_id\": false,\n  \"website_message_ids\": [],\n  \"website_published\": false,\n  \"website_url\": \"#\",\n  \"write_date\": \"2025-03-13 02:54:13\",\n  \"write_uid\": [\n    2,\n    \"Administrator\"\n  ],\n  \"zip\": \"\",\n  \"commercial_partner_id_expanded\": {\n    \"display_name\": \"Master Dudly\",\n    \"id\": 11,\n    \"name\": \"Master Dudly\",\n    \"property_account_payable_id\": [\n      14,\n      \"211000 Account Payable\"\n    ],\n    \"property_account_receivable_id\": [\n      6,\n      \"121000 Account Receivable\"\n    ]\n  },\n  \"create_uid_expanded\": {\n    \"company_id\": [\n      1,\n      \"My Company\"\n    ],\n    \"display_name\": \"Administrator\",\n    \"id\": 2,\n    \"login\": \"mark\",\n    \"name\": \"Administrator\",\n    \"notification_type\": \"email\",\n    \"partner_id\": [\n      3,\n      \"Administrator\"\n    ],\n    \"property_account_payable_id\": [\n      14,\n      \"211000 Account Payable\"\n    ],\n    \"property_account_receivable_id\": [\n      6,\n      \"121000 Account Receivable\"\n    ],\n    \"sidebar_type\": \"large\"\n  },\n  \"currency_id_expanded\": {\n    \"display_name\": \"USD\",\n    \"id\": 1,\n    \"name\": \"USD\",\n    \"symbol\": \"$\"\n  },\n  \"message_follower_ids_expanded\": [\n    {\n      \"display_name\": \"Administrator\",\n      \"email\": \"admin@example.com\",\n      \"id\": 108,\n      \"is_active\": true,\n      \"name\": \"Administrator\",\n      \"partner_id\": [\n        3,\n        \"Administrator\"\n      ],\n      \"res_id\": 11,\n      \"res_model\": \"res.partner\",\n      \"subtype_ids\": [\n        1\n      ]\n    }\n  ],\n  \"message_ids_expanded\": [\n    {\n      \"attachment_ids\": [],\n      \"author_avatar\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"author_guest_id\": false,\n      \"author_id\": [\n        3,\n        \"Administrator\"\n      ],\n      \"body\": \"<p>Contact created</p>\",\n      \"child_ids\": [],\n      \"create_date\": \"2025-03-13 02:54:13\",\n      \"create_uid\": [\n        2,\n        \"Administrator\"\n      ],\n      \"date\": \"2025-03-13 02:54:13\",\n      \"description\": \"Contact created\",\n      \"display_name\": false,\n      \"email_add_signature\": false,\n      \"email_from\": \"\\\"Administrator\\\" <admin@example.com>\",\n      \"email_layout_xmlid\": false,\n      \"has_error\": false,\n      \"has_sms_error\": false,\n      \"id\": 1323,\n      \"is_current_user_or_guest_author\": true,\n      \"is_internal\": true,\n      \"letter_ids\": [],\n      \"link_preview_ids\": [],\n      \"mail_activity_type_id\": false,\n      \"mail_ids\": [],\n      \"mail_server_id\": false,\n      \"message_id\": \"<456777328568252.1741834453.972236394882202-openerp-message-notify@4b9448334aa5>\",\n      \"message_type\": \"notification\",\n      \"model\": \"res.partner\",\n      \"needaction\": false,\n      \"notification_ids\": [],\n      \"notified_partner_ids\": [],\n      \"parent_id\": false,\n      \"partner_ids\": [],\n      \"pinned_at\": false,\n      \"preview\": \"Contact created\",\n      \"rating_ids\": [],\n      \"rating_value\": 0.0,\n      \"reaction_ids\": [],\n      \"record_alias_domain_id\": false,\n      \"record_company_id\": false,\n      \"record_name\": false,\n      \"reply_to\": \"\\\"Administrator\\\" <admin@example.com>\",\n      \"reply_to_force_new\": false,\n      \"res_id\": 11,\n      \"snailmail_error\": false,\n      \"starred\": false,\n      \"starred_partner_ids\": [],\n      \"subject\": false,\n      \"subtype_id\": [\n        2,\n        \"Note\"\n      ],\n      \"tracking_value_ids\": [],\n      \"write_date\": \"2025-03-13 02:54:13\",\n      \"write_uid\": [\n        2,\n        \"Administrator\"\n      ]\n    }\n  ],\n  \"message_partner_ids_expanded\": [\n    {\n      \"active\": true,\n      \"active_lang_count\": 1,\n      \"activity_calendar_event_id\": false,\n      \"activity_date_deadline\": false,\n      \"activity_exception_decoration\": false,\n      \"activity_exception_icon\": false,\n      \"activity_ids\": [],\n      \"activity_state\": false,\n      \"activity_summary\": false,\n      \"activity_type_icon\": false,\n      \"activity_type_id\": false,\n      \"activity_user_id\": false,\n      \"additional_info\": false,\n      \"avatar_1024\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"avatar_128\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"avatar_1920\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"avatar_256\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"avatar_512\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"bank_account_count\": 0,\n      \"bank_ids\": [],\n      \"barcode\": false,\n      \"calendar_last_notif_ack\": \"2025-03-06 11:01:40\",\n      \"can_publish\": true,\n      \"category_id\": [\n        1\n      ],\n      \"channel_ids\": [\n        1,\n        2,\n        4,\n        5\n      ],\n      \"child_ids\": [],\n      \"city\": \"Khlong Tan\",\n      \"color\": 0,\n      \"comment\": \"<p>abc123</p>\",\n      \"commercial_company_name\": false,\n      \"commercial_partner_id\": [\n        3,\n        \"Administrator\"\n      ],\n      \"company_id\": [\n        1,\n        \"My Company\"\n      ],\n      \"company_name\": false,\n      \"company_registry\": false,\n      \"company_type\": \"person\",\n      \"complete_name\": \"Administrator\",\n      \"contact_address\": \"55 Soi Sukhumvit 26\\n\\nKhlong Tan\\nBangkok 10110\\nThailand\",\n      \"contact_address_inline\": \"55 Soi Sukhumvit 26, Khlong Tan, Bangkok 10110, Thailand\",\n      \"contract_ids\": [],\n      \"country_code\": \"TH\",\n      \"country_id\": [\n        217,\n        \"Thailand\"\n      ],\n      \"create_date\": \"2025-03-06 10:20:54\",\n      \"create_uid\": [\n        1,\n        \"OdooBot\"\n      ],\n      \"credit\": 0.0,\n      \"credit_limit\": 0.0,\n      \"credit_to_invoice\": 0.0,\n      \"currency_id\": [\n        1,\n        \"USD\"\n      ],\n      \"customer_rank\": 0,\n      \"date\": false,\n      \"days_sales_outstanding\": 0.0,\n      \"debit\": 0.0,\n      \"debit_limit\": 0.0,\n      \"display_name\": \"Administrator\",\n      \"duplicated_bank_account_partners_count\": 0,\n      \"email\": \"admin@example.com\",\n      \"email_formatted\": \"\\\"Administrator\\\" <admin@example.com>\",\n      \"email_normalized\": \"admin@example.com\",\n      \"employee\": false,\n      \"employee_ids\": [\n        1\n      ],\n      \"employees_count\": 1,\n      \"fiscal_country_codes\": \"US\",\n      \"function\": \"CEO CFO\",\n      \"has_message\": true,\n      \"has_unreconciled_entries\": false,\n      \"id\": 3,\n      \"im_status\": \"offline\",\n      \"image_1024\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"image_128\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"image_1920\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"image_256\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"image_512\": \"PD94bWwgdmVyc2lvbj0nMS4wJyBlbmNvZGluZz0nVVRGLTgnID8+PHN2ZyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB4bWxuczp4bGluaz0naHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayc+PHJlY3QgZmlsbD0naHNsKDI1MywgNTElLCA0NSUpJyBoZWlnaHQ9JzE4MCcgd2lkdGg9JzE4MCcvPjx0ZXh0IGZpbGw9JyNmZmZmZmYnIGZvbnQtc2l6ZT0nOTYnIHRleHQtYW5jaG9yPSdtaWRkbGUnIHg9JzkwJyB5PScxMjUnIGZvbnQtZmFtaWx5PSdzYW5zLXNlcmlmJz5BPC90ZXh0Pjwvc3ZnPg==\",\n      \"industry_id\": false,\n      \"invoice_ids\": [],\n      \"invoice_warn\": \"no-message\",\n      \"invoice_warn_msg\": false,\n      \"is_blacklisted\": false,\n      \"is_company\": false,\n      \"is_public\": false,\n      \"is_published\": false,\n      \"journal_item_count\": 0,\n      \"lang\": \"en_US\",\n      \"last_time_entries_checked\": false,\n      \"meeting_count\": 4,\n      \"meeting_ids\": [\n        6,\n        7,\n        12,\n        1\n      ],\n      \"message_attachment_count\": 0,\n      \"message_bounce\": 0,\n      \"message_follower_ids\": [],\n      \"message_has_error\": false,\n      \"message_has_error_counter\": 0,\n      \"message_has_sms_error\": false,\n      \"message_ids\": [\n        1324\n      ],\n      \"message_is_follower\": false,\n      \"message_needaction\": false,\n      \"message_needaction_counter\": 0,\n      \"message_partner_ids\": [],\n      \"mobile\": \"0402851235\",\n      \"mobile_blacklisted\": false,\n      \"my_activity_date_deadline\": false,\n      \"name\": \"Administrator\",\n      \"parent_id\": false,\n      \"parent_name\": false,\n      \"partner_gid\": 0,\n      \"partner_latitude\": 0.0,\n      \"partner_longitude\": 0.0,\n      \"partner_share\": false,\n      \"payment_token_count\": 0,\n      \"payment_token_ids\": [],\n      \"peppol_eas\": false,\n      \"peppol_endpoint\": false,\n      \"phone\": \"+1 248-272-6209\",\n      \"phone_blacklisted\": false,\n      \"phone_mobile_search\": false,\n      \"phone_sanitized\": \"+12482726209\",\n      \"phone_sanitized_blacklisted\": false,\n      \"plan_to_change_bike\": false,\n      \"plan_to_change_car\": false,\n      \"project_ids\": [],\n      \"property_account_payable_id\": [\n        14,\n        \"211000 Account Payable\"\n      ],\n      \"property_account_position_id\": false,\n      \"property_account_receivable_id\": [\n        6,\n        \"121000 Account Receivable\"\n      ],\n      \"property_payment_term_id\": false,\n      \"property_product_pricelist\": false,\n      \"property_supplier_payment_term_id\": false,\n      \"rating_ids\": [],\n      \"ref\": false,\n      \"ref_company_ids\": [],\n      \"same_company_registry_partner_id\": false,\n      \"same_vat_partner_id\": false,\n      \"self\": [\n        3,\n        \"Administrator\"\n      ],\n      \"show_credit_limit\": false,\n      \"signup_expiration\": false,\n      \"signup_token\": false,\n      \"signup_type\": false,\n      \"signup_url\": \"http://localhost:8069/web/login?db=loneworker&login=mark\",\n      \"signup_valid\": false,\n      \"starred_message_ids\": [],\n      \"state_id\": [\n        1498,\n        \"Bangkok (TH)\"\n      ],\n      \"street\": \"55 Soi Sukhumvit 26\",\n      \"street2\": \"\",\n      \"supplier_rank\": 0,\n      \"task_count\": 0,\n      \"task_ids\": [],\n      \"title\": [\n        3,\n        \"Mister\"\n      ],\n      \"total_invoiced\": 0.0,\n      \"trust\": \"normal\",\n      \"type\": \"contact\",\n      \"tz\": \"Asia/Bangkok\",\n      \"tz_offset\": \"+0700\",\n      \"ubl_cii_format\": false,\n      \"use_partner_credit_limit\": false,\n      \"user_id\": false,\n      \"user_ids\": [\n        2\n      ],\n      \"vat\": \"\",\n      \"visitor_ids\": [\n        1\n      ],\n      \"website\": \"http://markshaw.com\",\n      \"website_id\": false,\n      \"website_message_ids\": [],\n      \"website_published\": false,\n      \"website_url\": \"#\",\n      \"write_date\": \"2025-03-13 04:34:26\",\n      \"write_uid\": [\n        2,\n        \"Administrator\"\n      ],\n      \"zip\": \"10110\"\n    }\n  ],\n  \"property_account_payable_id_expanded\": {\n    \"account_type\": \"liability_payable\",\n    \"code\": \"211000\",\n    \"company_id\": [\n      1,\n      \"My Company\"\n    ],\n    \"display_name\": \"211000 Account Payable\",\n    \"id\": 14,\n    \"name\": \"Account Payable\"\n  },\n  \"property_account_receivable_id_expanded\": {\n    \"account_type\": \"asset_receivable\",\n    \"code\": \"121000\",\n    \"company_id\": [\n      1,\n      \"My Company\"\n    ],\n    \"display_name\": \"121000 Account Receivable\",\n    \"id\": 6,\n    \"name\": \"Account Receivable\"\n  },\n  \"self_expanded\": {\n    \"display_name\": \"Master Dudly\",\n    \"id\": 11,\n    \"name\": \"Master Dudly\",\n    \"property_account_payable_id\": [\n      14,\n      \"211000 Account Payable\"\n    ],\n    \"property_account_receivable_id\": [\n      6,\n      \"121000 Account Receivable\"\n    ]\n  },\n  \"write_uid_expanded\": {\n    \"company_id\": [\n      1,\n      \"My Company\"\n    ],\n    \"display_name\": \"Administrator\",\n    \"id\": 2,\n    \"login\": \"mark\",\n    \"name\": \"Administrator\",\n    \"notification_type\": \"email\",\n    \"partner_id\": [\n      3,\n      \"Administrator\"\n    ],\n    \"property_account_payable_id\": [\n      14,\n      \"211000 Account Payable\"\n    ],\n    \"property_account_receivable_id\": [\n      6,\n      \"121000 Account Receivable\"\n    ],\n    \"sidebar_type\": \"large\"\n  }\n},\n    // Add more records as needed\n  ];\n  return (\n    <FlatList\n      data={partners}\n      renderItem={({ item }) => (\n        <TouchableOpacity \n          style={styles.item}\n          onPress={() => navigation.navigate('RespartnerDetails', { record: item })}>\n          <Text style={styles.itemText}>{item.name || item.display_name || `Record #${item.id}`}</Text>\n        </TouchableOpacity>\n      )}\n      keyExtractor={(item) => item.id.toString()}\n    />\n  );\n};\n\nconst styles = StyleSheet.create({\n  item: {\n    padding: 15,\n    borderBottomWidth: 1,\n    borderBottomColor: '#eee',\n  },\n  itemText: {\n    fontSize: 16,\n  },\n});\n\nexport default RespartnerListScreen;"
+  },
+  "notes": [
+    "Check for False in title to avoid 'bool object is not subscriptable' errors.",
+    "Optimize avatar_1920 (binary) to prevent performance issues on mobile.",
+    "Limit the number of records fetched for ref_company_ids to avoid overloading the UI.",
+    "Check for False in website_id to avoid 'bool object is not subscriptable' errors.",
+    "Limit the number of records fetched for bank_ids to avoid overloading the UI.",
+    "Optimize image_512 (binary) to prevent performance issues on mobile.",
+    "Check for False in activity_user_id to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in property_account_payable_id to avoid 'bool object is not subscriptable' errors.",
+    "Optimize image_1920 (binary) to prevent performance issues on mobile.",
+    "Check for False in country_id to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in user_id to avoid 'bool object is not subscriptable' errors.",
+    "Limit the number of records fetched for visitor_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for website_message_ids to avoid overloading the UI.",
+    "Check for False in same_vat_partner_id to avoid 'bool object is not subscriptable' errors.",
+    "Limit the number of records fetched for meeting_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for contract_ids to avoid overloading the UI.",
+    "Check for False in write_uid to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in self to avoid 'bool object is not subscriptable' errors.",
+    "Optimize avatar_512 (binary) to prevent performance issues on mobile.",
+    "Limit the number of records fetched for activity_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for payment_token_ids to avoid overloading the UI.",
+    "Optimize avatar_128 (binary) to prevent performance issues on mobile.",
+    "Check for False in currency_id to avoid 'bool object is not subscriptable' errors.",
+    "Optimize avatar_1024 (binary) to prevent performance issues on mobile.",
+    "Check for False in activity_calendar_event_id to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in property_product_pricelist to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in same_company_registry_partner_id to avoid 'bool object is not subscriptable' errors.",
+    "Limit the number of records fetched for project_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for invoice_ids to avoid overloading the UI.",
+    "Optimize image_128 (binary) to prevent performance issues on mobile.",
+    "Limit the number of records fetched for user_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for task_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for message_ids to avoid overloading the UI.",
+    "Check for False in property_payment_term_id to avoid 'bool object is not subscriptable' errors.",
+    "Optimize image_1024 (binary) to prevent performance issues on mobile.",
+    "Limit the number of records fetched for message_partner_ids to avoid overloading the UI.",
+    "Check for False in company_id to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in activity_type_id to avoid 'bool object is not subscriptable' errors.",
+    "Limit the number of records fetched for employee_ids to avoid overloading the UI.",
+    "Check for False in property_supplier_payment_term_id to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in state_id to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in property_account_position_id to avoid 'bool object is not subscriptable' errors.",
+    "Limit the number of records fetched for category_id to avoid overloading the UI.",
+    "Check for False in parent_id to avoid 'bool object is not subscriptable' errors.",
+    "Limit the number of records fetched for child_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for rating_ids to avoid overloading the UI.",
+    "Check for False in industry_id to avoid 'bool object is not subscriptable' errors.",
+    "Optimize image_256 (binary) to prevent performance issues on mobile.",
+    "Check for False in create_uid to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in commercial_partner_id to avoid 'bool object is not subscriptable' errors.",
+    "Check for False in property_account_receivable_id to avoid 'bool object is not subscriptable' errors.",
+    "Optimize avatar_256 (binary) to prevent performance issues on mobile.",
+    "Limit the number of records fetched for channel_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for message_follower_ids to avoid overloading the UI.",
+    "Limit the number of records fetched for starred_message_ids to avoid overloading the UI."
+  ]
+}

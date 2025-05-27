@@ -530,7 +530,7 @@ partnersAPI.getList = async (domain = [], fields = [], limit = 50, offset = 0, f
         const initialMaxIds = Math.max(1000, limit * 10); // Get at least 10 pages worth of IDs
         console.log(`Initial load: fetching first ${initialMaxIds} partner IDs`);
 
-        const allPartnerIds = await getAllPartnerIds(forceRefresh, initialMaxIds);
+        const allPartnerIds = await partnersAPI.getAllPartnerIds(forceRefresh, initialMaxIds);
 
         if (allPartnerIds.length === 0) {
           console.log('No partner IDs found, using mock data');
@@ -543,7 +543,7 @@ partnersAPI.getList = async (domain = [], fields = [], limit = 50, offset = 0, f
           try {
             console.log('Starting background fetch of additional partner IDs');
             // Get all IDs without a limit to ensure we have all contacts for pagination
-            const fullIdList = await getAllPartnerIds(true, 5000); // Force refresh to get all IDs, with a higher limit
+            const fullIdList = await partnersAPI.getAllPartnerIds(true, 5000); // Force refresh to get all IDs, with a higher limit
             console.log(`Background fetch completed, got ${fullIdList.length} total partner IDs`);
 
             // Also prefetch the next few pages of contacts to improve pagination performance

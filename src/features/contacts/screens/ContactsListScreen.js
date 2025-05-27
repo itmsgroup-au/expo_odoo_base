@@ -659,11 +659,11 @@ const ContactsListScreen = () => {
 
           // Debug: Check user access and permissions
           try {
-            const userInfo = await partnersAPI.getCurrentUserInfo();
+            const userInfo = await partnersAPI.default.getCurrentUserInfo();
             console.log('Current user info:', userInfo);
 
             // Check access rights for res.partner model
-            const accessRights = await partnersAPI.checkAccessRights('res.partner', 'read');
+            const accessRights = await partnersAPI.default.checkAccessRights('res.partner', 'read');
             console.log('User access rights for res.partner:', accessRights);
           } catch (error) {
             console.log('Could not check user permissions:', error.message);
@@ -689,14 +689,28 @@ const ContactsListScreen = () => {
               return array.findIndex(c => c.id === contact.id) === index;
             });
 
-            // Sort contacts alphabetically by name
-            const sortedContacts = uniqueContacts.sort((a, b) => {
+            // Separate companies and contacts, then sort each group
+            const companies = uniqueContacts.filter(contact => contact.is_company);
+            const individuals = uniqueContacts.filter(contact => !contact.is_company);
+
+            // Sort each group alphabetically
+            const sortedCompanies = companies.sort((a, b) => {
               const nameA = (a.name || '').toLowerCase();
               const nameB = (b.name || '').toLowerCase();
               return nameA.localeCompare(nameB);
             });
 
+            const sortedIndividuals = individuals.sort((a, b) => {
+              const nameA = (a.name || '').toLowerCase();
+              const nameB = (b.name || '').toLowerCase();
+              return nameA.localeCompare(nameB);
+            });
+
+            // Combine with companies first, then individuals
+            const sortedContacts = [...sortedCompanies, ...sortedIndividuals];
+
             console.log(`Filtered ${cachedContacts.length} contacts down to ${sortedContacts.length} unique, clean contacts`);
+            console.log(`Companies: ${sortedCompanies.length}, Individuals: ${sortedIndividuals.length}`);
 
             // Add index property to each contact for stable keys
             const indexedContacts = sortedContacts.map((contact, index) => ({
@@ -853,38 +867,95 @@ const ContactsListScreen = () => {
   };
 
   // Render contact item
-  const renderContactItem = useCallback(({ item }) => {
+  const renderContactItem = useCallback(({ item, index }) => {
     const imageUri = getImageUri(item.image_128);
     const initials = getInitials(item.name);
+    const isCompany = item.is_company;
+
+    // Check if this is the first individual after companies
+    const isFirstIndividual = !isCompany && index > 0 && filteredContacts[index - 1]?.is_company;
 
     return (
-      <TouchableOpacity
-        style={styles.contactItem}
-        onPress={() => handleContactPress(item)}
-      >
-        <View style={styles.avatarContainer}>
-          {imageUri ? (
-            <Image source={{ uri: imageUri }} style={styles.avatar} />
-          ) : (
-            <View style={[styles.avatarPlaceholder, { backgroundColor: getColorFromName(item.name) }]}>
-              <Text style={styles.avatarText}>{initials}</Text>
+      <>
+        {/* Section header for first individual */}
+        {isFirstIndividual && (
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionHeaderLine} />
+            <Text style={styles.sectionHeaderText}>CONTACTS</Text>
+            <View style={styles.sectionHeaderLine} />
+          </View>
+        )}
+
+        {/* Section header for first company */}
+        {isCompany && index === 0 && (
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionHeaderLine} />
+            <Text style={styles.sectionHeaderText}>COMPANIES</Text>
+            <View style={styles.sectionHeaderLine} />
+          </View>
+        )}
+
+        <TouchableOpacity
+          style={[
+            styles.contactItem,
+            isCompany ? styles.companyItem : styles.individualItem
+          ]}
+          onPress={() => handleContactPress(item)}
+          activeOpacity={0.7}
+        >
+          <View style={styles.avatarContainer}>
+            {imageUri ? (
+              <Image
+                source={{ uri: imageUri }}
+                style={[
+                  styles.avatar,
+                  isCompany && styles.companyAvatar
+                ]}
+              />
+            ) : (
+              <View style={[
+                styles.avatarPlaceholder,
+                { backgroundColor: getColorFromName(item.name) },
+                isCompany && styles.companyAvatarPlaceholder
+              ]}>
+                <Text style={[
+                  styles.avatarText,
+                  isCompany && styles.companyAvatarText
+                ]}>{initials}</Text>
+              </View>
+            )}
+            {isCompany && (
+              <View style={styles.companyBadge}>
+                <Icon name="office-building" size={12} color="#fff" />
+              </View>
+            )}
+          </View>
+
+          <View style={styles.contactInfo}>
+            <Text style={[
+              styles.contactName,
+              isCompany && styles.companyName
+            ]} numberOfLines={1}>
+              {item.name}
+            </Text>
+            <Text style={[
+              styles.contactDetail,
+              isCompany && styles.companyDetail
+            ]} numberOfLines={1}>
+              {item.phone || item.mobile || item.email || 'No contact info'}
+            </Text>
+          </View>
+
+          {/* Company indicator */}
+          {isCompany && (
+            <View style={styles.companyIndicator}>
+              <Icon name="office-building" size={16} color="#3498db" />
             </View>
           )}
-          {item.is_company && (
-            <View style={styles.companyBadge}>
-              <Icon name="office-building" size={12} color="#fff" />
-            </View>
-          )}
-        </View>
-        <View style={styles.contactInfo}>
-          <Text style={styles.contactName} numberOfLines={1}>{item.name}</Text>
-          <Text style={styles.contactDetail} numberOfLines={1}>
-            {item.phone || item.mobile || item.email || 'No contact info'}
-          </Text>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </>
     );
-  }, [handleContactPress]);
+  }, [handleContactPress, filteredContacts]);
 
   // Render footer with loading indicator for infinite scrolling
   const renderFooter = useCallback(() => {
@@ -958,12 +1029,44 @@ const ContactsListScreen = () => {
           </Text>
           {totalCount > 0 && (
             <Text style={styles.headerCount}>
-              {filteredContacts.length}/{totalCount}
+              {(() => {
+                const companies = filteredContacts.filter(c => c.is_company).length;
+                const individuals = filteredContacts.filter(c => !c.is_company).length;
+                return `${companies} companies • ${individuals} contacts`;
+              })()}
             </Text>
           )}
         </View>
-        <View style={{width: 24}} /> {/* Empty view for balance */}
+        {filterMode === 'related' ? (
+          <TouchableOpacity
+            style={styles.viewAllButton}
+            onPress={() => {
+              // Navigate to all contacts view (replace current screen)
+              navigation.replace('ContactsListScreen');
+            }}
+          >
+            <Text style={styles.viewAllButtonText}>All</Text>
+          </TouchableOpacity>
+        ) : (
+          <View style={{width: 24}} /> /* Empty view for balance */
+        )}
       </View>
+
+      {/* Related Contacts Banner */}
+      {filterMode === 'related' && (
+        <View style={styles.relatedBanner}>
+          <Icon name="link" size={16} color="#3498db" />
+          <Text style={styles.relatedBannerText}>
+            Showing contacts related to {parentName}
+          </Text>
+          <TouchableOpacity
+            onPress={() => navigation.replace('ContactsListScreen')}
+            style={styles.relatedBannerButton}
+          >
+            <Text style={styles.relatedBannerButtonText}>View All</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -1003,9 +1106,6 @@ const ContactsListScreen = () => {
           maxToRenderPerBatch={50}
           windowSize={10}
           removeClippedSubviews={false}
-          getItemLayout={(_, index) => (
-            {length: 74, offset: 74 * index, index}
-          )}
         />
       </View>
 
@@ -1050,6 +1150,43 @@ const styles = StyleSheet.create({
   homeButton: {
     padding: 8,
   },
+  viewAllButton: {
+    backgroundColor: '#3498db',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  viewAllButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  relatedBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e3f2fd',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#bbdefb',
+  },
+  relatedBannerText: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 14,
+    color: '#1976d2',
+  },
+  relatedBannerButton: {
+    backgroundColor: '#3498db',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  relatedBannerButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1071,11 +1208,37 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#f8f9fa',
+    marginTop: 8,
+  },
+  sectionHeaderLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#dee2e6',
+  },
+  sectionHeaderText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#6c757d',
+    letterSpacing: 1,
+    marginHorizontal: 16,
+  },
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
+    backgroundColor: '#fff',
+  },
+  companyItem: {
+    backgroundColor: '#fff',
+  },
+  individualItem: {
     backgroundColor: '#fff',
   },
   avatarContainer: {
@@ -1087,6 +1250,10 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
   },
+  companyAvatar: {
+    borderWidth: 2,
+    borderColor: '#3498db',
+  },
   avatarPlaceholder: {
     width: 50,
     height: 50,
@@ -1094,10 +1261,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  companyAvatarPlaceholder: {
+    borderWidth: 2,
+    borderColor: '#3498db',
+    backgroundColor: '#3498db',
+  },
   avatarText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  companyAvatarText: {
+    fontSize: 16,
+    fontWeight: '900',
   },
   companyBadge: {
     position: 'absolute',
@@ -1122,9 +1298,23 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 4,
   },
+  companyName: {
+    fontSize: 17,
+    fontWeight: '600',
+    color: '#2c3e50',
+  },
   contactDetail: {
     fontSize: 14,
     color: '#666',
+  },
+  companyDetail: {
+    fontSize: 14,
+    color: '#3498db',
+    fontWeight: '500',
+  },
+  companyIndicator: {
+    marginLeft: 8,
+    padding: 4,
   },
   separator: {
     height: 1,

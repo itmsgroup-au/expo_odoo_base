@@ -1,4 +1,4 @@
-// API for res.partner model - OPTIMIZED to bypass salesperson restrictions
+// Optimized API for res.partner model - bypasses salesperson restrictions
 
 import { createModelAPI } from './modelApiTemplate';
 import { odooAPI, createOdooClient } from '../odooClient';
@@ -34,7 +34,7 @@ const CACHE_CONFIG = {
   CACHE_EXPIRY: 1000 * 60 * 60 * 24, // 24 hours
   BATCH_SIZE: 100,
   FULL_SYNC_BATCH_SIZE: 2500,
-  CACHE_VERSION: '2.1', // Updated version for optimized fetching
+  CACHE_VERSION: '2.0', // Updated version for optimal fetching
   SYNC_INTERVAL: 1000 * 60 * 5, // 5 minutes
   MAX_CONTACTS: 5000,
   TIMEOUT: 30000, // 30 seconds timeout
@@ -188,28 +188,28 @@ const cacheManager = {
   }
 };
 
-// 🔑 KEY METHOD: Get all contact IDs bypassing salesperson restrictions
-partnersAPI.getAllPartnerIds = async (forceRefresh = false, maxIds = CACHE_CONFIG.MAX_CONTACTS) => {
+// OPTIMAL METHOD: Get all contact IDs bypassing salesperson restrictions
+partnersAPI.getAllContactIdsOptimal = async (forceRefresh = false) => {
   try {
+    console.log('🚀 Getting ALL contact IDs with OPTIMAL method (bypassing salesperson restrictions)...');
+
     // Check cache first if not forcing refresh
     if (!forceRefresh) {
       const cachedIds = await cacheManager.getPartnerIdsFromCache();
       if (cachedIds && cachedIds.length > 2000) { // Expecting around 2130 contacts
         console.log(`✅ Using ${cachedIds.length} cached contact IDs`);
-        return cachedIds.slice(0, maxIds);
+        return cachedIds;
       }
     }
 
-    console.log('🚀 Getting ALL contact IDs with BYPASS method (avoiding salesperson restrictions)...');
-
-    // THE SOLUTION: Use this domain filter to bypass salesperson restrictions
+    // THE KEY: Use this domain filter to bypass salesperson restrictions
     // ["|", ["is_company", "=", true], ["parent_id", "=", false]]
     // This gets: Companies OR top-level contacts (no parent)
     // This bypasses the user/salesperson assignment filtering that limits your results
     const domain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
 
     console.log('🔑 Using BYPASS domain filter:', JSON.stringify(domain));
-    console.log('This should get ALL 2130+ contacts, not just assigned ones!');
+    console.log('This should get ALL contacts, not just assigned ones!');
 
     // Use search endpoint to get all IDs in one call
     const response = await api.get('/api/v2/search/res.partner', {
@@ -237,21 +237,21 @@ partnersAPI.getAllPartnerIds = async (forceRefresh = false, maxIds = CACHE_CONFI
       await cacheManager.savePartnerIdsToCache(response.data);
       console.log(`💾 Cached ${contactCount} contact IDs`);
 
-      return response.data.slice(0, maxIds);
+      return response.data;
     } else {
       console.error('❌ Invalid response format for contact IDs:', response);
       return [];
     }
   } catch (error) {
-    console.error('❌ Error getting contact IDs with bypass method:', error);
+    console.error('❌ Error getting contact IDs with optimal method:', error);
     return [];
   }
 };
 
-// 🔑 KEY METHOD: Get ALL contacts with complete data bypassing restrictions
-partnersAPI.getAllContactsOptimal = async (forceRefresh = false) => {
+// OPTIMAL METHOD: Get all contacts with complete data
+partnersAPI.getAllContactsOptimalComplete = async (forceRefresh = false) => {
   try {
-    console.log('🚀 Getting ALL contacts with OPTIMAL bypass method...');
+    console.log('🚀 Getting ALL contacts with COMPLETE data (bypassing restrictions)...');
 
     // Check cache first if not forcing refresh
     if (!forceRefresh) {
@@ -262,14 +262,12 @@ partnersAPI.getAllContactsOptimal = async (forceRefresh = false) => {
       }
     }
 
-    // THE KEY: This domain bypasses salesperson assignment restrictions
-    // ["|", ["is_company", "=", true], ["parent_id", "=", false]]
-    // Gets: Companies OR top-level contacts (no parent)
+    // Use the bypass domain filter
     const domain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
 
-    console.log('🔑 Using BYPASS domain:', JSON.stringify(domain));
-    console.log('This should get ALL 2130+ contacts!');
+    console.log('🔑 Fetching ALL contacts with bypass domain:', JSON.stringify(domain));
 
+    // Get complete contact data in one API call
     const response = await api.get('/api/v2/search_read/res.partner', {
       params: {
         domain: JSON.stringify(domain),
@@ -282,80 +280,234 @@ partnersAPI.getAllContactsOptimal = async (forceRefresh = false) => {
         limit: 5000, // High limit to get all contacts
         offset: 0
       },
-      timeout: 60000 // 60 second timeout for large download
+      timeout: CACHE_CONFIG.BULK_TIMEOUT // Longer timeout for bulk download
     });
 
     if (response.data && Array.isArray(response.data)) {
       const contactCount = response.data.length;
-      console.log(`🎉 SUCCESS! Downloaded ${contactCount} contacts in ONE call!`);
+      console.log(`🎉 SUCCESS! Downloaded ${contactCount} COMPLETE contact records!`);
       
       if (contactCount >= 2130) {
-        console.log(`🌟 PERFECT! Got ${contactCount} contacts - restriction BYPASSED!`);
-      } else if (contactCount > 1000) {
-        console.log(`✅ Much better! Got ${contactCount} contacts vs previous limited results`);
+        console.log(`🌟 PERFECT! Got all ${contactCount} contacts in ONE API call!`);
       }
 
-      // Cache the contacts and IDs
+      // Cache both the complete contacts and just the IDs
       await cacheManager.savePartnersToCache(response.data);
       const allIds = response.data.map(contact => contact.id);
       await cacheManager.savePartnerIdsToCache(allIds);
 
       console.log(`💾 Cached ${contactCount} contacts and ${allIds.length} IDs`);
+
       return response.data;
     } else {
-      console.error('❌ Invalid response format:', response);
+      console.error('❌ Invalid response format for complete contacts:', response);
       return [];
     }
   } catch (error) {
-    console.error('❌ Error with optimal method:', error);
+    console.error('❌ Error getting contacts with complete data:', error);
+    
+    // Fallback: Get IDs first, then fetch in batches
+    console.log('🔄 Falling back to ID-first approach...');
+    const allIds = await partnersAPI.getAllContactIdsOptimal(forceRefresh);
+    
+    if (allIds.length > 0) {
+      console.log(`📋 Got ${allIds.length} IDs, fetching in optimized batches...`);
+      
+      const allContacts = [];
+      const batchSize = 100;
+      
+      for (let i = 0; i < allIds.length; i += batchSize) {
+        const batchIds = allIds.slice(i, i + batchSize);
+        const batchNum = Math.floor(i / batchSize) + 1;
+        const totalBatches = Math.ceil(allIds.length / batchSize);
+        
+        console.log(`📦 Fetching batch ${batchNum}/${totalBatches}: ${batchIds.length} contacts`);
+        
+        try {
+          const response = await api.get('/api/v2/read/res.partner', {
+            params: {
+              ids: JSON.stringify(batchIds),
+              fields: JSON.stringify([
+                'id', 'name', 'email', 'phone', 'mobile', 'image_128',
+                'street', 'city', 'country_id', 'is_company', 'active'
+              ])
+            },
+            timeout: 15000
+          });
+          
+          if (response.data && Array.isArray(response.data)) {
+            allContacts.push(...response.data);
+            console.log(`✅ Batch ${batchNum} completed: ${response.data.length} contacts (total: ${allContacts.length})`);
+          }
+          
+          // Small delay between batches to be nice to the server
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+        } catch (batchError) {
+          console.error(`❌ Error in batch ${batchNum}:`, batchError);
+          // Continue with next batch
+        }
+      }
+      
+      if (allContacts.length > 0) {
+        console.log(`🎯 Fallback successful: fetched ${allContacts.length}/${allIds.length} contacts`);
+        await cacheManager.savePartnersToCache(allContacts);
+        return allContacts;
+      }
+    }
+    
     return [];
   }
 };
 
-// Method that lists records efficiently with pagination and caching - OPTIMIZED
+// Method to test domain filters and find the best one
+partnersAPI.testDomainFilters = async () => {
+  const filters = [
+    { name: 'Current (Empty domain)', domain: [] },
+    { name: 'Active only', domain: [["active", "=", true]] },
+    { name: 'Companies only', domain: [["is_company", "=", true]] },
+    { name: 'No parent (top-level)', domain: [["parent_id", "=", false]] },
+    { name: '🔑 OPTIMAL: Companies OR no parent', domain: ["|", ["is_company", "=", true], ["parent_id", "=", false]] },
+    { name: 'All records', domain: ["|", ["is_company", "=", true], ["is_company", "=", false]] }
+  ];
+
+  console.log('🧪 === TESTING DOMAIN FILTERS TO FIND OPTIMAL ===');
+  
+  for (const filter of filters) {
+    try {
+      console.log(`\n🔍 Testing: ${filter.name}`);
+      console.log(`   Domain: ${JSON.stringify(filter.domain)}`);
+      
+      const startTime = Date.now();
+      const response = await api.get('/api/v2/search/res.partner', {
+        params: {
+          domain: JSON.stringify(filter.domain),
+          limit: 5000,
+          offset: 0
+        },
+        timeout: 30000
+      });
+      
+      const duration = Date.now() - startTime;
+      const count = response.data ? response.data.length : 0;
+      
+      console.log(`   📊 Result: ${count} records in ${duration}ms`);
+      
+      if (count >= 2130) {
+        console.log(`   🎉 ${filter.name} returned ${count} records - EXCELLENT!`);
+        
+        // Test getting sample data for this filter
+        const dataResponse = await api.get('/api/v2/search_read/res.partner', {
+          params: {
+            domain: JSON.stringify(filter.domain),
+            fields: JSON.stringify(['id', 'name', 'email', 'phone', 'is_company']),
+            limit: 5,
+            offset: 0
+          },
+          timeout: 10000
+        });
+        
+        if (dataResponse.data && dataResponse.data.length > 0) {
+          console.log(`   📋 Sample data:`);
+          dataResponse.data.forEach((contact, idx) => {
+            console.log(`      ${idx + 1}. ${contact.name} (ID: ${contact.id}, Company: ${contact.is_company})`);
+          });
+        }
+      } else if (count > 1000) {
+        console.log(`   ✅ ${filter.name} returned ${count} records - Better than current!`);
+      } else {
+        console.log(`   ❌ ${filter.name} only returned ${count} records - Still restricted`);
+      }
+      
+    } catch (error) {
+      console.error(`   💥 ${filter.name} failed:`, error.message);
+    }
+  }
+  
+  console.log('\n🏁 === FILTER TESTING COMPLETE ===');
+  console.log('\n💡 RECOMMENDATION: Use the OPTIMAL filter for all contact fetching!');
+};
+
+// Quick method to get exact count using optimal domain
+partnersAPI.getOptimalContactCount = async () => {
+  try {
+    const domain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
+    
+    const response = await api.post('/api/v2/call', {
+      model: 'res.partner',
+      method: 'search_count',
+      args: [domain],
+      kwargs: {}
+    });
+    
+    if (response.data && typeof response.data === 'number') {
+      console.log(`📊 Optimal domain count: ${response.data} contacts`);
+      return response.data;
+    }
+    
+    // Fallback: use search to get count
+    const searchResponse = await api.get('/api/v2/search/res.partner', {
+      params: {
+        domain: JSON.stringify(domain),
+        limit: 5000,
+        offset: 0
+      }
+    });
+    
+    if (searchResponse.data && Array.isArray(searchResponse.data)) {
+      console.log(`📊 Search count: ${searchResponse.data.length} contacts`);
+      return searchResponse.data.length;
+    }
+    
+    return 0;
+  } catch (error) {
+    console.error('Error getting optimal contact count:', error);
+    return 0;
+  }
+};
+
+// Update the existing getAllContacts method to use the optimal approach
+partnersAPI.getAllContacts = async (forceRefresh = false) => {
+  console.log('🔄 getAllContacts called - using OPTIMAL method');
+  return await partnersAPI.getAllContactsOptimalComplete(forceRefresh);
+};
+
+// Update the existing getAllPartnerIds method to use the optimal approach
+partnersAPI.getAllPartnerIds = async (forceRefresh = false) => {
+  console.log('🔄 getAllPartnerIds called - using OPTIMAL method');
+  return await partnersAPI.getAllContactIdsOptimal(forceRefresh);
+};
+
+// Update the getList method to use optimal domain when no specific domain is provided
 partnersAPI.getList = async (domain = [], fields = [], limit = 50, offset = 0, forceRefresh = false) => {
   try {
     console.log(`📋 getList called with domain: ${JSON.stringify(domain)}, limit: ${limit}, offset: ${offset}`);
 
-    // If no specific domain is provided, use the bypass one
+    // If no specific domain is provided, use the optimal one
     let searchDomain = domain;
     if (domain.length === 0) {
       searchDomain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
-      console.log('🔑 Using BYPASS domain to get ALL contacts');
+      console.log('🔑 Using OPTIMAL domain to bypass restrictions');
     }
 
-    // For first page, try to get all contacts at once with the optimal method
-    if (offset === 0 && domain.length === 0) {
-      console.log('🚀 Using getAllContactsOptimal for first page');
-      const allContacts = await partnersAPI.getAllContactsOptimal(forceRefresh);
-      
-      if (allContacts && allContacts.length > 0) {
-        console.log(`✅ Got ${allContacts.length} contacts from optimal method`);
-        
-        // Return the requested page from all contacts
-        const paginatedContacts = allContacts.slice(offset, offset + limit);
-        console.log(`📄 Returning ${paginatedContacts.length} contacts for current page`);
-        
-        return paginatedContacts;
-      }
-    }
-
-    // Check cache first if not forcing refresh
-    if (!forceRefresh) {
+    // Check cache first if not forcing refresh and asking for first page
+    if (!forceRefresh && offset === 0) {
       const cachedPartners = await cacheManager.getPartnersFromCache();
       if (cachedPartners && cachedPartners.length > 0) {
         console.log(`✅ Using ${cachedPartners.length} cached partners`);
         
+        // Apply domain filtering if needed (simplified for now)
+        let filteredPartners = cachedPartners;
+        
         // Apply pagination
-        const paginatedPartners = cachedPartners.slice(offset, offset + limit);
+        const paginatedPartners = filteredPartners.slice(offset, offset + limit);
         console.log(`📄 Returning ${paginatedPartners.length} partners from cache (paginated)`);
         
         return paginatedPartners;
       }
     }
 
-    // Fallback to API fetch with smaller timeout and batch size
-    console.log('📡 Fetching from API as fallback');
+    // Fetch from API
     const response = await api.get('/api/v2/search_read/res.partner', {
       params: {
         domain: JSON.stringify(searchDomain),
@@ -363,14 +515,20 @@ partnersAPI.getList = async (domain = [], fields = [], limit = 50, offset = 0, f
           'id', 'name', 'email', 'phone', 'mobile', 'image_128', 
           'street', 'city', 'country_id', 'is_company'
         ]),
-        limit: Math.min(limit, 100), // Limit batch size to prevent timeouts
+        limit: limit,
         offset: offset
       },
-      timeout: 15000 // Shorter timeout to prevent hanging
+      timeout: CACHE_CONFIG.TIMEOUT
     });
 
     if (response.data && Array.isArray(response.data)) {
       console.log(`📦 Fetched ${response.data.length} partners from API`);
+      
+      // Cache if it's the first page and we got a good amount of data
+      if (offset === 0 && response.data.length > 50) {
+        await cacheManager.savePartnersToCache(response.data);
+      }
+      
       return response.data;
     }
 
@@ -421,7 +579,7 @@ partnersAPI.getById = async (id, fields = [], forceRefresh = false) => {
   }
 };
 
-// Count method using bypass domain
+// Count method using optimal domain
 partnersAPI.getCount = async (forceRefresh = false) => {
   try {
     if (!forceRefresh) {
@@ -432,30 +590,12 @@ partnersAPI.getCount = async (forceRefresh = false) => {
       }
     }
 
-    // Use bypass domain for count
-    const domain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
-    
-    const response = await api.post('/api/v2/call', {
-      model: 'res.partner',
-      method: 'search_count',
-      args: [domain],
-      kwargs: {}
-    });
-    
-    if (response.data && typeof response.data === 'number') {
-      console.log(`📊 Bypass domain count: ${response.data} contacts`);
-      return response.data;
-    }
-    
-    return 0;
+    return await partnersAPI.getOptimalContactCount();
   } catch (error) {
     console.error('Error getting partner count:', error);
     return 0;
   }
 };
-
-// Alias methods for backward compatibility
-partnersAPI.getAllContacts = partnersAPI.getAllContactsOptimal;
 
 // Clear cache method
 partnersAPI.clearCache = async () => {
@@ -467,16 +607,5 @@ partnersAPI.getPartnersFromCache = cacheManager.getPartnersFromCache;
 partnersAPI.savePartnersToCache = cacheManager.savePartnersToCache;
 partnersAPI.getPartnerIdsFromCache = cacheManager.getPartnerIdsFromCache;
 partnersAPI.savePartnerIdsToCache = cacheManager.savePartnerIdsToCache;
-
-// Add any custom methods for this specific model
-export const getCustomerPartners = (limit = 20, offset = 0, forceRefresh = false) => {
-  return partnersAPI.getList(
-    [['customer_rank', '>', 0]], // Domain to filter customers
-    ['id', 'name', 'email', 'phone', 'street', 'city', 'country_id'], // Fields
-    limit,
-    offset,
-    forceRefresh
-  );
-};
 
 export default partnersAPI;

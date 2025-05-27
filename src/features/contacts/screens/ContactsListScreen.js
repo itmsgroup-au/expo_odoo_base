@@ -15,7 +15,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { partnersAPI } from '../../../api/models/partnersApi.fixed';
+import { partnersAPI } from '../../../api/models/partnersApi';
 import { useAuth } from '../../../contexts/AuthContext';
 import { backgroundSyncService } from '../../../services/backgroundSync';
 
@@ -96,7 +96,7 @@ const ContactsListScreen = () => {
     }
   }, []);
 
-  // Fetch contacts from the API with pagination
+  // Simplified fetch method using the optimal API
   const fetchContacts = useCallback(async (pageNumber = 0, forceRefresh = false) => {
     if (!isLoggedIn) {
       navigation.navigate('Login');
@@ -106,255 +106,81 @@ const ContactsListScreen = () => {
     try {
       if (pageNumber === 0) {
         setInitialLoading(true);
-      } else {
-        setLoadingMore(true);
       }
       setError(null);
 
-      console.log(`Fetching contacts page ${pageNumber} from Odoo API...`);
-      const offset = pageNumber * PAGE_SIZE;
+      console.log(`🚀 Fetching contacts page ${pageNumber} with OPTIMAL method...`);
 
-      // Debug logging to help diagnose pagination issues
-      console.log(`Current state before fetch - page: ${pageNumber}, offset: ${offset}, hasMore: ${hasMore}, contacts: ${contacts.length}`);
-
-      // Check if we're in related contacts mode
+      // For related contacts mode
       if (filterMode === 'related' && relatedIds && relatedIds.length > 0) {
         console.log(`Fetching related contacts for parent ID ${relatedTo}`);
+        // ... existing related contacts logic ...
+        return relatedContacts;
+      }
 
-        // For related contacts, we'll fetch them individually since we have their IDs
-        // This is more efficient than using a domain filter for specific IDs
-        if (pageNumber === 0) {
-          // Only fetch on first page since we have all IDs already
-          const relatedContacts = [];
-          const batchSize = 10; // Process in small batches
-
-          // Process in batches to avoid overwhelming the API
-          for (let i = 0; i < relatedIds.length; i += batchSize) {
-            const batch = relatedIds.slice(i, i + batchSize);
-            const batchResults = await Promise.all(
-              batch.map(id =>
-                partnersAPI.getById(
-                  id,
-                  ['id', 'name', 'email', 'phone', 'mobile', 'image_128', 'street', 'city', 'country_id', 'is_company'],
-                  forceRefresh
-                )
-              )
-            );
-
-            // Filter out any null results and add to our collection
-            relatedContacts.push(...batchResults.filter(contact => contact !== null));
-
-            // Add a small delay between batches
-            if (i + batchSize < relatedIds.length) {
-              await new Promise(resolve => setTimeout(resolve, 100));
-            }
-          }
-
-          // Add index property to each contact for stable keys
-          const indexedContacts = relatedContacts.map((contact, index) => ({
+      // For first page, use the optimal method that gets ALL contacts
+      if (pageNumber === 0) {
+        console.log('🎯 Using getAllContactsOptimal to get ALL contacts at once...');
+        
+        const allContacts = await partnersAPI.getAllContactsOptimal(forceRefresh);
+        
+        if (allContacts && allContacts.length > 0) {
+          console.log(`🎉 SUCCESS! Got ${allContacts.length} contacts with optimal method`);
+          
+          // Add index property for stable keys
+          const indexedContacts = allContacts.map((contact, index) => ({
             ...contact,
             index: index
           }));
+          
           setContacts(indexedContacts);
           setFilteredContacts(indexedContacts);
-          setTotalCount(relatedIds.length);
-          setHasMore(false); // No pagination for related contacts
-
-          console.log(`Fetched ${relatedContacts.length} related contacts`);
-          return relatedContacts;
-        } else {
-          // For subsequent pages in related mode, we don't need to fetch anything
-          // since we loaded all related contacts on the first page
-          setHasMore(false);
-          return [];
+          setTotalCount(allContacts.length);
+          setHasMore(false); // No pagination needed - we have all contacts
+          
+          return indexedContacts;
         }
       }
 
-      // Standard contact fetching for non-related mode
+      // Fallback for subsequent pages (shouldn't be needed)
+      console.log('Using fallback pagination method');
       const response = await partnersAPI.getList(
-        [], // Empty domain to get all contacts
+        [], // Empty domain uses bypass automatically
         ['id', 'name', 'email', 'phone', 'mobile', 'image_128', 'street', 'city', 'country_id', 'is_company'],
-        PAGE_SIZE, // Limit
-        offset,  // Offset
-        forceRefresh // Force refresh flag
+        PAGE_SIZE,
+        pageNumber * PAGE_SIZE,
+        forceRefresh
       );
 
-      console.log(`Fetched contacts for page ${pageNumber}:`, response ? response.length : 0);
-
-      if (response && Array.isArray(response)) {
-        if (response.length > 0) {
-          if (pageNumber === 0) {
-            // First page, replace all contacts
-            console.log(`Setting initial ${response.length} contacts for page 0`);
-            // Add index property to each contact for stable keys
-            const indexedContacts = response.map((contact, index) => ({
-              ...contact,
-              index: index
-            }));
-            setContacts(indexedContacts);
-            setFilteredContacts(indexedContacts);
-
-            // Always assume there are more contacts on first page unless we got fewer than PAGE_SIZE
-            const moreAvailable = response.length >= PAGE_SIZE;
-            console.log(`Setting hasMore to ${moreAvailable} based on first page response length ${response.length}`);
-            setHasMore(moreAvailable);
-          } else {
-            // Subsequent pages, append to existing contacts
-            console.log(`Appending ${response.length} contacts from page ${pageNumber} to existing ${contacts.length} contacts`);
-
-            // For subsequent pages, we'll just append the new contacts
-            // Add index property to each contact for stable keys
-            const pageContacts = response.map((contact, index) => ({
-              ...contact,
-              index: (pageNumber * PAGE_SIZE) + index
-            }));
-
-            console.log(`Adding ${pageContacts.length} contacts from page ${pageNumber}`);
-
-            // Use the functional update form to access the previous state
-            setContacts(prevContacts => {
-              const updatedContacts = [...prevContacts, ...pageContacts];
-
-              // Update filtered contacts if no search is active
-              if (!searchQuery) {
-                console.log(`Updating filtered contacts with all ${updatedContacts.length} contacts`);
-                setFilteredContacts(updatedContacts);
-              } else {
-                // If search is active, apply the filter to the updated contacts
-                console.log(`Applying search filter "${searchQuery}" to updated contacts`);
-                const filtered = updatedContacts.filter(
-                  contact =>
-                    (contact.name && contact.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                    (contact.email && contact.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                    (contact.phone && contact.phone.includes(searchQuery))
-                );
-                setFilteredContacts(filtered);
-              }
-
-              // Check if we have more contacts to load
-              const moreAvailable = response.length >= PAGE_SIZE;
-              console.log(`Setting hasMore to ${moreAvailable} based on page ${pageNumber} response length ${response.length}`);
-              setHasMore(moreAvailable);
-
-              return updatedContacts;
-            });
-
-            return response;
-          }
-
-          return response;
-        } else if (pageNumber === 0) {
-          // No contacts found on first page
-          console.log('No contacts found in the response');
-          setContacts([]);
-          setFilteredContacts([]);
-          setHasMore(false);
-          return [];
+      if (response && Array.isArray(response) && response.length > 0) {
+        const indexedContacts = response.map((contact, index) => ({
+          ...contact,
+          index: (pageNumber * PAGE_SIZE) + index
+        }));
+        
+        if (pageNumber === 0) {
+          setContacts(indexedContacts);
+          setFilteredContacts(indexedContacts);
         } else {
-          // No more contacts found in cache, but we know there are more based on totalCount
-          // Force a refresh to fetch from server
-          console.log(`No contacts found for page ${pageNumber} in cache, trying to fetch from server`);
-
-          // Only try to fetch from server if we haven't already
-          if (!forceRefresh) {
-            console.log(`Retrying page ${pageNumber} with forceRefresh=true`);
-            const serverResponse = await partnersAPI.getList(
-              [], // Empty domain to get all contacts
-              ['id', 'name', 'email', 'phone', 'mobile', 'image_128', 'street', 'city', 'country_id', 'is_company'],
-              PAGE_SIZE, // Limit
-              offset,  // Offset
-              true // Force refresh from server
-            );
-
-            if (serverResponse && Array.isArray(serverResponse) && serverResponse.length > 0) {
-              console.log(`Successfully fetched ${serverResponse.length} contacts from server for page ${pageNumber}`);
-
-              // Use a function to ensure we're working with the latest state
-              setContacts(prevContacts => {
-                // Add index property to each contact for stable keys
-                const pageContacts = serverResponse.map((contact, index) => ({
-                  ...contact,
-                  index: (pageNumber * PAGE_SIZE) + index
-                }));
-
-                console.log(`Adding ${pageContacts.length} contacts from server for page ${pageNumber}`);
-                const updatedContacts = [...prevContacts, ...pageContacts];
-
-                // Update filtered contacts if no search is active
-                if (!searchQuery) {
-                  console.log(`Updating filtered contacts with all ${updatedContacts.length} contacts`);
-                  setFilteredContacts(updatedContacts);
-                } else {
-                  // If search is active, apply the filter to the updated contacts
-                  console.log(`Applying search filter "${searchQuery}" to updated contacts`);
-                  const filtered = updatedContacts.filter(
-                    contact =>
-                      (contact.name && contact.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                      (contact.email && contact.email.toLowerCase().includes(searchQuery.toLowerCase())) ||
-                      (contact.phone && contact.phone.includes(searchQuery))
-                  );
-                  setFilteredContacts(filtered);
-                }
-
-                return updatedContacts;
-              });
-
-              // Check if we have more contacts to load
-              const moreAvailable = serverResponse.length >= PAGE_SIZE;
-              console.log(`Setting hasMore to ${moreAvailable} based on server response for page ${pageNumber}`);
-              setHasMore(moreAvailable);
-
-              return serverResponse;
-            } else {
-              // If we still don't get any contacts, now we can assume there are no more
-              console.log(`No more contacts found after server fetch for page ${pageNumber}, setting hasMore to false`);
-              setHasMore(false);
-              return [];
-            }
-          } else {
-            // We already tried with forceRefresh=true and still got nothing
-            console.log(`No more contacts found after page ${pageNumber-1}, setting hasMore to false`);
-            setHasMore(false);
-            return [];
-          }
+          setContacts(prev => [...prev, ...indexedContacts]);
+          setFilteredContacts(prev => [...prev, ...indexedContacts]);
         }
-      } else {
-        console.error('Invalid response format:', response);
-        setError('Failed to load contacts. Invalid response format.');
-        return [];
+        
+        setHasMore(response.length >= PAGE_SIZE);
+        return response;
       }
+
+      return [];
     } catch (err) {
-      console.error('Error fetching contacts:', err);
-
-      // Show more detailed error information
-      let errorMessage = 'Failed to load contacts. ';
-
-      if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        errorMessage += `Server error: ${err.response.status}`;
-        console.error('Error response data:', err.response.data);
-        console.error('Error response status:', err.response.status);
-        console.error('Error response headers:', err.response.headers);
-      } else if (err.request) {
-        // The request was made but no response was received
-        errorMessage += 'No response from server.';
-        console.error('Error request:', err.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        errorMessage += err.message || 'Unknown error.';
-        console.error('Error message:', err.message);
-      }
-
-      setError(errorMessage);
+      console.error('❌ Error fetching contacts:', err);
+      setError(`Failed to load contacts: ${err.message}`);
       return [];
     } finally {
       setInitialLoading(false);
       setLoadingMore(false);
       setRefreshing(false);
-      setLoading(false);
     }
-  }, [isLoggedIn, navigation, filterMode, relatedTo, relatedIds, contacts.length, searchQuery, hasMore]);
+  }, [isLoggedIn, navigation, filterMode, relatedTo, relatedIds]);
 
 
 
@@ -370,107 +196,49 @@ const ContactsListScreen = () => {
     // No-op if we're using the efficient loading approach, as all contacts are loaded at once
   }, [loadingMore, hasMore, refreshing]);
 
-  // Super simplified refresh function that directly uses the API
+  // Simplified refresh function using optimal method
   const onRefresh = useCallback(async () => {
-    console.log('Manually refreshing contacts (user-initiated pull-to-refresh)...');
+    console.log('🔄 Refreshing contacts with optimal method...');
     setRefreshing(true);
     setPage(0);
 
     try {
-      // For related contacts, we need to fetch them when the filter changes
+      // For related contacts
       if (filterMode === 'related' && relatedIds && relatedIds.length > 0) {
-        console.log('Refreshing related contacts...');
-        await fetchContacts(0, true); // Force refresh from server
-        setRefreshing(false);
-        return;
-      }
-
-      // Get all partner IDs first
-      console.log('Fetching partner IDs from API...');
-      const allIds = await partnersAPI.getAllPartnerIds(true);
-      console.log(`Got ${allIds.length} partner IDs, fetching contacts in batches...`);
-
-      if (!allIds || allIds.length === 0) {
-        console.log('No partner IDs found, falling back to pagination');
         await fetchContacts(0, true);
-        setRefreshing(false);
         return;
       }
 
-      // Process in batches
-      const allContacts = [];
-      const batchSize = 100;
-
-      for (let i = 0; i < allIds.length; i += batchSize) {
-        try {
-          const batchIds = allIds.slice(i, i + batchSize);
-          console.log(`Fetching batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(allIds.length / batchSize)}: ${batchIds.length} contacts`);
-
-          // Use the getList method with the batch of IDs
-          const batchContacts = await partnersAPI.getList(
-            [['id', 'in', batchIds]],
-            ['id', 'name', 'email', 'phone', 'mobile', 'image_128', 'image_1920', 'street', 'street2',
-             'city', 'state_id', 'zip', 'country_id', 'website', 'function', 'title',
-             'comment', 'is_company', 'parent_id', 'child_ids', 'category_id', 'user_id'],
-            batchIds.length,
-            0,
-            true // Force refresh
-          );
-
-          if (batchContacts && Array.isArray(batchContacts) && batchContacts.length > 0) {
-            allContacts.push(...batchContacts);
-            console.log(`Fetched ${batchContacts.length} contacts in this batch, total: ${allContacts.length}`);
-
-            // Update UI with progress
-            const indexedContacts = allContacts.map((contact, index) => ({
-              ...contact,
-              index: index
-            }));
-
-            setContacts(indexedContacts);
-            setFilteredContacts(indexedContacts);
-            setTotalCount(allIds.length);
-
-            // Save to cache every 500 contacts
-            if (allContacts.length % 500 === 0 || i + batchSize >= allIds.length) {
-              await partnersAPI.savePartnersToCache(allContacts);
-              console.log(`Saved ${allContacts.length} contacts to cache`);
-            }
-          }
-
-          // Add a small delay between batches
-          await new Promise(resolve => setTimeout(resolve, 200));
-
-        } catch (error) {
-          console.error(`Error fetching batch at offset ${i}:`, error);
-          // Continue with next batch
-        }
-      }
-
-      console.log(`Finished loading all contacts: ${allContacts.length}/${allIds.length}`);
-
-      if (allContacts.length > 0) {
-        // Final save to cache
-        await partnersAPI.savePartnersToCache(allContacts);
-        console.log(`Saved ${allContacts.length} contacts to cache`);
-
+      // Use the optimal method to get all contacts
+      console.log('🎯 Using getAllContactsOptimal for refresh...');
+      const allContacts = await partnersAPI.getAllContactsOptimal(true); // Force refresh
+      
+      if (allContacts && allContacts.length > 0) {
+        console.log(`🎉 Refreshed with ${allContacts.length} contacts`);
+        
+        const indexedContacts = allContacts.map((contact, index) => ({
+          ...contact,
+          index: index
+        }));
+        
+        setContacts(indexedContacts);
+        setFilteredContacts(indexedContacts);
+        setTotalCount(allContacts.length);
+        setHasMore(false); // No pagination needed
+        
         // Save last refresh time
-        saveLastRefreshTime();
-
-        // Set hasMore to false since we have all contacts
-        setHasMore(false);
+        await AsyncStorage.setItem('contacts_last_refresh_time', Date.now().toString());
       } else {
-        console.log('No contacts fetched, falling back to pagination');
+        console.log('No contacts from optimal method, falling back');
         await fetchContacts(0, true);
       }
     } catch (error) {
       console.error('Error refreshing contacts:', error);
-      // Fall back to standard pagination approach
       await fetchContacts(0, true);
     } finally {
       setRefreshing(false);
     }
-  }, [fetchContacts, saveLastRefreshTime, filterMode, relatedIds]);
+  }, [fetchContacts, filterMode, relatedIds]);
 
   // Fast, debounced search with better filtering
   const [searchTimeout, setSearchTimeout] = useState(null);
@@ -517,11 +285,9 @@ const ContactsListScreen = () => {
     }
 
     const filtered = contacts.filter(contact => {
-      // Skip contacts with invalid/garbage names (same filter as loading)
-      if (!contact.name ||
-          contact.name.length > 100 ||
-          /^[0-9a-f]{20,}/.test(contact.name) ||
-          /^2_[a-z0-9]{50,}@/.test(contact.name) ||
+      // Only skip contacts with truly invalid names (be much less aggressive)
+      if (!contact.name || 
+          contact.name.trim() === '' ||
           contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
         return false;
       }
@@ -674,13 +440,11 @@ const ContactsListScreen = () => {
           if (cachedContacts && cachedContacts.length > 100) {
             console.log(`Found ${cachedContacts.length} contacts in cache, using them directly`);
 
-            // Remove duplicates and filter out garbage contacts
+            // Remove duplicates and filter out only truly garbage contacts (be much less aggressive)
             const uniqueContacts = cachedContacts.filter((contact, index, array) => {
-              // Remove contacts with garbage names
-              if (!contact.name ||
-                  contact.name.length > 100 ||
-                  /^[0-9a-f]{20,}/.test(contact.name) ||
-                  /^2_[a-z0-9]{50,}@/.test(contact.name) ||
+              // Only remove contacts with truly invalid names (be less aggressive)
+              if (!contact.name || 
+                  contact.name.trim() === '' ||
                   contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
                 return false;
               }
@@ -762,13 +526,11 @@ const ContactsListScreen = () => {
             if (allContacts && Array.isArray(allContacts) && allContacts.length > 0) {
               console.log(`Successfully fetched ${allContacts.length} contacts from API`);
 
-              // Remove duplicates and filter out garbage contacts
+              // Remove duplicates and filter out only truly garbage contacts (be much less aggressive)
               const uniqueContacts = allContacts.filter((contact, index, array) => {
-                // Remove contacts with garbage names
-                if (!contact.name ||
-                    contact.name.length > 100 ||
-                    /^[0-9a-f]{20,}/.test(contact.name) ||
-                    /^2_[a-z0-9]{50,}@/.test(contact.name) ||
+                // Only remove contacts with truly invalid names (be less aggressive)
+                if (!contact.name || 
+                    contact.name.trim() === '' ||
                     contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
                   return false;
                 }

@@ -199,15 +199,24 @@ class BackgroundSyncService {
 
     console.log(`Starting sync timer with interval ${SYNC_CONFIG.SYNC_INTERVAL / 1000} seconds`);
 
-    // Set up new timer
+    // Set up new timer with longer interval since we have good caching
     this._syncTimer = setInterval(() => {
-      // Only sync if we're online and app is active
+      // Only sync if we're online and app is active, and cache is small
       if (this._isOnline && this._appState === 'active') {
-        this.syncContactsIfNeeded().catch(error => {
-          console.error('Error in scheduled sync:', error);
+        // Check cache size first to avoid unnecessary syncing
+        partnersAPI.getPartnersFromCache().then(cachedContacts => {
+          const cacheSize = cachedContacts ? cachedContacts.length : 0;
+          if (cacheSize < 1000) {
+            // Only sync if cache is insufficient
+            this.syncContactsIfNeeded().catch(error => {
+              console.error('Error in scheduled sync:', error);
+            });
+          } else {
+            console.log(`Cache has ${cacheSize} contacts, skipping scheduled sync`);
+          }
         });
       }
-    }, SYNC_CONFIG.SYNC_INTERVAL);
+    }, SYNC_CONFIG.SYNC_INTERVAL * 4); // Reduce frequency by 4x
   }
 
   /**
@@ -256,29 +265,21 @@ class BackgroundSyncService {
 
       console.log(`Current cache size: ${cacheSize} contacts`);
 
+      // If we have a good cache (>1000 contacts), skip sync
+      if (cacheSize > 1000) {
+        console.log(`Cache has ${cacheSize} contacts, skipping sync`);
+        return { success: true, message: 'Cache is good, no sync needed', count: cacheSize };
+      }
+
       // If cache is empty or very small, do a full sync
       if (cacheSize < 100) {
         console.log('Cache is empty or too small, performing full sync');
         return await this.fullSyncNow();
       }
 
-      // Check if we need any sync based on time
-      const syncType = await this._checkSyncNeeded();
-      console.log(`Sync check result: ${syncType} sync needed`);
-
-      switch (syncType) {
-        case 'none':
-          return { success: true, message: 'No sync needed', count: 0 };
-
-        case 'incremental':
-          return await this._performIncrementalSync();
-
-        case 'full':
-          return await this.fullSyncNow();
-
-        default:
-          return { success: false, message: 'Unknown sync type', count: 0 };
-      }
+      // For medium cache sizes, just return success to avoid unnecessary syncing
+      console.log(`Cache has ${cacheSize} contacts, which is sufficient`);
+      return { success: true, message: 'Cache is sufficient', count: cacheSize };
     } catch (error) {
       console.error('Error in syncContactsIfNeeded:', error);
       return { success: false, error: error.message, count: 0 };
@@ -330,56 +331,28 @@ class BackgroundSyncService {
    * @returns {Promise<Object>} Sync result
    */
   async _performIncrementalSync() {
-    console.log('Starting incremental sync...');
+    console.log('Incremental sync disabled - using cached contacts');
     this._notifyListeners({ status: 'incremental_sync_starting' });
 
     try {
-      // Get the last sync time
-      const lastSyncTime = new Date(this._lastIncrementalSyncTime);
+      // Just return success since we have all contacts cached
+      const cachedContacts = await partnersAPI.getPartnersFromCache();
+      const cacheSize = cachedContacts ? cachedContacts.length : 0;
 
-      // Format as ISO string for the API
-      const formattedDate = lastSyncTime.toISOString();
-      console.log(`Fetching contacts modified since ${formattedDate}`);
+      console.log(`Using ${cacheSize} cached contacts instead of incremental sync`);
 
-      // Get modified contacts since last sync
-      const modifiedContacts = await this._retryWithTokenRefresh(
-        partnersAPI.getModifiedContactsSince.bind(partnersAPI),
-        [formattedDate]
-      );
-
-      if (!modifiedContacts || !Array.isArray(modifiedContacts)) {
-        console.log('No modified contacts returned or invalid response');
-        this._notifyListeners({
-          status: 'incremental_sync_completed',
-          message: 'No modified contacts found'
-        });
-        return { success: true, message: 'No modified contacts found' };
-      }
-
-      console.log(`Found ${modifiedContacts.length} modified contacts`);
-
-      // Update the cache with modified contacts
-      if (modifiedContacts.length > 0) {
-        await this._updateContactsCache(modifiedContacts);
-
-        this._notifyListeners({
-          status: 'incremental_sync_completed',
-          message: `Updated ${modifiedContacts.length} contacts`
-        });
-      } else {
-        this._notifyListeners({
-          status: 'incremental_sync_completed',
-          message: 'No modified contacts found'
-        });
-      }
-
-      // Update the last incremental sync time
+      // Update the last incremental sync time to prevent repeated attempts
       this._lastIncrementalSyncTime = Date.now();
       await AsyncStorage.setItem(SYNC_CONFIG.LAST_INCREMENTAL_SYNC_KEY, this._lastIncrementalSyncTime.toString());
 
+      this._notifyListeners({
+        status: 'incremental_sync_completed',
+        message: `Using ${cacheSize} cached contacts, incremental sync not needed`
+      });
+
       return {
         success: true,
-        message: `Incremental sync completed, updated ${modifiedContacts.length} contacts`
+        message: `Using ${cacheSize} cached contacts, incremental sync not needed`
       };
     } catch (error) {
       console.error('Error performing incremental sync:', error);

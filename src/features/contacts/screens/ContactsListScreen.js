@@ -121,23 +121,23 @@ const ContactsListScreen = () => {
       // For first page, use the optimal method that gets ALL contacts
       if (pageNumber === 0) {
         console.log('🎯 Using getAllContactsOptimal to get ALL contacts at once...');
-        
+
         const allContacts = await partnersAPI.getAllContactsOptimal(forceRefresh);
-        
+
         if (allContacts && allContacts.length > 0) {
           console.log(`🎉 SUCCESS! Got ${allContacts.length} contacts with optimal method`);
-          
+
           // Add index property for stable keys
           const indexedContacts = allContacts.map((contact, index) => ({
             ...contact,
             index: index
           }));
-          
+
           setContacts(indexedContacts);
           setFilteredContacts(indexedContacts);
           setTotalCount(allContacts.length);
           setHasMore(false); // No pagination needed - we have all contacts
-          
+
           return indexedContacts;
         }
       }
@@ -157,7 +157,7 @@ const ContactsListScreen = () => {
           ...contact,
           index: (pageNumber * PAGE_SIZE) + index
         }));
-        
+
         if (pageNumber === 0) {
           setContacts(indexedContacts);
           setFilteredContacts(indexedContacts);
@@ -165,7 +165,7 @@ const ContactsListScreen = () => {
           setContacts(prev => [...prev, ...indexedContacts]);
           setFilteredContacts(prev => [...prev, ...indexedContacts]);
         }
-        
+
         setHasMore(response.length >= PAGE_SIZE);
         return response;
       }
@@ -184,17 +184,20 @@ const ContactsListScreen = () => {
 
 
 
-  // Simplified load more function - not needed with our new approach but kept for compatibility
+  // Simplified load more function - disabled since we load all contacts at once
   const handleLoadMore = useCallback(() => {
-    // With the new approach, all contacts should be loaded at once from cache
-    // This function is kept for compatibility with the FlatList component
-    if (loadingMore || !hasMore || refreshing) {
+    // With the new approach, all contacts are loaded at once from cache
+    // No need for pagination anymore
+    if (loadingMore || !hasMore || refreshing || contacts.length > 1000) {
       return;
     }
 
-    console.log('handleLoadMore called - but should not be needed with new approach');
-    // No-op if we're using the efficient loading approach, as all contacts are loaded at once
-  }, [loadingMore, hasMore, refreshing]);
+    // Only load more if we have very few contacts (fallback case)
+    if (contacts.length < 100) {
+      console.log('Very few contacts loaded, attempting to load more...');
+      fetchContacts(Math.floor(contacts.length / PAGE_SIZE), false);
+    }
+  }, [loadingMore, hasMore, refreshing, contacts.length, fetchContacts]);
 
   // Simplified refresh function using optimal method
   const onRefresh = useCallback(async () => {
@@ -212,20 +215,20 @@ const ContactsListScreen = () => {
       // Use the optimal method to get all contacts
       console.log('🎯 Using getAllContactsOptimal for refresh...');
       const allContacts = await partnersAPI.getAllContactsOptimal(true); // Force refresh
-      
+
       if (allContacts && allContacts.length > 0) {
         console.log(`🎉 Refreshed with ${allContacts.length} contacts`);
-        
+
         const indexedContacts = allContacts.map((contact, index) => ({
           ...contact,
           index: index
         }));
-        
+
         setContacts(indexedContacts);
         setFilteredContacts(indexedContacts);
         setTotalCount(allContacts.length);
         setHasMore(false); // No pagination needed
-        
+
         // Save last refresh time
         await AsyncStorage.setItem('contacts_last_refresh_time', Date.now().toString());
       } else {
@@ -286,7 +289,7 @@ const ContactsListScreen = () => {
 
     const filtered = contacts.filter(contact => {
       // Only skip contacts with truly invalid names (be much less aggressive)
-      if (!contact.name || 
+      if (!contact.name ||
           contact.name.trim() === '' ||
           contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
         return false;
@@ -443,7 +446,7 @@ const ContactsListScreen = () => {
             // Remove duplicates and filter out only truly garbage contacts (be much less aggressive)
             const uniqueContacts = cachedContacts.filter((contact, index, array) => {
               // Only remove contacts with truly invalid names (be less aggressive)
-              if (!contact.name || 
+              if (!contact.name ||
                   contact.name.trim() === '' ||
                   contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
                 return false;
@@ -529,7 +532,7 @@ const ContactsListScreen = () => {
               // Remove duplicates and filter out only truly garbage contacts (be much less aggressive)
               const uniqueContacts = allContacts.filter((contact, index, array) => {
                 // Only remove contacts with truly invalid names (be less aggressive)
-                if (!contact.name || 
+                if (!contact.name ||
                     contact.name.trim() === '' ||
                     contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
                   return false;

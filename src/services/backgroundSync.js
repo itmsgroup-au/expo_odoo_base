@@ -250,12 +250,25 @@ class BackgroundSyncService {
    */
   async syncContactsIfNeeded() {
     try {
+      // Always check if we have a good cache first
+      const cachedContacts = await partnersAPI.getPartnersFromCache();
+      const cacheSize = cachedContacts ? cachedContacts.length : 0;
+
+      console.log(`Current cache size: ${cacheSize} contacts`);
+
+      // If cache is empty or very small, do a full sync
+      if (cacheSize < 100) {
+        console.log('Cache is empty or too small, performing full sync');
+        return await this.fullSyncNow();
+      }
+
+      // Check if we need any sync based on time
       const syncType = await this._checkSyncNeeded();
       console.log(`Sync check result: ${syncType} sync needed`);
 
       switch (syncType) {
         case 'none':
-          return { success: true, message: 'No sync needed' };
+          return { success: true, message: 'No sync needed', count: 0 };
 
         case 'incremental':
           return await this._performIncrementalSync();
@@ -264,11 +277,11 @@ class BackgroundSyncService {
           return await this.fullSyncNow();
 
         default:
-          return { success: false, message: 'Unknown sync type' };
+          return { success: false, message: 'Unknown sync type', count: 0 };
       }
     } catch (error) {
       console.error('Error in syncContactsIfNeeded:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, count: 0 };
     }
   }
 
@@ -452,7 +465,8 @@ class BackgroundSyncService {
       console.log('Full sync already in progress');
       return {
         success: false,
-        message: 'Full sync already in progress'
+        message: 'Full sync already in progress',
+        count: 0
       };
     }
 
@@ -467,7 +481,8 @@ class BackgroundSyncService {
       console.log('Cannot start full sync: offline');
       return {
         success: false,
-        message: 'Cannot start full sync: offline'
+        message: 'Cannot start full sync: offline',
+        count: 0
       };
     }
 
@@ -477,24 +492,35 @@ class BackgroundSyncService {
       console.log(`Cannot start full sync: not enough free space (${Math.round(freeSpace / (1024 * 1024))}MB)`);
       return {
         success: false,
-        message: `Not enough free space (${Math.round(freeSpace / (1024 * 1024))}MB)`
+        message: `Not enough free space (${Math.round(freeSpace / (1024 * 1024))}MB)`,
+        count: 0
       };
     }
 
-    // Get the total count of contacts with retry mechanism
-    const totalCount = await this._retryWithTokenRefresh(
-      partnersAPI.getCount.bind(partnersAPI),
-      [true]
-    );
-    console.log(`Total contacts on server: ${totalCount}`);
+    try {
+      // Get the total count of contacts with retry mechanism
+      const totalCount = await this._retryWithTokenRefresh(
+        partnersAPI.getCount.bind(partnersAPI),
+        [true]
+      );
+      console.log(`Total contacts on server: ${totalCount}`);
 
-    // Start the full sync
-    this._startFullSync(totalCount);
+      // Start the full sync and wait for it to complete
+      const syncResult = await this._performFullSyncAndWait(totalCount);
 
-    return {
-      success: true,
-      message: `Started full sync of ${totalCount} contacts`
-    };
+      return {
+        success: syncResult.success,
+        message: syncResult.message,
+        count: syncResult.count || 0
+      };
+    } catch (error) {
+      console.error('Error in fullSyncNow:', error);
+      return {
+        success: false,
+        message: error.message,
+        count: 0
+      };
+    }
   }
 
   /**

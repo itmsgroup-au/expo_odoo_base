@@ -472,22 +472,130 @@ const ContactsListScreen = () => {
     }
   }, [fetchContacts, saveLastRefreshTime, filterMode, relatedIds]);
 
-  // Filter contacts based on search query
-  const handleSearch = useCallback((text) => {
-    setSearchQuery(text);
-    if (text.trim() === '') {
+  // Fast, debounced search with better filtering
+  const [searchTimeout, setSearchTimeout] = useState(null);
+
+  const performSearch = useCallback((searchTerm) => {
+    console.log(`=== SEARCH DEBUG START ===`);
+    console.log(`Search term: "${searchTerm}"`);
+    console.log(`Total contacts available: ${contacts.length}`);
+
+    if (searchTerm.trim() === '') {
+      console.log(`Empty search, showing all ${contacts.length} contacts`);
       setFilteredContacts(contacts);
-    } else {
-      const filtered = contacts.filter(
-        contact =>
-          (contact.name && contact.name.toLowerCase().includes(text.toLowerCase())) ||
-          (contact.email && contact.email.toLowerCase().includes(text.toLowerCase())) ||
-          (contact.phone && contact.phone.includes(text))
-      );
-      setFilteredContacts(filtered);
+      return;
     }
+
+    const term = searchTerm.toLowerCase().trim();
+    const startTime = Date.now();
+
+    // Debug: Show some sample contact names to verify data
+    if (contacts.length > 0) {
+      const sampleNames = contacts.slice(0, 10).map(c => c.name || 'NO_NAME').join(', ');
+      console.log(`Sample contact names: ${sampleNames}`);
+
+      // Show last 10 contacts too (to see if we have Z names)
+      const lastSampleNames = contacts.slice(-10).map(c => c.name || 'NO_NAME').join(', ');
+      console.log(`Last 10 contact names: ${lastSampleNames}`);
+
+      // Check if we have contacts starting with the search term
+      const contactsStartingWith = contacts.filter(c => c.name && c.name.toLowerCase().startsWith(term.toLowerCase()));
+      console.log(`Contacts starting with "${term}": ${contactsStartingWith.length}`);
+
+      // Check for exact matches
+      const exactMatches = contacts.filter(c => c.name && c.name.toLowerCase() === term.toLowerCase());
+      console.log(`Exact matches for "${term}": ${exactMatches.length}`);
+
+      // Check for partial matches (contains)
+      const partialMatches = contacts.filter(c => c.name && c.name.toLowerCase().includes(term.toLowerCase()));
+      console.log(`Partial matches for "${term}": ${partialMatches.length}`);
+      if (partialMatches.length > 0) {
+        console.log(`First few partial matches:`, partialMatches.slice(0, 5).map(c => c.name));
+      }
+    } else {
+      console.log(`NO CONTACTS AVAILABLE FOR SEARCH!`);
+    }
+
+    const filtered = contacts.filter(contact => {
+      // Skip contacts with invalid/garbage names (same filter as loading)
+      if (!contact.name ||
+          contact.name.length > 100 ||
+          /^[0-9a-f]{20,}/.test(contact.name) ||
+          /^2_[a-z0-9]{50,}@/.test(contact.name) ||
+          contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
+        return false;
+      }
+
+      // Fast name search (most common)
+      if (contact.name.toLowerCase().includes(term)) {
+        return true;
+      }
+
+      // Email search
+      if (contact.email && contact.email.toLowerCase().includes(term)) {
+        return true;
+      }
+
+      // Phone search (simplified)
+      if (contact.phone && contact.phone.includes(term)) {
+        return true;
+      }
+
+      // Mobile search (simplified)
+      if (contact.mobile && contact.mobile.includes(term)) {
+        return true;
+      }
+
+      return false;
+    });
+
+    const searchTime = Date.now() - startTime;
+    console.log(`Search "${searchTerm}" found ${filtered.length} results in ${searchTime}ms`);
+
+    // Debug: Show first few results
+    if (filtered.length > 0) {
+      const resultNames = filtered.slice(0, 5).map(c => c.name).join(', ');
+      console.log(`First few results: ${resultNames}`);
+    } else {
+      console.log(`NO RESULTS FOUND for "${searchTerm}"`);
+    }
+
+    console.log(`=== SEARCH DEBUG END ===`);
+    setFilteredContacts(filtered);
   }, [contacts]);
 
+  const handleSearch = useCallback((text) => {
+    setSearchQuery(text);
+
+    // Clear existing timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+
+    // Debounce search for better performance
+    const timeout = setTimeout(() => {
+      performSearch(text);
+    }, 150); // 150ms debounce
+
+    setSearchTimeout(timeout);
+  }, [searchTimeout, performSearch]);
+
+  // Ensure filteredContacts is updated when contacts change
+  useEffect(() => {
+    if (contacts.length > 0 && filteredContacts.length === 0 && !searchQuery) {
+      console.log(`Updating filteredContacts with ${contacts.length} contacts (was empty)`);
+      setFilteredContacts(contacts);
+    }
+  }, [contacts, filteredContacts.length, searchQuery]);
+
+  // Cleanup search timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+    };
+  }, [searchTimeout]);
 
   // Initialize data on first load
   useEffect(() => {
@@ -541,31 +649,83 @@ const ContactsListScreen = () => {
     useCallback(() => {
       const loadContacts = async () => {
         try {
-          setInitialLoading(true);
-
           // For related contacts, we need to fetch them when the filter changes
           if (filterMode === 'related' && relatedIds && relatedIds.length > 0) {
             console.log('Loading related contacts...');
+            setInitialLoading(true);
             fetchContacts(0, false); // Use cache if available
             return;
           }
 
-          // First, check if we have a valid cache
+          // Debug: Check user access and permissions
+          try {
+            const userInfo = await partnersAPI.getCurrentUserInfo();
+            console.log('Current user info:', userInfo);
+
+            // Check access rights for res.partner model
+            const accessRights = await partnersAPI.checkAccessRights('res.partner', 'read');
+            console.log('User access rights for res.partner:', accessRights);
+          } catch (error) {
+            console.log('Could not check user permissions:', error.message);
+          }
+
+          // First, check if we have a valid cache - NO LOADING SPINNER
           const cachedContacts = await partnersAPI.getPartnersFromCache();
           if (cachedContacts && cachedContacts.length > 100) {
             console.log(`Found ${cachedContacts.length} contacts in cache, using them directly`);
 
+            // Remove duplicates and filter out garbage contacts
+            const uniqueContacts = cachedContacts.filter((contact, index, array) => {
+              // Remove contacts with garbage names
+              if (!contact.name ||
+                  contact.name.length > 100 ||
+                  /^[0-9a-f]{20,}/.test(contact.name) ||
+                  /^2_[a-z0-9]{50,}@/.test(contact.name) ||
+                  contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
+                return false;
+              }
+
+              // Remove duplicates by ID (keep first occurrence)
+              return array.findIndex(c => c.id === contact.id) === index;
+            });
+
+            // Sort contacts alphabetically by name
+            const sortedContacts = uniqueContacts.sort((a, b) => {
+              const nameA = (a.name || '').toLowerCase();
+              const nameB = (b.name || '').toLowerCase();
+              return nameA.localeCompare(nameB);
+            });
+
+            console.log(`Filtered ${cachedContacts.length} contacts down to ${sortedContacts.length} unique, clean contacts`);
+
             // Add index property to each contact for stable keys
-            const indexedContacts = cachedContacts.map((contact, index) => ({
+            const indexedContacts = sortedContacts.map((contact, index) => ({
               ...contact,
               index: index
             }));
 
-            // Update state
+            // Update state immediately - no loading spinner
+            console.log(`Setting contacts state with ${indexedContacts.length} contacts (sorted alphabetically)`);
+
+            // Debug: Show contact name distribution
+            const namesByLetter = {};
+            indexedContacts.forEach(contact => {
+              if (contact.name) {
+                const firstLetter = contact.name.charAt(0).toUpperCase();
+                namesByLetter[firstLetter] = (namesByLetter[firstLetter] || 0) + 1;
+              }
+            });
+            console.log('Contact distribution by first letter:', JSON.stringify(namesByLetter, null, 2));
+
+            // Check for specific names
+            const zulContacts = indexedContacts.filter(c => c.name && c.name.toLowerCase().includes('zul'));
+            console.log(`Contacts containing "zul": ${zulContacts.length}`, zulContacts.map(c => c.name));
+
             setContacts(indexedContacts);
             setFilteredContacts(indexedContacts);
             setTotalCount(cachedContacts.length);
             setHasMore(false);
+            console.log(`State updated: contacts=${indexedContacts.length}, filteredContacts=${indexedContacts.length}, totalCount=${cachedContacts.length}`);
 
             // Check if we need to do a background sync based on time
             const needsSync = await shouldRefreshContacts();
@@ -580,6 +740,7 @@ const ContactsListScreen = () => {
           } else {
             // If cache is empty or has too few contacts, use the API's getAllContacts method directly
             console.log('Cache is empty or has too few contacts, fetching all contacts from API');
+            setInitialLoading(true);
 
             // Get all contacts at once - this will continue until all contacts are downloaded
             const allContacts = await partnersAPI.getAllContacts(true);
@@ -587,8 +748,32 @@ const ContactsListScreen = () => {
             if (allContacts && Array.isArray(allContacts) && allContacts.length > 0) {
               console.log(`Successfully fetched ${allContacts.length} contacts from API`);
 
+              // Remove duplicates and filter out garbage contacts
+              const uniqueContacts = allContacts.filter((contact, index, array) => {
+                // Remove contacts with garbage names
+                if (!contact.name ||
+                    contact.name.length > 100 ||
+                    /^[0-9a-f]{20,}/.test(contact.name) ||
+                    /^2_[a-z0-9]{50,}@/.test(contact.name) ||
+                    contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
+                  return false;
+                }
+
+                // Remove duplicates by ID (keep first occurrence)
+                return array.findIndex(c => c.id === contact.id) === index;
+              });
+
+              // Sort contacts alphabetically by name
+              const sortedContacts = uniqueContacts.sort((a, b) => {
+                const nameA = (a.name || '').toLowerCase();
+                const nameB = (b.name || '').toLowerCase();
+                return nameA.localeCompare(nameB);
+              });
+
+              console.log(`Filtered ${allContacts.length} contacts down to ${sortedContacts.length} unique, clean contacts`);
+
               // Add index property to each contact for stable keys
-              const indexedContacts = allContacts.map((contact, index) => ({
+              const indexedContacts = sortedContacts.map((contact, index) => ({
                 ...contact,
                 index: index
               }));
@@ -605,13 +790,14 @@ const ContactsListScreen = () => {
               console.log('No contacts returned from API, falling back to pagination');
               fetchContacts(0, true);
             }
+
+            setInitialLoading(false);
           }
         } catch (error) {
           console.error('Error loading contacts:', error);
+          setInitialLoading(false);
           // Fall back to standard pagination approach
           fetchContacts(0, true);
-        } finally {
-          setInitialLoading(false);
         }
       };
 
@@ -813,10 +999,10 @@ const ContactsListScreen = () => {
           ItemSeparatorComponent={() => <View style={styles.separator} />}
           showsVerticalScrollIndicator={false}
           extraData={[loadingMore, page, filteredContacts.length]}
-          initialNumToRender={20}
-          maxToRenderPerBatch={20}
-          windowSize={21}
-          removeClippedSubviews={true}
+          initialNumToRender={50}
+          maxToRenderPerBatch={50}
+          windowSize={10}
+          removeClippedSubviews={false}
           getItemLayout={(_, index) => (
             {length: 74, offset: 74 * index, index}
           )}

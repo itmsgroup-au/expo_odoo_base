@@ -390,8 +390,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   logo: {
-    width: 560,
-    height: 240,
+    width: 448,
+    height: 192,
     marginBottom: 5,
   },
   formContainer: {

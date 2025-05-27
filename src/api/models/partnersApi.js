@@ -997,6 +997,8 @@ partnersAPI.getAllContacts = async (forceRefresh = false) => {
 
         console.log(`Fetching batch of ${currentBatchSize} contacts at offset ${currentOffset}`);
 
+        console.log(`API Request - Domain: ${JSON.stringify([])}, Limit: ${currentBatchSize}, Offset: ${currentOffset}`);
+
         const response = await api.get('/api/v2/search_read/res.partner', {
           params: {
             domain: JSON.stringify([]),
@@ -1006,6 +1008,8 @@ partnersAPI.getAllContacts = async (forceRefresh = false) => {
           },
           timeout: CACHE_CONFIG.TIMEOUT
         });
+
+        console.log(`API Response - Got ${response.data ? response.data.length : 0} contacts for offset ${currentOffset}`);
 
         if (response.data && Array.isArray(response.data) && response.data.length > 0) {
           allContacts.push(...response.data);
@@ -1273,6 +1277,27 @@ partnersAPI.searchRead = async (model, domain, fields, limit, offset, forceRefre
   // Use console.log instead of console.warn to prevent screen display
   console.log(`[WARNING] All attempts to search ${model} failed, returning empty array`);
   return [];
+};
+
+// Add methods to check user permissions and access
+partnersAPI.getCurrentUserInfo = async () => {
+  try {
+    const response = await api.get('/api/v2/user');
+    return response.data;
+  } catch (error) {
+    console.error('Error getting current user info:', error);
+    throw error;
+  }
+};
+
+partnersAPI.checkAccessRights = async (model, operation) => {
+  try {
+    const response = await api.get(`/api/v2/access/rights/${model}/${operation}`);
+    return response.data;
+  } catch (error) {
+    console.error(`Error checking access rights for ${model}:`, error);
+    throw error;
+  }
 };
 
 export default partnersAPI;

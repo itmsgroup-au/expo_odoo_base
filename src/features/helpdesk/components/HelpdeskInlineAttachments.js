@@ -378,12 +378,17 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       const filePath = `${attachmentsDir}${filename}`;
 
       // Try multiple download URLs with fallback strategy
+      const baseUrl = odooClient.client.defaults.baseURL || '';
       const downloadUrls = [
         // Try filename-based first (best for caching)
         attachment.downloadUrlWithFilename,
         // Fallback to ID-based
         attachment.downloadUrl,
-        // Final fallback to legacy URL
+        // Legacy web/content endpoint (often more reliable)
+        `${baseUrl}/web/content/${attachment.id}?download=true`,
+        // Alternative legacy format
+        `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,
+        // Final fallback to original full URL
         attachment.fullUrl
       ].filter(Boolean); // Remove any undefined URLs
 
@@ -396,30 +401,54 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       // Try each URL until one works
       for (let i = 0; i < downloadUrls.length; i++) {
         const baseUrl = downloadUrls[i];
-        let downloadUrl = baseUrl;
 
-        // Add access token
-        if (accessToken && !downloadUrl.includes('access_token')) {
-          const separator = downloadUrl.includes('?') ? '&' : '?';
-          downloadUrl = `${downloadUrl}${separator}access_token=${encodeURIComponent(accessToken)}`;
+        // Try different authentication methods for each URL
+        const authMethods = [
+          // Method 1: Access token in URL
+          (url) => {
+            if (accessToken && !url.includes('access_token')) {
+              const separator = url.includes('?') ? '&' : '?';
+              return `${url}${separator}access_token=${encodeURIComponent(accessToken)}`;
+            }
+            return url;
+          },
+          // Method 2: Session-based (no token, relies on cookies)
+          (url) => url
+        ];
+
+        for (let authIndex = 0; authIndex < authMethods.length; authIndex++) {
+          const downloadUrl = authMethods[authIndex](baseUrl);
+
+          console.log(`Attempt ${i + 1}.${authIndex + 1}: Trying ${downloadUrl}`);
+
+          try {
+            // For session-based auth, we might need to include headers
+            const downloadOptions = {
+              headers: authIndex === 1 && accessToken ? {
+                'Authorization': `Bearer ${accessToken}`,
+                'Cookie': `session_id=${accessToken}`
+              } : {}
+            };
+
+            downloadResult = await FileSystem.downloadAsync(downloadUrl, filePath, downloadOptions);
+
+            if (downloadResult.status === 200) {
+              console.log(`Success with URL ${i + 1}.${authIndex + 1}: ${baseUrl}`);
+              break;
+            } else {
+              console.log(`Failed with status ${downloadResult.status} for URL ${i + 1}.${authIndex + 1}`);
+              lastError = new Error(`Download failed with status ${downloadResult.status}`);
+            }
+          } catch (error) {
+            console.log(`Error with URL ${i + 1}.${authIndex + 1}:`, error.message);
+            lastError = error;
+            continue;
+          }
         }
 
-        console.log(`Attempt ${i + 1}: Trying ${downloadUrl}`);
-
-        try {
-          downloadResult = await FileSystem.downloadAsync(downloadUrl, filePath);
-
-          if (downloadResult.status === 200) {
-            console.log(`Success with URL ${i + 1}: ${baseUrl}`);
-            break;
-          } else {
-            console.log(`Failed with status ${downloadResult.status} for URL ${i + 1}`);
-            lastError = new Error(`Download failed with status ${downloadResult.status}`);
-          }
-        } catch (error) {
-          console.log(`Error with URL ${i + 1}:`, error.message);
-          lastError = error;
-          continue;
+        // If we got a successful download, break out of the outer loop too
+        if (downloadResult && downloadResult.status === 200) {
+          break;
         }
       }
 
@@ -490,13 +519,36 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       const filename = `${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
       const tempPath = `${tempDir}${filename}`;
 
-      let downloadUrl = attachment.fullUrl;
-      if (accessToken && !downloadUrl.includes('access_token')) {
-        const separator = downloadUrl.includes('?') ? '&' : '?';
-        downloadUrl = `${downloadUrl}${separator}access_token=${accessToken}`;
-      }
+      // Try the same fallback URLs as in downloadFile
+      const baseUrl = odooClient.client.defaults.baseURL || '';
+      const fallbackUrls = [
+        attachment.downloadUrlWithFilename,
+        attachment.downloadUrl,
+        `${baseUrl}/web/content/${attachment.id}?download=true`,
+        `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,
+        attachment.fullUrl
+      ].filter(Boolean);
 
-      const downloadResult = await FileSystem.downloadAsync(downloadUrl, tempPath);
+      let downloadResult = null;
+
+      for (const url of fallbackUrls) {
+        try {
+          let downloadUrl = url;
+          if (accessToken && !downloadUrl.includes('access_token')) {
+            const separator = downloadUrl.includes('?') ? '&' : '?';
+            downloadUrl = `${downloadUrl}${separator}access_token=${encodeURIComponent(accessToken)}`;
+          }
+
+          downloadResult = await FileSystem.downloadAsync(downloadUrl, tempPath);
+
+          if (downloadResult.status === 200) {
+            break;
+          }
+        } catch (error) {
+          console.log(`Share download failed with ${url}:`, error.message);
+          continue;
+        }
+      }
 
       if (downloadResult.status === 200) {
         if (await Sharing.isAvailableAsync()) {
@@ -558,14 +610,39 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         }
 
         const tempUri = `${tempDir}${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-        let downloadUrl = attachment.fullUrl;
-        if (accessToken && !downloadUrl.includes('access_token')) {
-          const separator = downloadUrl.includes('?') ? '&' : '?';
-          downloadUrl = `${downloadUrl}${separator}access_token=${accessToken}`;
+
+        // Try the same fallback URLs as in downloadFile
+        const baseUrl = odooClient.client.defaults.baseURL || '';
+        const fallbackUrls = [
+          attachment.downloadUrlWithFilename,
+          attachment.downloadUrl,
+          `${baseUrl}/web/content/${attachment.id}?download=true`,
+          `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,
+          attachment.fullUrl
+        ].filter(Boolean);
+
+        let downloadResult = null;
+
+        for (const url of fallbackUrls) {
+          try {
+            let downloadUrl = url;
+            if (accessToken && !downloadUrl.includes('access_token')) {
+              const separator = downloadUrl.includes('?') ? '&' : '?';
+              downloadUrl = `${downloadUrl}${separator}access_token=${encodeURIComponent(accessToken)}`;
+            }
+
+            downloadResult = await FileSystem.downloadAsync(downloadUrl, tempUri);
+
+            if (downloadResult.status === 200) {
+              break;
+            }
+          } catch (error) {
+            console.log(`Save to photos download failed with ${url}:`, error.message);
+            continue;
+          }
         }
 
-        const downloadResult = await FileSystem.downloadAsync(downloadUrl, tempUri);
-        if (downloadResult.status !== 200) {
+        if (!downloadResult || downloadResult.status !== 200) {
           throw new Error('Download failed');
         }
         fileUri = tempUri;

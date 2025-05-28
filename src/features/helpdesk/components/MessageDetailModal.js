@@ -46,8 +46,9 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
         isDragging.current = true;
       },
       onPanResponderMove: (evt, gestureState) => {
-        // Just update translateY for smooth dragging feel
-        translateY.setValue(gestureState.dy);
+        // Constrain translateY to prevent detachment feeling
+        const constrainedY = Math.max(-50, Math.min(100, gestureState.dy));
+        translateY.setValue(constrainedY);
       },
       onPanResponderRelease: (evt, gestureState) => {
         isDragging.current = false;
@@ -62,13 +63,22 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
           return;
         }
 
-        // Determine target height based on drag direction and distance
-        if (gestureState.dy > 50) {
-          // Dragging down - go to smaller height or close
-          targetHeight = currentHeight === maxHeight ? minHeight : minHeight;
-        } else if (gestureState.dy < -50) {
-          // Dragging up - go to larger height
-          targetHeight = currentHeight === minHeight ? maxHeight : maxHeight;
+        // Determine target height based on drag direction, distance, and velocity
+        if (gestureState.dy > 30 || velocity > 0.3) {
+          // Dragging down or fast downward velocity - go to smaller height or close
+          if (currentHeight === maxHeight) {
+            targetHeight = minHeight;
+          } else {
+            // Close if already at minimum and dragging down
+            if (gestureState.dy > 80 || velocity > 0.8) {
+              onClose();
+              return;
+            }
+            targetHeight = minHeight;
+          }
+        } else if (gestureState.dy < -20 || velocity < -0.2) {
+          // Dragging up or fast upward velocity - go to larger height
+          targetHeight = maxHeight;
         } else {
           // Small drag - snap back to current height
           targetHeight = currentHeight;
@@ -84,11 +94,17 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
 
         // Update height with smooth transition
         if (targetHeight !== currentHeight) {
-          // Configure smooth animation
+          // Configure smooth animation with different settings for expand vs collapse
+          const isExpanding = targetHeight > currentHeight;
+
           LayoutAnimation.configureNext({
-            duration: 250,
+            duration: isExpanding ? 400 : 300,
             create: { type: 'easeInEaseOut', property: 'opacity' },
-            update: { type: 'spring', springDamping: 0.7 },
+            update: {
+              type: 'spring',
+              springDamping: isExpanding ? 0.9 : 0.7,
+              initialVelocity: isExpanding ? 0.1 : 0.3
+            },
             delete: { type: 'easeInEaseOut', property: 'opacity' }
           });
 

@@ -236,8 +236,25 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
             createDate: att.create_date,
             createUser: att.create_uid?.[1] || 'Unknown',
             url: att.url,
-            fullUrl: att.url ? `${baseUrl}${att.url}` : `${baseUrl}/api/v2/download/${att.id}`,
-            thumbnailUrl: att.mimetype?.startsWith('image/') ? `${baseUrl}/api/v2/image/${att.id}/128x128` : null
+
+            // Primary download URL - recommended for downloads
+            downloadUrl: `${baseUrl}/api/v2/download/${att.id}`,
+
+            // Download with filename (better for caching)
+            downloadUrlWithFilename: `${baseUrl}/api/v2/download/${att.id}/${encodeURIComponent(att.name)}`,
+
+            // Thumbnail URL for images using image API
+            thumbnailUrl: att.mimetype?.startsWith('image/')
+              ? `${baseUrl}/api/v2/image/${att.id}/128x128`
+              : null,
+
+            // Full size image URL
+            imageUrl: att.mimetype?.startsWith('image/')
+              ? `${baseUrl}/api/v2/image/${att.id}`
+              : null,
+
+            // Legacy URL as fallback
+            fullUrl: att.url ? `${baseUrl}${att.url}` : `${baseUrl}/api/v2/download/${att.id}`
           };
 
           // Log the processed attachment
@@ -269,8 +286,25 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
             createDate: att.create_date,
             createUser: att.create_uid?.[1] || 'Unknown',
             url: att.url,
-            fullUrl: att.url ? `${baseUrl}${att.url}` : `${baseUrl}/api/v2/download/${att.id}`,
-            thumbnailUrl: att.mimetype?.startsWith('image/') ? `${baseUrl}/api/v2/image/${att.id}/128x128` : null
+
+            // Primary download URL - recommended for downloads
+            downloadUrl: `${baseUrl}/api/v2/download/${att.id}`,
+
+            // Download with filename (better for caching)
+            downloadUrlWithFilename: `${baseUrl}/api/v2/download/${att.id}/${encodeURIComponent(att.name)}`,
+
+            // Thumbnail URL for images using image API
+            thumbnailUrl: att.mimetype?.startsWith('image/')
+              ? `${baseUrl}/api/v2/image/${att.id}/128x128`
+              : null,
+
+            // Full size image URL
+            imageUrl: att.mimetype?.startsWith('image/')
+              ? `${baseUrl}/api/v2/image/${att.id}`
+              : null,
+
+            // Legacy URL as fallback
+            fullUrl: att.url ? `${baseUrl}${att.url}` : `${baseUrl}/api/v2/download/${att.id}`
           };
 
           // Add additional logging for debugging
@@ -343,31 +377,67 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       const filename = `${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
       const filePath = `${attachmentsDir}${filename}`;
 
-      // Build download URL with access token
-      let downloadUrl = attachment.fullUrl;
-      if (accessToken && !downloadUrl.includes('access_token')) {
-        const separator = downloadUrl.includes('?') ? '&' : '?';
-        downloadUrl = `${downloadUrl}${separator}access_token=${accessToken}`;
-      }
+      // Try multiple download URLs with fallback strategy
+      const downloadUrls = [
+        // Try filename-based first (best for caching)
+        attachment.downloadUrlWithFilename,
+        // Fallback to ID-based
+        attachment.downloadUrl,
+        // Final fallback to legacy URL
+        attachment.fullUrl
+      ].filter(Boolean); // Remove any undefined URLs
 
       console.log(`Downloading ${attachment.name} to ${filePath}`);
+      console.log(`Available download URLs:`, downloadUrls);
 
-      // Download with expo-file-system
-      const downloadResult = await FileSystem.downloadAsync(downloadUrl, filePath);
+      let downloadResult = null;
+      let lastError = null;
 
-      if (downloadResult.status === 200) {
-        const fileInfo = await FileSystem.getInfoAsync(filePath);
-        setCachedFiles(prev => new Map([...prev, [attachment.id, {
-          uri: filePath,
-          path: filePath,
-          size: fileInfo.size,
-          modifiedTime: fileInfo.modificationTime
-        }]]));
+      // Try each URL until one works
+      for (let i = 0; i < downloadUrls.length; i++) {
+        const baseUrl = downloadUrls[i];
+        let downloadUrl = baseUrl;
 
-        Alert.alert('Success', `${attachment.name} has been downloaded and cached.`);
-      } else {
-        throw new Error(`Download failed with status ${downloadResult.status}`);
+        // Add access token
+        if (accessToken && !downloadUrl.includes('access_token')) {
+          const separator = downloadUrl.includes('?') ? '&' : '?';
+          downloadUrl = `${downloadUrl}${separator}access_token=${encodeURIComponent(accessToken)}`;
+        }
+
+        console.log(`Attempt ${i + 1}: Trying ${downloadUrl}`);
+
+        try {
+          downloadResult = await FileSystem.downloadAsync(downloadUrl, filePath);
+
+          if (downloadResult.status === 200) {
+            console.log(`Success with URL ${i + 1}: ${baseUrl}`);
+            break;
+          } else {
+            console.log(`Failed with status ${downloadResult.status} for URL ${i + 1}`);
+            lastError = new Error(`Download failed with status ${downloadResult.status}`);
+          }
+        } catch (error) {
+          console.log(`Error with URL ${i + 1}:`, error.message);
+          lastError = error;
+          continue;
+        }
       }
+
+      if (!downloadResult || downloadResult.status !== 200) {
+        throw lastError || new Error('All download methods failed');
+      }
+
+      // Success - update cache
+      const fileInfo = await FileSystem.getInfoAsync(filePath);
+      setCachedFiles(prev => new Map([...prev, [attachment.id, {
+        uri: filePath,
+        path: filePath,
+        size: fileInfo.size,
+        modifiedTime: fileInfo.modificationTime,
+        originalName: attachment.name
+      }]]));
+
+      Alert.alert('Success', `${attachment.name} has been downloaded and cached.`);
     } catch (error) {
       console.error('Download error:', error);
       Alert.alert('Download Failed', `Could not download ${attachment.name}. Please try again.`);
@@ -595,6 +665,21 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
     );
   };
 
+  // Get optimized image preview URL
+  const getImagePreviewUrl = (attachment) => {
+    if (!attachment.mimetype?.startsWith('image/')) return null;
+
+    // Use thumbnail URL if available, fallback to image URL, then full URL
+    let imageUrl = attachment.thumbnailUrl || attachment.imageUrl || attachment.fullUrl;
+
+    if (accessToken && !imageUrl.includes('access_token')) {
+      const separator = imageUrl.includes('?') ? '&' : '?';
+      imageUrl = `${imageUrl}${separator}access_token=${encodeURIComponent(accessToken)}`;
+    }
+
+    return imageUrl;
+  };
+
   // Add a refresh function for debugging
   const handleRefresh = () => {
     console.log('HelpdeskInlineAttachments: Manual refresh triggered');
@@ -666,7 +751,7 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
                       source={{
                         uri: isCached && cachedFiles.get(item.id)?.uri
                           ? cachedFiles.get(item.id).uri
-                          : item.thumbnailUrl || item.fullUrl,
+                          : getImagePreviewUrl(item),
                         headers: accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {},
                       }}
                       style={styles.attachmentThumbnail}

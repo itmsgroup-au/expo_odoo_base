@@ -20,62 +20,78 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 const MessageDetailModal = ({ visible, message, onClose }) => {
   const { colors } = useTheme();
   const [dragPosition] = useState(new Animated.Value(0));
-  const [expanded, setExpanded] = useState(false);
-  
-  // Initial position (partially visible)
-  const initialHeight = screenHeight * 0.3;
-  const expandedHeight = screenHeight * 0.9;
-  
+  const [modalState, setModalState] = useState('collapsed'); // 'collapsed', 'partial', 'expanded'
+
+  // Three-stage heights
+  const collapsedHeight = screenHeight * 0.15; // Peek view
+  const partialHeight = screenHeight * 0.4;    // Partial view
+  const expandedHeight = screenHeight * 0.85;  // Full view
+
+  const getCurrentHeight = () => {
+    switch (modalState) {
+      case 'collapsed': return collapsedHeight;
+      case 'partial': return partialHeight;
+      case 'expanded': return expandedHeight;
+      default: return partialHeight;
+    }
+  };
+
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         return Math.abs(gestureState.dy) > 10;
       },
       onPanResponderMove: (evt, gestureState) => {
-        if (gestureState.dy > 0) {
-          // Dragging down
-          dragPosition.setValue(gestureState.dy);
-        } else if (expanded) {
-          // Dragging up when expanded
-          dragPosition.setValue(gestureState.dy);
-        }
+        // Allow dragging in both directions
+        dragPosition.setValue(gestureState.dy);
       },
       onPanResponderRelease: (evt, gestureState) => {
-        if (gestureState.dy > 100) {
-          // Close modal if dragged down significantly
-          onClose();
-        } else if (gestureState.dy < -50 && !expanded) {
-          // Expand if dragged up
-          expandModal();
-        } else if (gestureState.dy > 50 && expanded) {
-          // Collapse if dragged down when expanded
-          collapseModal();
-        } else {
-          // Snap back to current state
-          Animated.spring(dragPosition, {
-            toValue: 0,
-            useNativeDriver: true,
-          }).start();
+        const threshold = 50;
+
+        if (gestureState.dy > threshold) {
+          // Dragging down - go to previous state or close
+          if (modalState === 'expanded') {
+            setModalState('partial');
+          } else if (modalState === 'partial') {
+            setModalState('collapsed');
+          } else {
+            onClose();
+          }
+        } else if (gestureState.dy < -threshold) {
+          // Dragging up - go to next state
+          if (modalState === 'collapsed') {
+            setModalState('partial');
+          } else if (modalState === 'partial') {
+            setModalState('expanded');
+          }
         }
+
+        // Snap back to position
+        Animated.spring(dragPosition, {
+          toValue: 0,
+          useNativeDriver: true,
+        }).start();
       },
     })
   ).current;
 
-  const expandModal = () => {
-    setExpanded(true);
-    Animated.spring(dragPosition, {
-      toValue: 0,
-      useNativeDriver: true,
-    }).start();
+  // Handle tap on handle bar to cycle through states
+  const handleTap = () => {
+    if (modalState === 'collapsed') {
+      setModalState('partial');
+    } else if (modalState === 'partial') {
+      setModalState('expanded');
+    } else {
+      setModalState('partial');
+    }
   };
 
-  const collapseModal = () => {
-    setExpanded(false);
-    Animated.spring(dragPosition, {
-      toValue: 0,
-      useNativeDriver: true,
-    }).start();
-  };
+  // Reset modal state when opening
+  useEffect(() => {
+    if (visible) {
+      setModalState('partial'); // Start in partial state
+    }
+  }, [visible]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -103,27 +119,30 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
       onRequestClose={onClose}
     >
       <View style={styles.overlay}>
-        <TouchableOpacity 
-          style={styles.backdrop} 
-          activeOpacity={1} 
+        <TouchableOpacity
+          style={styles.backdrop}
+          activeOpacity={1}
           onPress={onClose}
         />
-        
+
         <Animated.View
           style={[
             styles.modalContainer,
             {
               backgroundColor: colors.surface,
-              height: expanded ? expandedHeight : initialHeight,
+              height: getCurrentHeight(),
               transform: [{ translateY: dragPosition }],
             },
           ]}
           {...panResponder.panHandlers}
         >
-          {/* Handle bar */}
-          <View style={styles.handleContainer}>
+          {/* Handle bar - tappable */}
+          <TouchableOpacity style={styles.handleContainer} onPress={handleTap} activeOpacity={0.7}>
             <View style={[styles.handle, { backgroundColor: colors.textSecondary }]} />
-          </View>
+            <Text style={[styles.handleHint, { color: colors.textSecondary }]}>
+              {modalState === 'collapsed' ? 'Tap to expand' : modalState === 'partial' ? 'Tap for full view' : 'Tap to collapse'}
+            </Text>
+          </TouchableOpacity>
 
           {/* Header */}
           <View style={styles.header}>
@@ -147,43 +166,57 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Compact info when collapsed */}
-          {!expanded && (
-            <View style={styles.compactInfo}>
+          {/* Content based on modal state */}
+          <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
+            <View style={styles.messageDetails}>
               <Text style={[styles.dateText, { color: colors.textSecondary }]}>
                 {formatDate(message.date || message.create_date)}
               </Text>
-              <TouchableOpacity onPress={expandModal} style={styles.expandButton}>
-                <Text style={[styles.expandButtonText, { color: colors.primary }]}>
-                  Tap to expand
+
+              {message.subject && modalState !== 'collapsed' && (
+                <Text style={[styles.subjectText, { color: colors.text }]}>
+                  {message.subject}
                 </Text>
-                <Icon name="chevron-up" size={16} color={colors.primary} />
-              </TouchableOpacity>
-            </View>
-          )}
+              )}
 
-          {/* Full content when expanded */}
-          {expanded && (
-            <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
-              <View style={styles.messageDetails}>
-                <Text style={[styles.dateText, { color: colors.textSecondary }]}>
-                  {formatDate(message.date || message.create_date)}
+              {message.email_from && modalState === 'expanded' && (
+                <Text style={[styles.emailText, { color: colors.textSecondary }]}>
+                  From: {message.email_from}
                 </Text>
-                
-                {message.subject && (
-                  <Text style={[styles.subjectText, { color: colors.text }]}>
-                    {message.subject}
-                  </Text>
-                )}
+              )}
 
-                {message.email_from && (
-                  <Text style={[styles.emailText, { color: colors.textSecondary }]}>
-                    From: {message.email_from}
-                  </Text>
-                )}
+              {/* Show tracking changes if available */}
+              {message.tracking_value_ids && message.tracking_value_ids.length > 0 && (
+                <View style={styles.trackingContainer}>
+                  {message.tracking_value_ids.map((tracking, index) => {
+                    const fieldName = tracking.field_desc || tracking.field;
+                    const oldValue = tracking.old_value_text || tracking.old_value || '';
+                    const newValue = tracking.new_value_text || tracking.new_value || '';
 
-                {message.body && message.body.trim() ? (
-                  <View style={styles.bodyContainer}>
+                    return (
+                      <View key={index} style={styles.trackingItem}>
+                        <Text style={[styles.trackingLabel, { color: colors.text }]}>
+                          {fieldName}:
+                        </Text>
+                        <Text style={[styles.trackingChange, { color: colors.textSecondary }]}>
+                          {oldValue && newValue ? `${oldValue} → ${newValue}` : newValue || oldValue}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
+
+              {/* Show body content based on state */}
+              {message.body && message.body.trim() && modalState !== 'collapsed' ? (
+                <View style={styles.bodyContainer}>
+                  {modalState === 'partial' ? (
+                    // Show preview in partial state
+                    <Text style={[styles.bodyPreview, { color: colors.text }]} numberOfLines={3}>
+                      {message.body.replace(/<[^>]*>/g, '').trim()}
+                    </Text>
+                  ) : (
+                    // Show full content in expanded state
                     <RenderHtml
                       contentWidth={screenWidth - 64}
                       source={{
@@ -202,23 +235,23 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
                         style: { fontSize: 16, color: colors.text }
                       }}
                     />
-                  </View>
-                ) : (
-                  <Text style={[styles.noContentText, { color: colors.textSecondary }]}>
-                    No content
-                  </Text>
-                )}
+                  )}
+                </View>
+              ) : modalState !== 'collapsed' && (
+                <Text style={[styles.noContentText, { color: colors.textSecondary }]}>
+                  No content
+                </Text>
+              )}
 
-                {message.attachment_ids && message.attachment_ids.length > 0 && (
-                  <View style={styles.attachmentsInfo}>
-                    <Text style={[styles.attachmentsLabel, { color: colors.text }]}>
-                      Attachments ({message.attachment_ids.length})
-                    </Text>
-                  </View>
-                )}
-              </View>
-            </ScrollView>
-          )}
+              {message.attachment_ids && message.attachment_ids.length > 0 && modalState !== 'collapsed' && (
+                <View style={styles.attachmentsInfo}>
+                  <Text style={[styles.attachmentsLabel, { color: colors.text }]}>
+                    Attachments ({message.attachment_ids.length})
+                  </Text>
+                </View>
+              )}
+            </View>
+          </ScrollView>
         </Animated.View>
       </View>
     </Modal>
@@ -253,6 +286,11 @@ const styles = StyleSheet.create({
     width: 40,
     height: 4,
     borderRadius: 2,
+    marginBottom: 4,
+  },
+  handleHint: {
+    fontSize: 12,
+    textAlign: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -310,9 +348,34 @@ const styles = StyleSheet.create({
   bodyContainer: {
     marginTop: 8,
   },
+  bodyPreview: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
   noContentText: {
     fontSize: 14,
     fontStyle: 'italic',
+  },
+  trackingContainer: {
+    marginTop: 8,
+    padding: 12,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 6,
+    borderLeftWidth: 3,
+    borderLeftColor: '#007bff',
+  },
+  trackingItem: {
+    marginBottom: 4,
+  },
+  trackingLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    marginBottom: 2,
+  },
+  trackingChange: {
+    fontSize: 14,
+    fontWeight: '500',
   },
   attachmentsInfo: {
     marginTop: 16,

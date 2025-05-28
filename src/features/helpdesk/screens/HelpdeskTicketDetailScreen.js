@@ -17,6 +17,7 @@ import { getHelpdeskTicket, getHelpdeskStages, updateHelpdeskTicket } from '../.
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HTML from 'react-native-render-html';
 import HelpdeskMessageThread from '../components/HelpdeskMessageThread';
+import HelpdeskInlineAttachments from '../components/HelpdeskInlineAttachments';
 
 // Move the renderSafeHTML function outside the component to prevent re-creation
 const renderSafeHTML = (htmlContent, colors, contentWidth) => {
@@ -519,19 +520,10 @@ const HelpdeskTicketDetailScreen = ({ route }) => {
 
         {activeTab === 'attachments' && (
           <View style={styles.tabContent}>
-            <TouchableOpacity
-              style={styles.viewAllButton}
-              onPress={() => {
-                navigation.navigate('HelpdeskAttachments', {
-                  ticketId: parseInt(ticketId, 10),
-                  ticketName: ticket?.name || 'Ticket'
-                });
-              }}
-            >
-              <Text style={[styles.viewAllButtonText, { color: colors.primary }]}>
-                View All Attachments
-              </Text>
-            </TouchableOpacity>
+            <HelpdeskInlineAttachments
+              ticketId={parseInt(ticketId, 10)}
+              ticketName={ticket?.name || 'Ticket'}
+            />
           </View>
         )}
       </View>
@@ -580,17 +572,6 @@ const styles = StyleSheet.create({
   },
   tabContent: {
     flex: 1,
-  },
-  viewAllButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignSelf: 'center',
-    marginTop: 16,
-  },
-  viewAllButtonText: {
-    fontSize: 14,
-    fontWeight: '500',
   },
   header: {
     borderRadius: 8,

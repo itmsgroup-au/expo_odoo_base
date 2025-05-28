@@ -41,7 +41,9 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.20.0",
     "react-native-webview": "^13.13.5",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "expo-media-library": "~17.1.6",
+    "expo-sharing": "~13.1.5"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

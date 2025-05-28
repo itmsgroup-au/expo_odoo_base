@@ -34,13 +34,65 @@ const HelpdeskMessageThread = ({ model, recordId, recordName, ...props }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState('activity'); // 'activity' or 'audit'
 
-  // Combine messages and activities into a single timeline
-  const timelineItems = [...messages, ...activities].sort((a, b) => {
-    const dateA = a.date || a.create_date;
-    const dateB = b.date || b.create_date;
-    return new Date(dateB) - new Date(dateA);
-  });
+  // Separate messages into activity and audit log
+  const getActivityMessages = () => {
+    return [...messages, ...activities]
+      .filter(item => {
+        // Activity includes: regular messages, stage changes, assignments, etc.
+        if (item.message_type === 'comment' || item.message_type === 'email') return true;
+        if (item.activity_type_id) return true;
+        if (item.tracking_value_ids && item.tracking_value_ids.length > 0) return true;
+        return false;
+      })
+      .sort((a, b) => {
+        const dateA = a.date || a.create_date;
+        const dateB = b.date || b.create_date;
+        return new Date(dateB) - new Date(dateA);
+      });
+  };
+
+  const getAuditLogMessages = () => {
+    return [...messages, ...activities]
+      .filter(item => {
+        // Audit log includes: system notifications, internal notes, automated actions
+        if (item.message_type === 'notification') return true;
+        if (item.subtype_id && item.subtype_id[1] && item.subtype_id[1].includes('note')) return true;
+        if (item.is_internal) return true;
+        return false;
+      })
+      .sort((a, b) => {
+        const dateA = a.date || a.create_date;
+        const dateB = b.date || b.create_date;
+        return new Date(dateB) - new Date(dateA);
+      });
+  };
+
+  // Get current tab's messages
+  const getCurrentMessages = () => {
+    return activeTab === 'activity' ? getActivityMessages() : getAuditLogMessages();
+  };
+
+  // Format tracking value changes like Odoo
+  const formatTrackingChanges = (trackingValues) => {
+    if (!trackingValues || trackingValues.length === 0) return null;
+
+    return trackingValues.map(tracking => {
+      const fieldName = tracking.field_desc || tracking.field;
+      const oldValue = tracking.old_value_text || tracking.old_value || '';
+      const newValue = tracking.new_value_text || tracking.new_value || '';
+
+      if (oldValue && newValue) {
+        return `${fieldName}: ${oldValue} → ${newValue}`;
+      } else if (newValue) {
+        return `${fieldName}: ${newValue}`;
+      } else if (oldValue) {
+        return `${fieldName}: ${oldValue} (removed)`;
+      }
+      return `${fieldName} changed`;
+    }).join('\n');
+  };
 
   // Fetch messages and activities
   const fetchData = useCallback(async (forceRefresh = false) => {
@@ -96,6 +148,12 @@ const HelpdeskMessageThread = ({ model, recordId, recordName, ...props }) => {
 
   // Get preview text
   const getPreviewText = (item) => {
+    // Check for tracking changes first
+    if (item.tracking_value_ids && item.tracking_value_ids.length > 0) {
+      const trackingText = formatTrackingChanges(item.tracking_value_ids);
+      if (trackingText) return trackingText;
+    }
+
     if (item.body) {
       // Strip HTML tags and get first 100 characters
       const text = item.body.replace(/<[^>]*>/g, '').trim();
@@ -194,8 +252,42 @@ const HelpdeskMessageThread = ({ model, recordId, recordName, ...props }) => {
         </TouchableOpacity>
       </View>
 
+      {/* Tab Navigation */}
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            activeTab === 'activity' && styles.activeTab,
+            { borderBottomColor: activeTab === 'activity' ? colors.primary : 'transparent' }
+          ]}
+          onPress={() => setActiveTab('activity')}
+        >
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === 'activity' ? colors.primary : colors.textSecondary }
+          ]}>
+            Activity
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.tab,
+            activeTab === 'audit' && styles.activeTab,
+            { borderBottomColor: activeTab === 'audit' ? colors.primary : 'transparent' }
+          ]}
+          onPress={() => setActiveTab('audit')}
+        >
+          <Text style={[
+            styles.tabText,
+            { color: activeTab === 'audit' ? colors.primary : colors.textSecondary }
+          ]}>
+            Audit Log
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
-        data={timelineItems}
+        data={getCurrentMessages()}
         renderItem={renderMessageItem}
         keyExtractor={(item) => `${item.id}-${item.date || item.create_date}`}
         contentContainerStyle={styles.listContent}
@@ -211,11 +303,11 @@ const HelpdeskMessageThread = ({ model, recordId, recordName, ...props }) => {
           <View style={styles.emptyContainer}>
             <Icon name="message-text-outline" size={48} color={colors.textSecondary} />
             <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              No messages yet
+              No {activeTab === 'activity' ? 'activity' : 'audit log entries'} yet
             </Text>
           </View>
         }
-        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+        ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: '#f0f0f0' }} />}
       />
 
       <MessageDetailModal
@@ -250,18 +342,37 @@ const styles = StyleSheet.create({
   refreshButton: {
     padding: 8,
   },
+  tabContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#f8f9fa',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+    borderBottomWidth: 2,
+  },
+  activeTab: {
+    backgroundColor: '#fff',
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
   listContent: {
-    padding: 16,
+    paddingVertical: 8,
   },
   messageItem: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    padding: 12,
+    borderRadius: 4,
+    marginHorizontal: 16,
+    marginVertical: 2,
+    backgroundColor: '#fff',
+    borderLeftWidth: 3,
+    borderLeftColor: '#e0e0e0',
   },
   internalNoteItem: {
     borderLeftWidth: 4,

@@ -36,14 +36,25 @@ const HelpdeskMessageThread = ({ model, recordId, recordName, ...props }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [activeTab, setActiveTab] = useState('activity'); // 'activity' or 'audit'
 
-  // Separate messages into activity and audit log
+  // Separate messages into activity and audit log - mutually exclusive
   const getActivityMessages = () => {
     return [...messages, ...activities]
       .filter(item => {
+        // First check if it belongs to audit log
+        const isAuditLog = (
+          item.message_type === 'notification' ||
+          (item.subtype_id && item.subtype_id[1] && item.subtype_id[1].includes('note')) ||
+          item.is_internal
+        );
+
+        // If it's audit log, exclude from activity
+        if (isAuditLog) return false;
+
         // Activity includes: regular messages, stage changes, assignments, etc.
         if (item.message_type === 'comment' || item.message_type === 'email') return true;
         if (item.activity_type_id) return true;
         if (item.tracking_value_ids && item.tracking_value_ids.length > 0) return true;
+
         return false;
       })
       .sort((a, b) => {

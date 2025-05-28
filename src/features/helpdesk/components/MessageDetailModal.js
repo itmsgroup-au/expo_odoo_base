@@ -19,77 +19,83 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 const MessageDetailModal = ({ visible, message, onClose }) => {
   const { colors } = useTheme();
-  const [dragPosition] = useState(new Animated.Value(0));
-  const [modalState, setModalState] = useState('collapsed'); // 'collapsed', 'partial', 'expanded'
+  const translateY = useRef(new Animated.Value(0)).current;
+  const [currentHeight, setCurrentHeight] = useState(screenHeight * 0.4); // Start at partial height
 
-  // Three-stage heights
-  const collapsedHeight = screenHeight * 0.15; // Peek view
-  const partialHeight = screenHeight * 0.4;    // Partial view
-  const expandedHeight = screenHeight * 0.85;  // Full view
+  // Height boundaries
+  const minHeight = screenHeight * 0.3;  // Minimum height (partial view)
+  const maxHeight = screenHeight * 0.9;  // Maximum height (full view)
 
-  const getCurrentHeight = () => {
-    switch (modalState) {
-      case 'collapsed': return collapsedHeight;
-      case 'partial': return partialHeight;
-      case 'expanded': return expandedHeight;
-      default: return partialHeight;
-    }
-  };
+  // Track if we're currently dragging
+  const isDragging = useRef(false);
 
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (evt, gestureState) => {
         return Math.abs(gestureState.dy) > 10;
       },
+      onPanResponderGrant: () => {
+        isDragging.current = true;
+      },
       onPanResponderMove: (evt, gestureState) => {
-        // Allow dragging in both directions
-        dragPosition.setValue(gestureState.dy);
+        // Calculate new height based on drag
+        const newHeight = currentHeight - gestureState.dy;
+
+        // Constrain within bounds
+        const constrainedHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
+
+        // Update the height smoothly
+        setCurrentHeight(constrainedHeight);
       },
       onPanResponderRelease: (evt, gestureState) => {
-        const threshold = 50;
+        isDragging.current = false;
 
-        if (gestureState.dy > threshold) {
-          // Dragging down - go to previous state or close
-          if (modalState === 'expanded') {
-            setModalState('partial');
-          } else if (modalState === 'partial') {
-            setModalState('collapsed');
-          } else {
-            onClose();
-          }
-        } else if (gestureState.dy < -threshold) {
-          // Dragging up - go to next state
-          if (modalState === 'collapsed') {
-            setModalState('partial');
-          } else if (modalState === 'partial') {
-            setModalState('expanded');
-          }
+        // Determine final height based on velocity and position
+        const velocity = gestureState.vy;
+        const finalHeight = currentHeight - gestureState.dy;
+
+        let targetHeight;
+
+        // If dragging down with significant velocity, close modal
+        if (gestureState.dy > 100 && velocity > 0.5) {
+          onClose();
+          return;
         }
 
-        // Snap back to position
-        Animated.spring(dragPosition, {
+        // Snap to nearest logical height based on current position
+        const midPoint = (minHeight + maxHeight) / 2;
+
+        if (finalHeight < midPoint) {
+          // Closer to minimum - snap to partial view
+          targetHeight = minHeight;
+        } else {
+          // Closer to maximum - snap to full view
+          targetHeight = maxHeight;
+        }
+
+        // Animate to target height
+        Animated.timing(translateY, {
           toValue: 0,
+          duration: 300,
           useNativeDriver: true,
         }).start();
+
+        setCurrentHeight(targetHeight);
       },
     })
   ).current;
 
-  // Handle tap on handle bar to cycle through states
+  // Handle tap on handle bar to toggle between partial and full
   const handleTap = () => {
-    if (modalState === 'collapsed') {
-      setModalState('partial');
-    } else if (modalState === 'partial') {
-      setModalState('expanded');
-    } else {
-      setModalState('partial');
-    }
+    const targetHeight = currentHeight < maxHeight ? maxHeight : minHeight;
+    setCurrentHeight(targetHeight);
   };
 
-  // Reset modal state when opening
+  // Reset modal height when opening
   useEffect(() => {
     if (visible) {
-      setModalState('partial'); // Start in partial state
+      setCurrentHeight(minHeight); // Start at partial height
+      translateY.setValue(0);
     }
   }, [visible]);
 
@@ -130,8 +136,8 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
             styles.modalContainer,
             {
               backgroundColor: colors.surface,
-              height: getCurrentHeight(),
-              transform: [{ translateY: dragPosition }],
+              height: currentHeight,
+              transform: [{ translateY: translateY }],
             },
           ]}
           {...panResponder.panHandlers}
@@ -140,7 +146,7 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
           <TouchableOpacity style={styles.handleContainer} onPress={handleTap} activeOpacity={0.7}>
             <View style={[styles.handle, { backgroundColor: colors.textSecondary }]} />
             <Text style={[styles.handleHint, { color: colors.textSecondary }]}>
-              {modalState === 'collapsed' ? 'Tap to expand' : modalState === 'partial' ? 'Tap for full view' : 'Tap to collapse'}
+              {currentHeight < maxHeight ? 'Drag up or tap for full view' : 'Drag down or tap to collapse'}
             </Text>
           </TouchableOpacity>
 
@@ -166,20 +172,20 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
             </TouchableOpacity>
           </View>
 
-          {/* Content based on modal state */}
+          {/* Content based on modal height */}
           <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
             <View style={styles.messageDetails}>
               <Text style={[styles.dateText, { color: colors.textSecondary }]}>
                 {formatDate(message.date || message.create_date)}
               </Text>
 
-              {message.subject && modalState !== 'collapsed' && (
+              {message.subject && (
                 <Text style={[styles.subjectText, { color: colors.text }]}>
                   {message.subject}
                 </Text>
               )}
 
-              {message.email_from && modalState === 'expanded' && (
+              {message.email_from && currentHeight > (minHeight + maxHeight) / 2 && (
                 <Text style={[styles.emailText, { color: colors.textSecondary }]}>
                   From: {message.email_from}
                 </Text>
@@ -207,16 +213,16 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
                 </View>
               )}
 
-              {/* Show body content based on state */}
-              {message.body && message.body.trim() && modalState !== 'collapsed' ? (
+              {/* Show body content based on height */}
+              {message.body && message.body.trim() ? (
                 <View style={styles.bodyContainer}>
-                  {modalState === 'partial' ? (
-                    // Show preview in partial state
+                  {currentHeight < (minHeight + maxHeight) / 2 ? (
+                    // Show preview when height is closer to minimum
                     <Text style={[styles.bodyPreview, { color: colors.text }]} numberOfLines={3}>
                       {message.body.replace(/<[^>]*>/g, '').trim()}
                     </Text>
                   ) : (
-                    // Show full content in expanded state
+                    // Show full content when height is closer to maximum
                     <RenderHtml
                       contentWidth={screenWidth - 64}
                       source={{
@@ -237,13 +243,13 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
                     />
                   )}
                 </View>
-              ) : modalState !== 'collapsed' && (
+              ) : (
                 <Text style={[styles.noContentText, { color: colors.textSecondary }]}>
                   No content
                 </Text>
               )}
 
-              {message.attachment_ids && message.attachment_ids.length > 0 && modalState !== 'collapsed' && (
+              {message.attachment_ids && message.attachment_ids.length > 0 && (
                 <View style={styles.attachmentsInfo}>
                   <Text style={[styles.attachmentsLabel, { color: colors.text }]}>
                     Attachments ({message.attachment_ids.length})

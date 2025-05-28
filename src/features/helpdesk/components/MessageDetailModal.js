@@ -10,7 +10,15 @@ import {
   PanResponder,
   Dimensions,
   SafeAreaView,
+  LayoutAnimation,
+  UIManager,
+  Platform,
 } from 'react-native';
+
+// Enable LayoutAnimation on Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../../../contexts/ThemeContext';
 import RenderHtml from 'react-native-render-html';
@@ -20,7 +28,6 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 const MessageDetailModal = ({ visible, message, onClose }) => {
   const { colors } = useTheme();
   const translateY = useRef(new Animated.Value(0)).current;
-  const animatedHeight = useRef(new Animated.Value(screenHeight * 0.4)).current;
   const [currentHeight, setCurrentHeight] = useState(screenHeight * 0.4); // Start at partial height
 
   // Height boundaries
@@ -39,22 +46,14 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
         isDragging.current = true;
       },
       onPanResponderMove: (evt, gestureState) => {
-        // Calculate new height based on drag
-        const newHeight = currentHeight - gestureState.dy;
-
-        // Constrain within bounds
-        const constrainedHeight = Math.max(minHeight, Math.min(maxHeight, newHeight));
-
-        // Update the height smoothly
-        setCurrentHeight(constrainedHeight);
+        // Just update translateY for smooth dragging feel
+        translateY.setValue(gestureState.dy);
       },
       onPanResponderRelease: (evt, gestureState) => {
         isDragging.current = false;
 
         // Determine final height based on velocity and position
         const velocity = gestureState.vy;
-        const finalHeight = currentHeight - gestureState.dy;
-
         let targetHeight;
 
         // If dragging down with significant velocity, close modal
@@ -63,18 +62,19 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
           return;
         }
 
-        // Snap to nearest logical height based on current position
-        const midPoint = (minHeight + maxHeight) / 2;
-
-        if (finalHeight < midPoint) {
-          // Closer to minimum - snap to partial view
-          targetHeight = minHeight;
+        // Determine target height based on drag direction and distance
+        if (gestureState.dy > 50) {
+          // Dragging down - go to smaller height or close
+          targetHeight = currentHeight === maxHeight ? minHeight : minHeight;
+        } else if (gestureState.dy < -50) {
+          // Dragging up - go to larger height
+          targetHeight = currentHeight === minHeight ? maxHeight : maxHeight;
         } else {
-          // Closer to maximum - snap to full view
-          targetHeight = maxHeight;
+          // Small drag - snap back to current height
+          targetHeight = currentHeight;
         }
 
-        // Smooth animation to target height with spring physics
+        // Animate translateY back to 0
         Animated.spring(translateY, {
           toValue: 0,
           useNativeDriver: true,
@@ -82,17 +82,18 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
           friction: 8,
         }).start();
 
-        // Animate height change smoothly
-        Animated.spring(animatedHeight, {
-          toValue: targetHeight,
-          useNativeDriver: false,
-          tension: 100,
-          friction: 8,
-        }).start(({ finished }) => {
-          if (finished) {
-            setCurrentHeight(targetHeight);
-          }
-        });
+        // Update height with smooth transition
+        if (targetHeight !== currentHeight) {
+          // Configure smooth animation
+          LayoutAnimation.configureNext({
+            duration: 250,
+            create: { type: 'easeInEaseOut', property: 'opacity' },
+            update: { type: 'spring', springDamping: 0.7 },
+            delete: { type: 'easeInEaseOut', property: 'opacity' }
+          });
+
+          setCurrentHeight(targetHeight);
+        }
       },
     })
   ).current;
@@ -101,23 +102,21 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
   const handleTap = () => {
     const targetHeight = currentHeight < maxHeight ? maxHeight : minHeight;
 
-    Animated.spring(animatedHeight, {
-      toValue: targetHeight,
-      useNativeDriver: false,
-      tension: 100,
-      friction: 8,
-    }).start(({ finished }) => {
-      if (finished) {
-        setCurrentHeight(targetHeight);
-      }
+    // Configure smooth animation
+    LayoutAnimation.configureNext({
+      duration: 300,
+      create: { type: 'easeInEaseOut', property: 'opacity' },
+      update: { type: 'spring', springDamping: 0.8 },
+      delete: { type: 'easeInEaseOut', property: 'opacity' }
     });
+
+    setCurrentHeight(targetHeight);
   };
 
   // Reset modal height when opening
   useEffect(() => {
     if (visible) {
       setCurrentHeight(minHeight); // Start at partial height
-      animatedHeight.setValue(minHeight);
       translateY.setValue(0);
     }
   }, [visible]);
@@ -159,7 +158,7 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
             styles.modalContainer,
             {
               backgroundColor: colors.surface,
-              height: animatedHeight,
+              height: currentHeight,
               transform: [{ translateY: translateY }],
             },
           ]}

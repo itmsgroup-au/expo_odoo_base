@@ -50,11 +50,11 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
   // Check which files are already cached
   const checkCachedFiles = useCallback(async (attachmentsList) => {
     const cacheMap = new Map();
-    
+
     for (const attachment of attachmentsList) {
       const filename = `${attachment.id}_${attachment.name}`;
       const fileUri = `${FileSystem.documentDirectory}attachments/${filename}`;
-      
+
       try {
         const fileInfo = await FileSystem.getInfoAsync(fileUri);
         if (fileInfo.exists) {
@@ -68,7 +68,7 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         console.log(`Error checking cache for ${filename}:`, error);
       }
     }
-    
+
     setCachedFiles(cacheMap);
   }, []);
 
@@ -300,6 +300,224 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
     fetchAttachments();
   }, [fetchAttachments]);
 
+  // Create attachments directory if needed
+  const ensureAttachmentsDirectory = async () => {
+    const attachmentsDir = `${FileSystem.documentDirectory}attachments/`;
+    const dirInfo = await FileSystem.getInfoAsync(attachmentsDir);
+    if (!dirInfo.exists) {
+      await FileSystem.makeDirectoryAsync(attachmentsDir, { intermediates: true });
+    }
+    return attachmentsDir;
+  };
+
+  // Download and cache file
+  const downloadFile = async (attachment) => {
+    if (attachment.fileSize > 1024 * 1024) {
+      Alert.alert('File Too Large', 'Files larger than 1MB cannot be cached to preserve device storage.');
+      return;
+    }
+
+    if (downloadingItems.has(attachment.id)) {
+      return; // Already downloading
+    }
+
+    try {
+      setDownloadingItems(prev => new Set([...prev, attachment.id]));
+
+      const attachmentsDir = await ensureAttachmentsDirectory();
+      const filename = `${attachment.id}_${attachment.name}`;
+      const fileUri = `${attachmentsDir}${filename}`;
+
+      // Build download URL with access token
+      let downloadUrl = attachment.fullUrl;
+      if (accessToken && !downloadUrl.includes('access_token')) {
+        const separator = downloadUrl.includes('?') ? '&' : '?';
+        downloadUrl = `${downloadUrl}${separator}access_token=${accessToken}`;
+      }
+
+      console.log(`Downloading ${attachment.name} to ${fileUri}`);
+
+      const downloadResult = await FileSystem.downloadAsync(downloadUrl, fileUri);
+
+      if (downloadResult.status === 200) {
+        const fileInfo = await FileSystem.getInfoAsync(fileUri);
+        setCachedFiles(prev => new Map([...prev, [attachment.id, {
+          uri: fileUri,
+          size: fileInfo.size,
+          modifiedTime: fileInfo.modificationTime
+        }]]));
+
+        Alert.alert('Success', `${attachment.name} has been downloaded and cached.`);
+      } else {
+        throw new Error(`Download failed with status ${downloadResult.status}`);
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      Alert.alert('Download Failed', `Could not download ${attachment.name}. Please try again.`);
+    } finally {
+      setDownloadingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(attachment.id);
+        return newSet;
+      });
+    }
+  };
+
+  // Share file functionality
+  const shareFile = async (attachment) => {
+    try {
+      const cachedFile = cachedFiles.get(attachment.id);
+
+      if (cachedFile && await FileSystem.getInfoAsync(cachedFile.uri).then(info => info.exists)) {
+        // Share local cached file
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(cachedFile.uri, {
+            mimeType: attachment.mimetype,
+            dialogTitle: `Share ${attachment.name}`,
+          });
+        } else {
+          // Fallback to native share
+          await Share.share({
+            url: cachedFile.uri,
+            title: attachment.name,
+          });
+        }
+      } else {
+        // Share URL
+        let shareUrl = attachment.fullUrl;
+        if (accessToken && !shareUrl.includes('access_token')) {
+          const separator = shareUrl.includes('?') ? '&' : '?';
+          shareUrl = `${shareUrl}${separator}access_token=${accessToken}`;
+        }
+
+        await Share.share({
+          url: shareUrl,
+          title: attachment.name,
+          message: `Check out this file: ${attachment.name}`,
+        });
+      }
+    } catch (error) {
+      console.error('Share error:', error);
+      Alert.alert('Share Failed', 'Could not share the file. Please try again.');
+    }
+  };
+
+  // Save image to photos
+  const saveToPhotos = async (attachment) => {
+    if (!attachment.mimetype?.startsWith('image/')) {
+      Alert.alert('Invalid File', 'Only images can be saved to photos.');
+      return;
+    }
+
+    try {
+      // Request permissions
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission Required', 'Please grant permission to access your photo library.');
+        return;
+      }
+
+      let fileUri;
+      const cachedFile = cachedFiles.get(attachment.id);
+
+      if (cachedFile && await FileSystem.getInfoAsync(cachedFile.uri).then(info => info.exists)) {
+        fileUri = cachedFile.uri;
+      } else {
+        // Download temporarily
+        const tempDir = `${FileSystem.cacheDirectory}temp_photos/`;
+        const tempDirInfo = await FileSystem.getInfoAsync(tempDir);
+        if (!tempDirInfo.exists) {
+          await FileSystem.makeDirectoryAsync(tempDir, { intermediates: true });
+        }
+
+        const tempUri = `${tempDir}${attachment.id}_${attachment.name}`;
+        let downloadUrl = attachment.fullUrl;
+        if (accessToken && !downloadUrl.includes('access_token')) {
+          const separator = downloadUrl.includes('?') ? '&' : '?';
+          downloadUrl = `${downloadUrl}${separator}access_token=${accessToken}`;
+        }
+
+        const downloadResult = await FileSystem.downloadAsync(downloadUrl, tempUri);
+        if (downloadResult.status !== 200) {
+          throw new Error('Download failed');
+        }
+        fileUri = tempUri;
+      }
+
+      // Save to media library
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      await MediaLibrary.createAlbumAsync('ExoMobile', asset, false);
+
+      Alert.alert('Success', `${attachment.name} has been saved to your photos.`);
+
+      // Clean up temp file if it was created
+      if (!cachedFiles.has(attachment.id)) {
+        await FileSystem.deleteAsync(fileUri, { idempotent: true });
+      }
+    } catch (error) {
+      console.error('Save to photos error:', error);
+      Alert.alert('Save Failed', 'Could not save the image to photos. Please try again.');
+    }
+  };
+
+  // Open attachment handler
+  const openAttachment = (attachment) => {
+    if (attachment.mimetype?.startsWith('image/')) {
+      // Navigate to image viewer
+      navigation.navigate('ExpoImageViewer', {
+        attachmentId: attachment.id,
+        attachmentInfo: attachment,
+        title: attachment.name,
+      });
+    } else {
+      // Try to open cached file first, fallback to web URL
+      const cachedFile = cachedFiles.get(attachment.id);
+      if (cachedFile) {
+        Linking.openURL(cachedFile.uri).catch(() => {
+          // Fallback to web URL
+          let openUrl = attachment.fullUrl;
+          if (accessToken && !openUrl.includes('access_token')) {
+            const separator = openUrl.includes('?') ? '&' : '?';
+            openUrl = `${openUrl}${separator}access_token=${accessToken}`;
+          }
+          Linking.openURL(openUrl);
+        });
+      } else {
+        let openUrl = attachment.fullUrl;
+        if (accessToken && !openUrl.includes('access_token')) {
+          const separator = openUrl.includes('?') ? '&' : '?';
+          openUrl = `${openUrl}${separator}access_token=${accessToken}`;
+        }
+        Linking.openURL(openUrl);
+      }
+    }
+  };
+
+  // Show attachment actions context menu
+  const showAttachmentActions = (attachment) => {
+    const actions = [
+      { text: 'Open', onPress: () => openAttachment(attachment) },
+      { text: 'Share', onPress: () => shareFile(attachment) }
+    ];
+
+    // Add conditional actions based on file size and type
+    if (attachment.fileSize <= 1024 * 1024 && !cachedFiles.has(attachment.id)) {
+      actions.push({ text: 'Download & Cache', onPress: () => downloadFile(attachment) });
+    }
+
+    if (attachment.mimetype?.startsWith('image/')) {
+      actions.push({ text: 'Save to Photos', onPress: () => saveToPhotos(attachment) });
+    }
+
+    actions.push({ text: 'Cancel', style: 'cancel' });
+
+    Alert.alert(
+      attachment.name,
+      `${formatFileSize(attachment.fileSize)} • ${attachment.mimetype}`,
+      actions
+    );
+  };
+
   // Add a refresh function for debugging
   const handleRefresh = () => {
     console.log('HelpdeskInlineAttachments: Manual refresh triggered');
@@ -349,58 +567,94 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
           Tap to view • Long press for options
         </Text>
       </View>
-      
+
       <FlatList
         data={attachments}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={[styles.attachmentItem, { backgroundColor: colors.surface }]}
-            onPress={() => console.log('Attachment pressed:', item.name)}
-          >
-            <View style={styles.attachmentContent}>
-              <View style={styles.attachmentPreview}>
-                {item.mimetype?.startsWith('image/') ? (
-                  <CachedImage
-                    attachmentId={item.id}
-                    size="64x64"
-                    style={styles.attachmentThumbnail}
-                    contentFit="cover"
-                    attachmentInfo={item}
-                  />
-                ) : (
-                  <View style={[styles.attachmentIcon, { backgroundColor: colors.background }]}>
-                    <Icon
-                      name={getFileIconName(item.mimetype)}
-                      size={24}
-                      color={colors.primary}
+        renderItem={({ item }) => {
+          const isImage = item.mimetype?.startsWith('image/');
+          const isCached = cachedFiles.has(item.id);
+          const isDownloading = downloadingItems.has(item.id);
+          const isLargeFile = item.fileSize > 1024 * 1024;
+
+          return (
+            <TouchableOpacity
+              style={[styles.attachmentItem, { backgroundColor: colors.surface }]}
+              onPress={() => openAttachment(item)}
+              onLongPress={() => showAttachmentActions(item)}
+            >
+              <View style={styles.attachmentContent}>
+                <View style={styles.attachmentPreview}>
+                  {isImage ? (
+                    <CachedImage
+                      attachmentId={item.id}
+                      size="64x64"
+                      style={styles.attachmentThumbnail}
+                      contentFit="cover"
+                      attachmentInfo={item}
                     />
-                  </View>
-                )}
-              </View>
+                  ) : (
+                    <View style={[styles.attachmentIcon, { backgroundColor: colors.background }]}>
+                      <Icon
+                        name={getFileIconName(item.mimetype)}
+                        size={24}
+                        color={colors.primary}
+                      />
+                    </View>
+                  )}
 
-              <View style={styles.attachmentInfo}>
-                <Text style={[styles.attachmentName, { color: colors.text }]} numberOfLines={2}>
-                  {item.name}
-                </Text>
-                <Text style={[styles.attachmentDetails, { color: colors.textSecondary }]}>
-                  {formatFileSize(item.fileSize)}
-                </Text>
-                <Text style={[styles.attachmentDate, { color: colors.textSecondary }]}>
-                  {new Date(item.createDate).toLocaleDateString()}
-                </Text>
-              </View>
+                  {/* Cache indicator */}
+                  {isCached && !isLargeFile && (
+                    <View style={[styles.cacheIndicator, { backgroundColor: colors.success }]}>
+                      <Icon name="check" size={12} color="white" />
+                    </View>
+                  )}
+                </View>
 
-              <View style={styles.attachmentActions}>
-                <TouchableOpacity
-                  style={[styles.actionButton, { backgroundColor: colors.primary }]}
-                  onPress={() => console.log('Share pressed:', item.name)}
-                >
-                  <Icon name="share-variant" size={16} color="white" />
-                </TouchableOpacity>
+                <View style={styles.attachmentInfo}>
+                  <Text style={[styles.attachmentName, { color: colors.text }]} numberOfLines={2}>
+                    {item.name}
+                  </Text>
+                  <Text style={[styles.attachmentDetails, { color: colors.textSecondary }]}>
+                    {formatFileSize(item.fileSize)}
+                    {isLargeFile && ' • Too large to cache'}
+                    {isCached && ' • Cached'}
+                  </Text>
+                  <Text style={[styles.attachmentDate, { color: colors.textSecondary }]}>
+                    {new Date(item.createDate).toLocaleDateString()} • {item.createUser}
+                  </Text>
+                </View>
+
+                <View style={styles.attachmentActions}>
+                  <TouchableOpacity
+                    style={[styles.actionButton, { backgroundColor: colors.primary }]}
+                    onPress={() => shareFile(item)}
+                  >
+                    <Icon name="share-variant" size={16} color="white" />
+                  </TouchableOpacity>
+
+                  {!isLargeFile && (
+                    isDownloading ? (
+                      <View style={[styles.actionButton, { backgroundColor: colors.background }]}>
+                        <ActivityIndicator size="small" color={colors.primary} />
+                      </View>
+                    ) : isCached ? (
+                      <View style={[styles.actionButton, { backgroundColor: colors.success }]}>
+                        <Icon name="check" size={16} color="white" />
+                      </View>
+                    ) : (
+                      <TouchableOpacity
+                        style={[styles.actionButton, { backgroundColor: colors.background, borderWidth: 1, borderColor: colors.primary }]}
+                        onPress={() => downloadFile(item)}
+                      >
+                        <Icon name="download" size={16} color={colors.primary} />
+                      </TouchableOpacity>
+                    )
+                  )}
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        )}
+            </TouchableOpacity>
+          );
+        }}
         keyExtractor={(item) => `attachment-${item.id}`}
         style={styles.list}
         showsVerticalScrollIndicator={false}
@@ -483,6 +737,16 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cacheIndicator: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
   },

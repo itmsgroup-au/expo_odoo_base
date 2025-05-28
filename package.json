@@ -25,6 +25,8 @@
     "expo-file-system": "~18.1.9",
     "expo-image": "~2.1.7",
     "expo-image-picker": "^16.1.4",
+    "expo-media-library": "~17.1.6",
+    "expo-sharing": "~13.1.5",
     "expo-status-bar": "~2.2.3",
     "metro": "^0.82.0",
     "metro-config": "^0.82.0",
@@ -32,6 +34,8 @@
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
     "react-native-blob-util": "^0.21.2",
+    "react-native-fast-image": "^8.6.3",
+    "react-native-file-viewer": "^2.1.5",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-pdf": "^6.7.7",
     "react-native-reanimated": "~3.17.4",
@@ -41,9 +45,7 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "^0.20.0",
     "react-native-webview": "^13.13.5",
-    "winston": "^3.17.0",
-    "expo-media-library": "~17.1.6",
-    "expo-sharing": "~13.1.5"
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

@@ -20,6 +20,7 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 const MessageDetailModal = ({ visible, message, onClose }) => {
   const { colors } = useTheme();
   const translateY = useRef(new Animated.Value(0)).current;
+  const animatedHeight = useRef(new Animated.Value(screenHeight * 0.4)).current;
   const [currentHeight, setCurrentHeight] = useState(screenHeight * 0.4); // Start at partial height
 
   // Height boundaries
@@ -73,14 +74,25 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
           targetHeight = maxHeight;
         }
 
-        // Animate to target height
-        Animated.timing(translateY, {
+        // Smooth animation to target height with spring physics
+        Animated.spring(translateY, {
           toValue: 0,
-          duration: 300,
           useNativeDriver: true,
+          tension: 100,
+          friction: 8,
         }).start();
 
-        setCurrentHeight(targetHeight);
+        // Animate height change smoothly
+        Animated.spring(animatedHeight, {
+          toValue: targetHeight,
+          useNativeDriver: false,
+          tension: 100,
+          friction: 8,
+        }).start(({ finished }) => {
+          if (finished) {
+            setCurrentHeight(targetHeight);
+          }
+        });
       },
     })
   ).current;
@@ -88,13 +100,24 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
   // Handle tap on handle bar to toggle between partial and full
   const handleTap = () => {
     const targetHeight = currentHeight < maxHeight ? maxHeight : minHeight;
-    setCurrentHeight(targetHeight);
+
+    Animated.spring(animatedHeight, {
+      toValue: targetHeight,
+      useNativeDriver: false,
+      tension: 100,
+      friction: 8,
+    }).start(({ finished }) => {
+      if (finished) {
+        setCurrentHeight(targetHeight);
+      }
+    });
   };
 
   // Reset modal height when opening
   useEffect(() => {
     if (visible) {
       setCurrentHeight(minHeight); // Start at partial height
+      animatedHeight.setValue(minHeight);
       translateY.setValue(0);
     }
   }, [visible]);
@@ -136,7 +159,7 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
             styles.modalContainer,
             {
               backgroundColor: colors.surface,
-              height: currentHeight,
+              height: animatedHeight,
               transform: [{ translateY: translateY }],
             },
           ]}

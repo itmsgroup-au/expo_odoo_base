@@ -21,7 +21,6 @@ import { useNavigation } from '@react-navigation/native';
 import odooClient from '../../../api/odooClient';
 import CachedImage from '../../../components/CachedImage';
 import { getFileIconName, formatFileSize } from '../../../components/AttachmentsList';
-import RNBlobUtil from 'react-native-blob-util';
 import { Image } from 'expo-image';
 
 const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
@@ -49,34 +48,32 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
     getAccessToken();
   }, []);
 
-  // Check which files are already cached using RNBlobUtil
+  // Check which files are already cached using expo-file-system
   const checkCachedFiles = useCallback(async (attachmentsList) => {
     const cacheMap = new Map();
 
     try {
-      const { dirs } = RNBlobUtil.fs;
-      const attachmentsDir = `${dirs.DocumentDir}/attachments`;
+      const attachmentsDir = `${FileSystem.documentDirectory}attachments/`;
 
       // Check if attachments directory exists
-      const dirExists = await RNBlobUtil.fs.isDir(attachmentsDir);
-      if (!dirExists) {
+      const dirInfo = await FileSystem.getInfoAsync(attachmentsDir);
+      if (!dirInfo.exists) {
         setCachedFiles(cacheMap);
         return;
       }
 
       for (const attachment of attachmentsList) {
         const filename = `${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-        const filePath = `${attachmentsDir}/${filename}`;
+        const filePath = `${attachmentsDir}${filename}`;
 
         try {
-          const fileExists = await RNBlobUtil.fs.exists(filePath);
-          if (fileExists) {
-            const fileStats = await RNBlobUtil.fs.stat(filePath);
+          const fileInfo = await FileSystem.getInfoAsync(filePath);
+          if (fileInfo.exists) {
             cacheMap.set(attachment.id, {
-              uri: `file://${filePath}`,
+              uri: filePath,
               path: filePath,
-              size: fileStats.size,
-              modifiedTime: fileStats.lastModified
+              size: fileInfo.size,
+              modifiedTime: fileInfo.modificationTime
             });
           }
         } catch (error) {
@@ -328,7 +325,7 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
     return attachmentsDir;
   };
 
-  // Download and cache file using RNBlobUtil for better performance
+  // Download and cache file using expo-file-system
   const downloadFile = async (attachment) => {
     if (attachment.fileSize > 1024 * 1024) {
       Alert.alert('File Too Large', 'Files larger than 1MB cannot be cached to preserve device storage.');
@@ -342,18 +339,9 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
     try {
       setDownloadingItems(prev => new Set([...prev, attachment.id]));
 
-      // Use RNBlobUtil for better file handling
-      const { dirs } = RNBlobUtil.fs;
-      const attachmentsDir = `${dirs.DocumentDir}/attachments`;
-
-      // Ensure directory exists
-      const dirExists = await RNBlobUtil.fs.isDir(attachmentsDir);
-      if (!dirExists) {
-        await RNBlobUtil.fs.mkdir(attachmentsDir);
-      }
-
+      const attachmentsDir = await ensureAttachmentsDirectory();
       const filename = `${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const filePath = `${attachmentsDir}/${filename}`;
+      const filePath = `${attachmentsDir}${filename}`;
 
       // Build download URL with access token
       let downloadUrl = attachment.fullUrl;
@@ -364,24 +352,21 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
 
       console.log(`Downloading ${attachment.name} to ${filePath}`);
 
-      // Download with RNBlobUtil
-      const response = await RNBlobUtil.config({
-        path: filePath,
-        fileCache: true,
-      }).fetch('GET', downloadUrl);
+      // Download with expo-file-system
+      const downloadResult = await FileSystem.downloadAsync(downloadUrl, filePath);
 
-      if (response.respInfo.status === 200) {
-        const fileStats = await RNBlobUtil.fs.stat(filePath);
+      if (downloadResult.status === 200) {
+        const fileInfo = await FileSystem.getInfoAsync(filePath);
         setCachedFiles(prev => new Map([...prev, [attachment.id, {
-          uri: `file://${filePath}`,
+          uri: filePath,
           path: filePath,
-          size: fileStats.size,
-          modifiedTime: fileStats.lastModified
+          size: fileInfo.size,
+          modifiedTime: fileInfo.modificationTime
         }]]));
 
         Alert.alert('Success', `${attachment.name} has been downloaded and cached.`);
       } else {
-        throw new Error(`Download failed with status ${response.respInfo.status}`);
+        throw new Error(`Download failed with status ${downloadResult.status}`);
       }
     } catch (error) {
       console.error('Download error:', error);
@@ -400,71 +385,68 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
     try {
       const cachedFile = cachedFiles.get(attachment.id);
 
-      if (cachedFile && cachedFile.path && await RNBlobUtil.fs.exists(cachedFile.path)) {
-        // Share local cached file
-        console.log(`Sharing local file: ${cachedFile.path}`);
-
-        if (await Sharing.isAvailableAsync()) {
-          await Sharing.shareAsync(cachedFile.uri, {
-            mimeType: attachment.mimetype,
-            dialogTitle: `Share ${attachment.name}`,
-          });
-        } else {
-          // Fallback to native share with file URI
-          await Share.share({
-            url: cachedFile.uri,
-            title: attachment.name,
-          });
-        }
-      } else {
-        // Download first, then share
-        console.log(`File not cached, downloading first: ${attachment.name}`);
-
-        // Download temporarily for sharing
-        const { dirs } = RNBlobUtil.fs;
-        const tempDir = `${dirs.CacheDir}/temp_share`;
-
-        const dirExists = await RNBlobUtil.fs.isDir(tempDir);
-        if (!dirExists) {
-          await RNBlobUtil.fs.mkdir(tempDir);
-        }
-
-        const filename = `${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-        const tempPath = `${tempDir}/${filename}`;
-
-        let downloadUrl = attachment.fullUrl;
-        if (accessToken && !downloadUrl.includes('access_token')) {
-          const separator = downloadUrl.includes('?') ? '&' : '?';
-          downloadUrl = `${downloadUrl}${separator}access_token=${accessToken}`;
-        }
-
-        const response = await RNBlobUtil.config({
-          path: tempPath,
-          fileCache: true,
-        }).fetch('GET', downloadUrl);
-
-        if (response.respInfo.status === 200) {
-          const tempUri = `file://${tempPath}`;
+      if (cachedFile && cachedFile.path) {
+        const fileInfo = await FileSystem.getInfoAsync(cachedFile.path);
+        if (fileInfo.exists) {
+          // Share local cached file
+          console.log(`Sharing local file: ${cachedFile.path}`);
 
           if (await Sharing.isAvailableAsync()) {
-            await Sharing.shareAsync(tempUri, {
+            await Sharing.shareAsync(cachedFile.uri, {
               mimeType: attachment.mimetype,
               dialogTitle: `Share ${attachment.name}`,
             });
           } else {
+            // Fallback to native share with file URI
             await Share.share({
-              url: tempUri,
+              url: cachedFile.uri,
               title: attachment.name,
             });
           }
-
-          // Clean up temp file after sharing
-          setTimeout(() => {
-            RNBlobUtil.fs.unlink(tempPath).catch(console.error);
-          }, 5000);
-        } else {
-          throw new Error('Download failed for sharing');
+          return;
         }
+      }
+
+      // Download first, then share
+      console.log(`File not cached, downloading first: ${attachment.name}`);
+
+      // Download temporarily for sharing
+      const tempDir = `${FileSystem.cacheDirectory}temp_share/`;
+      const tempDirInfo = await FileSystem.getInfoAsync(tempDir);
+      if (!tempDirInfo.exists) {
+        await FileSystem.makeDirectoryAsync(tempDir, { intermediates: true });
+      }
+
+      const filename = `${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const tempPath = `${tempDir}${filename}`;
+
+      let downloadUrl = attachment.fullUrl;
+      if (accessToken && !downloadUrl.includes('access_token')) {
+        const separator = downloadUrl.includes('?') ? '&' : '?';
+        downloadUrl = `${downloadUrl}${separator}access_token=${accessToken}`;
+      }
+
+      const downloadResult = await FileSystem.downloadAsync(downloadUrl, tempPath);
+
+      if (downloadResult.status === 200) {
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(tempPath, {
+            mimeType: attachment.mimetype,
+            dialogTitle: `Share ${attachment.name}`,
+          });
+        } else {
+          await Share.share({
+            url: tempPath,
+            title: attachment.name,
+          });
+        }
+
+        // Clean up temp file after sharing
+        setTimeout(() => {
+          FileSystem.deleteAsync(tempPath, { idempotent: true }).catch(console.error);
+        }, 5000);
+      } else {
+        throw new Error('Download failed for sharing');
       }
     } catch (error) {
       console.error('Share error:', error);
@@ -490,9 +472,14 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       let fileUri;
       const cachedFile = cachedFiles.get(attachment.id);
 
-      if (cachedFile && await FileSystem.getInfoAsync(cachedFile.uri).then(info => info.exists)) {
-        fileUri = cachedFile.uri;
-      } else {
+      if (cachedFile && cachedFile.path) {
+        const fileInfo = await FileSystem.getInfoAsync(cachedFile.path);
+        if (fileInfo.exists) {
+          fileUri = cachedFile.uri;
+        }
+      }
+
+      if (!fileUri) {
         // Download temporarily
         const tempDir = `${FileSystem.cacheDirectory}temp_photos/`;
         const tempDirInfo = await FileSystem.getInfoAsync(tempDir);
@@ -500,7 +487,7 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
           await FileSystem.makeDirectoryAsync(tempDir, { intermediates: true });
         }
 
-        const tempUri = `${tempDir}${attachment.id}_${attachment.name}`;
+        const tempUri = `${tempDir}${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
         let downloadUrl = attachment.fullUrl;
         if (accessToken && !downloadUrl.includes('access_token')) {
           const separator = downloadUrl.includes('?') ? '&' : '?';
@@ -521,7 +508,7 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       Alert.alert('Success', `${attachment.name} has been saved to your photos.`);
 
       // Clean up temp file if it was created
-      if (!cachedFiles.has(attachment.id)) {
+      if (!cachedFiles.has(attachment.id) && fileUri.includes('temp_photos')) {
         await FileSystem.deleteAsync(fileUri, { idempotent: true });
       }
     } catch (error) {
@@ -544,34 +531,38 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         // For non-images, try to open cached file or download URL
         const cachedFile = cachedFiles.get(attachment.id);
 
-        if (cachedFile && cachedFile.path && await RNBlobUtil.fs.exists(cachedFile.path)) {
-          // Open cached file with system default app
-          console.log(`Opening cached file: ${cachedFile.path}`);
+        if (cachedFile && cachedFile.path) {
+          const fileInfo = await FileSystem.getInfoAsync(cachedFile.path);
+          if (fileInfo.exists) {
+            // Open cached file with system default app
+            console.log(`Opening cached file: ${cachedFile.path}`);
 
-          try {
-            await Linking.openURL(cachedFile.uri);
-          } catch (linkingError) {
-            console.log('Linking failed for cached file:', linkingError);
-            // Fallback to web URL
-            let fallbackUrl = attachment.fullUrl;
-            if (accessToken && !fallbackUrl.includes('access_token')) {
-              const separator = fallbackUrl.includes('?') ? '&' : '?';
-              fallbackUrl = `${fallbackUrl}${separator}access_token=${accessToken}`;
+            try {
+              await Linking.openURL(cachedFile.uri);
+            } catch (linkingError) {
+              console.log('Linking failed for cached file:', linkingError);
+              // Fallback to web URL
+              let fallbackUrl = attachment.fullUrl;
+              if (accessToken && !fallbackUrl.includes('access_token')) {
+                const separator = fallbackUrl.includes('?') ? '&' : '?';
+                fallbackUrl = `${fallbackUrl}${separator}access_token=${accessToken}`;
+              }
+              await Linking.openURL(fallbackUrl);
             }
-            await Linking.openURL(fallbackUrl);
+            return;
           }
-        } else {
-          // Open web URL directly
-          console.log(`Opening web URL: ${attachment.name}`);
-
-          let openUrl = attachment.fullUrl;
-          if (accessToken && !openUrl.includes('access_token')) {
-            const separator = openUrl.includes('?') ? '&' : '?';
-            openUrl = `${openUrl}${separator}access_token=${accessToken}`;
-          }
-
-          await Linking.openURL(openUrl);
         }
+
+        // Open web URL directly
+        console.log(`Opening web URL: ${attachment.name}`);
+
+        let openUrl = attachment.fullUrl;
+        if (accessToken && !openUrl.includes('access_token')) {
+          const separator = openUrl.includes('?') ? '&' : '?';
+          openUrl = `${openUrl}${separator}access_token=${accessToken}`;
+        }
+
+        await Linking.openURL(openUrl);
       }
     } catch (error) {
       console.error('Open attachment error:', error);

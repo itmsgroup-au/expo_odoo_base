@@ -243,6 +243,9 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
             // Download with filename (better for caching)
             downloadUrlWithFilename: `${baseUrl}/api/v2/download/${att.id}/${encodeURIComponent(att.name)}`,
 
+            // Working format from browser (with model and field parameters)
+            downloadUrlWithModel: `${baseUrl}/api/v2/download/${att.id}?model=ir.attachment&field=raw&filename_field=name&type=file`,
+
             // Thumbnail URL for images using image API
             thumbnailUrl: att.mimetype?.startsWith('image/')
               ? `${baseUrl}/api/v2/image/${att.id}/128x128`
@@ -295,6 +298,9 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
 
             // Download with filename (better for caching)
             downloadUrlWithFilename: `${baseUrl}/api/v2/download/${att.id}/${encodeURIComponent(att.name)}`,
+
+            // Working format from browser (with model and field parameters)
+            downloadUrlWithModel: `${baseUrl}/api/v2/download/${att.id}?model=ir.attachment&field=raw&filename_field=name&type=file`,
 
             // Thumbnail URL for images using image API
             thumbnailUrl: att.mimetype?.startsWith('image/')
@@ -413,6 +419,8 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       // Try multiple download URLs with fallback strategy
       const baseUrl = odooClient.client.defaults.baseURL || '';
       const downloadUrls = [
+        // Try the working browser format first
+        attachment.downloadUrlWithModel,
         attachment.downloadUrlWithFilename,
         attachment.downloadUrl,
         `${baseUrl}/web/content/${attachment.id}?download=true`,
@@ -515,7 +523,9 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       // Try multiple download URLs with fallback strategy
       const baseUrl = odooClient.client.defaults.baseURL || '';
       const downloadUrls = [
-        // Try filename-based first (best for caching)
+        // Try the working browser format first
+        attachment.downloadUrlWithModel,
+        // Try filename-based (best for caching)
         attachment.downloadUrlWithFilename,
         // Fallback to ID-based
         attachment.downloadUrl,
@@ -657,6 +667,7 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       // Try the same fallback URLs as in downloadFile
       const baseUrl = odooClient.client.defaults.baseURL || '';
       const fallbackUrls = [
+        attachment.downloadUrlWithModel,
         attachment.downloadUrlWithFilename,
         attachment.downloadUrl,
         `${baseUrl}/web/content/${attachment.id}?download=true`,
@@ -749,6 +760,7 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         // Try the same fallback URLs as in downloadFile
         const baseUrl = odooClient.client.defaults.baseURL || '';
         const fallbackUrls = [
+          attachment.downloadUrlWithModel,
           attachment.downloadUrlWithFilename,
           attachment.downloadUrl,
           `${baseUrl}/web/content/${attachment.id}?download=true`,
@@ -898,6 +910,7 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       // Try the same fallback URLs as download
       const baseUrl = odooClient.client.defaults.baseURL || '';
       const webUrls = [
+        attachment.downloadUrlWithModel,
         attachment.downloadUrl,
         `${baseUrl}/web/content/${attachment.id}?download=true`,
         `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,

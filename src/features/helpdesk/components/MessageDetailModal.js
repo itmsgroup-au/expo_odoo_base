@@ -28,14 +28,20 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
   const snapPoints = useMemo(() => ['20%', '50%', '90%'], []);
 
   // Track current snap index for haptic feedback
-  const [currentSnapIndex, setCurrentSnapIndex] = useState(1); // Start at 50%
+  const [currentSnapIndex, setCurrentSnapIndex] = useState(-1); // Start closed
 
   // Handle bottom sheet changes with haptic feedback
   const handleSheetChanges = useCallback((index) => {
     console.log('Bottom sheet changed to index:', index);
 
+    // Validate index
+    if (index < -1 || index >= snapPoints.length) {
+      console.warn(`Invalid sheet index ${index}, ignoring`);
+      return;
+    }
+
     // Provide haptic feedback on snap
-    if (index !== currentSnapIndex) {
+    if (index !== currentSnapIndex && index >= 0) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       setCurrentSnapIndex(index);
     }
@@ -43,9 +49,10 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
     // Close modal if swiped down past the first snap point
     if (index === -1) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      setCurrentSnapIndex(-1);
       onClose();
     }
-  }, [currentSnapIndex, onClose]);
+  }, [currentSnapIndex, onClose, snapPoints.length]);
 
   // Handle bottom sheet close
   const handleClose = useCallback(() => {
@@ -55,22 +62,32 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
 
   // Handle snap to specific index
   const snapToIndex = useCallback((index) => {
+    // Validate index is within range
+    if (index < 0 || index >= snapPoints.length) {
+      console.warn(`Invalid snap index ${index}, must be between 0 and ${snapPoints.length - 1}`);
+      return;
+    }
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     bottomSheetRef.current?.snapToIndex(index);
-  }, []);
+  }, [snapPoints.length]);
 
   // Handle tap on handle bar to cycle through snap points
   const handleTap = useCallback(() => {
-    const nextIndex = currentSnapIndex === 2 ? 1 : currentSnapIndex + 1;
+    // Ensure we have a valid current snap index
+    const safeCurrentIndex = Math.max(0, Math.min(currentSnapIndex, snapPoints.length - 1));
+    const nextIndex = safeCurrentIndex === 2 ? 1 : safeCurrentIndex + 1;
     snapToIndex(nextIndex);
-  }, [currentSnapIndex, snapToIndex]);
+  }, [currentSnapIndex, snapToIndex, snapPoints.length]);
 
   // Open/close bottom sheet based on visible prop
   useEffect(() => {
     if (visible && message) {
-      // Open to middle snap point (50%)
-      bottomSheetRef.current?.snapToIndex(1);
-      setCurrentSnapIndex(1);
+      // Small delay to ensure bottom sheet is mounted before snapping
+      setTimeout(() => {
+        bottomSheetRef.current?.snapToIndex(1);
+        setCurrentSnapIndex(1);
+      }, 100);
     } else {
       // Close the bottom sheet
       bottomSheetRef.current?.close();
@@ -208,7 +225,7 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
 
         <BottomSheet
           ref={bottomSheetRef}
-          index={1}
+          index={-1}
           snapPoints={snapPoints}
           onChange={handleSheetChanges}
           enablePanDownToClose={true}

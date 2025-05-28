@@ -246,6 +246,11 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
             // Working format from browser (with model and field parameters)
             downloadUrlWithModel: `${baseUrl}/api/v2/download/${att.id}?model=ir.attachment&field=raw&filename_field=name&type=file`,
 
+            // API response format options
+            downloadUrlAsFile: `${baseUrl}/api/v2/download/${att.id}?response_type=file`,
+            downloadUrlAsStream: `${baseUrl}/api/v2/download/${att.id}?response_type=stream`,
+            downloadUrlAsBase64: `${baseUrl}/api/v2/download/${att.id}?response_type=base64`,
+
             // Thumbnail URL for images using image API
             thumbnailUrl: att.mimetype?.startsWith('image/')
               ? `${baseUrl}/api/v2/image/${att.id}/128x128`
@@ -274,8 +279,10 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         setAttachments(processedAttachments);
         await checkCachedFiles(processedAttachments);
 
-        // Auto-download attachments under 1MB
-        await autoDownloadSmallAttachments(processedAttachments);
+        // Auto-download attachments under 1MB in background (non-blocking)
+        setTimeout(() => {
+          autoDownloadSmallAttachments(processedAttachments);
+        }, 500); // Small delay to let UI render first
       } else if (attachmentsResponse.data && Array.isArray(attachmentsResponse.data)) {
         // This is the format used in the MessageThread component
         console.log(`HelpdeskInlineAttachments: Retrieved ${attachmentsResponse.data.length} attachment details (array format)`);
@@ -301,6 +308,11 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
 
             // Working format from browser (with model and field parameters)
             downloadUrlWithModel: `${baseUrl}/api/v2/download/${att.id}?model=ir.attachment&field=raw&filename_field=name&type=file`,
+
+            // API response format options
+            downloadUrlAsFile: `${baseUrl}/api/v2/download/${att.id}?response_type=file`,
+            downloadUrlAsStream: `${baseUrl}/api/v2/download/${att.id}?response_type=stream`,
+            downloadUrlAsBase64: `${baseUrl}/api/v2/download/${att.id}?response_type=base64`,
 
             // Thumbnail URL for images using image API
             thumbnailUrl: att.mimetype?.startsWith('image/')
@@ -331,8 +343,10 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         setAttachments(processedAttachments);
         await checkCachedFiles(processedAttachments);
 
-        // Auto-download attachments under 1MB
-        await autoDownloadSmallAttachments(processedAttachments);
+        // Auto-download attachments under 1MB in background (non-blocking)
+        setTimeout(() => {
+          autoDownloadSmallAttachments(processedAttachments);
+        }, 500); // Small delay to let UI render first
       } else {
         console.log('HelpdeskInlineAttachments: No attachment details found in the response');
         setAttachments([]);
@@ -421,6 +435,9 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       const downloadUrls = [
         // Try the working browser format first
         attachment.downloadUrlWithModel,
+        // Try API response format options
+        attachment.downloadUrlAsFile,
+        attachment.downloadUrlAsStream,
         attachment.downloadUrlWithFilename,
         attachment.downloadUrl,
         `${baseUrl}/web/content/${attachment.id}?download=true`,
@@ -525,6 +542,9 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       const downloadUrls = [
         // Try the working browser format first
         attachment.downloadUrlWithModel,
+        // Try API response format options
+        attachment.downloadUrlAsFile,
+        attachment.downloadUrlAsStream,
         // Try filename-based (best for caching)
         attachment.downloadUrlWithFilename,
         // Fallback to ID-based
@@ -668,6 +688,8 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       const baseUrl = odooClient.client.defaults.baseURL || '';
       const fallbackUrls = [
         attachment.downloadUrlWithModel,
+        attachment.downloadUrlAsFile,
+        attachment.downloadUrlAsStream,
         attachment.downloadUrlWithFilename,
         attachment.downloadUrl,
         `${baseUrl}/web/content/${attachment.id}?download=true`,
@@ -761,6 +783,8 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         const baseUrl = odooClient.client.defaults.baseURL || '';
         const fallbackUrls = [
           attachment.downloadUrlWithModel,
+          attachment.downloadUrlAsFile,
+          attachment.downloadUrlAsStream,
           attachment.downloadUrlWithFilename,
           attachment.downloadUrl,
           `${baseUrl}/web/content/${attachment.id}?download=true`,
@@ -911,6 +935,8 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       const baseUrl = odooClient.client.defaults.baseURL || '';
       const webUrls = [
         attachment.downloadUrlWithModel,
+        attachment.downloadUrlAsFile,
+        attachment.downloadUrlAsStream,
         attachment.downloadUrl,
         `${baseUrl}/web/content/${attachment.id}?download=true`,
         `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,

@@ -243,13 +243,13 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
             // Download with filename (better for caching)
             downloadUrlWithFilename: `${baseUrl}/api/v2/download/${att.id}/${encodeURIComponent(att.name)}`,
 
-            // Working format from browser (with model and field parameters)
-            downloadUrlWithModel: `${baseUrl}/api/v2/download/${att.id}?model=ir.attachment&field=raw&filename_field=name&type=file`,
+            // Working format from browser (correct query parameter format)
+            downloadUrlWithModel: `${baseUrl}/api/v2/download?model=ir.attachment&id=${att.id}&field=raw&filename=${encodeURIComponent(att.name)}&filename_field=name&type=file`,
 
-            // API response format options
-            downloadUrlAsFile: `${baseUrl}/api/v2/download/${att.id}?response_type=file`,
-            downloadUrlAsStream: `${baseUrl}/api/v2/download/${att.id}?response_type=stream`,
-            downloadUrlAsBase64: `${baseUrl}/api/v2/download/${att.id}?response_type=base64`,
+            // API response format options (using query parameters)
+            downloadUrlAsFile: `${baseUrl}/api/v2/download?model=ir.attachment&id=${att.id}&field=raw&response_type=file`,
+            downloadUrlAsStream: `${baseUrl}/api/v2/download?model=ir.attachment&id=${att.id}&field=raw&response_type=stream`,
+            downloadUrlAsBase64: `${baseUrl}/api/v2/download?model=ir.attachment&id=${att.id}&field=raw&response_type=base64`,
 
             // Thumbnail URL for images using image API
             thumbnailUrl: att.mimetype?.startsWith('image/')
@@ -306,13 +306,13 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
             // Download with filename (better for caching)
             downloadUrlWithFilename: `${baseUrl}/api/v2/download/${att.id}/${encodeURIComponent(att.name)}`,
 
-            // Working format from browser (with model and field parameters)
-            downloadUrlWithModel: `${baseUrl}/api/v2/download/${att.id}?model=ir.attachment&field=raw&filename_field=name&type=file`,
+            // Working format from browser (correct query parameter format)
+            downloadUrlWithModel: `${baseUrl}/api/v2/download?model=ir.attachment&id=${att.id}&field=raw&filename=${encodeURIComponent(att.name)}&filename_field=name&type=file`,
 
-            // API response format options
-            downloadUrlAsFile: `${baseUrl}/api/v2/download/${att.id}?response_type=file`,
-            downloadUrlAsStream: `${baseUrl}/api/v2/download/${att.id}?response_type=stream`,
-            downloadUrlAsBase64: `${baseUrl}/api/v2/download/${att.id}?response_type=base64`,
+            // API response format options (using query parameters)
+            downloadUrlAsFile: `${baseUrl}/api/v2/download?model=ir.attachment&id=${att.id}&field=raw&response_type=file`,
+            downloadUrlAsStream: `${baseUrl}/api/v2/download?model=ir.attachment&id=${att.id}&field=raw&response_type=stream`,
+            downloadUrlAsBase64: `${baseUrl}/api/v2/download?model=ir.attachment&id=${att.id}&field=raw&response_type=base64`,
 
             // Thumbnail URL for images using image API
             thumbnailUrl: att.mimetype?.startsWith('image/')
@@ -433,13 +433,18 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       // Try multiple download URLs with fallback strategy
       const baseUrl = odooClient.client.defaults.baseURL || '';
       const downloadUrls = [
-        // Try the working browser format first
+        // Try the working browser format first (proven to work)
         attachment.downloadUrlWithModel,
         // Try API response format options
         attachment.downloadUrlAsFile,
         attachment.downloadUrlAsStream,
+        // Additional working formats based on browser pattern
+        `${baseUrl}/api/v2/download?model=ir.attachment&id=${attachment.id}&field=raw&filename_field=name&type=file`,
+        `${baseUrl}/api/v2/download?model=ir.attachment&id=${attachment.id}&field=raw`,
+        // Original path-based formats
         attachment.downloadUrlWithFilename,
         attachment.downloadUrl,
+        // Legacy web/content endpoints
         `${baseUrl}/web/content/${attachment.id}?download=true`,
         `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,
         attachment.fullUrl
@@ -540,20 +545,20 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       // Try multiple download URLs with fallback strategy
       const baseUrl = odooClient.client.defaults.baseURL || '';
       const downloadUrls = [
-        // Try the working browser format first
+        // Try the working browser format first (proven to work)
         attachment.downloadUrlWithModel,
         // Try API response format options
         attachment.downloadUrlAsFile,
         attachment.downloadUrlAsStream,
-        // Try filename-based (best for caching)
+        // Additional working formats based on browser pattern
+        `${baseUrl}/api/v2/download?model=ir.attachment&id=${attachment.id}&field=raw&filename_field=name&type=file`,
+        `${baseUrl}/api/v2/download?model=ir.attachment&id=${attachment.id}&field=raw`,
+        // Original path-based formats
         attachment.downloadUrlWithFilename,
-        // Fallback to ID-based
         attachment.downloadUrl,
-        // Legacy web/content endpoint (often more reliable)
+        // Legacy web/content endpoints
         `${baseUrl}/web/content/${attachment.id}?download=true`,
-        // Alternative legacy format
         `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,
-        // Final fallback to original full URL
         attachment.fullUrl
       ].filter(Boolean); // Remove any undefined URLs
 

@@ -1,24 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   Modal,
   TouchableOpacity,
-  ScrollView,
-  Animated,
-  PanResponder,
   Dimensions,
   SafeAreaView,
-  LayoutAnimation,
-  UIManager,
   Platform,
 } from 'react-native';
-
-// Enable LayoutAnimation on Android
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
+import BottomSheet, { BottomSheetView, BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import * as Haptics from 'expo-haptics';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../../../contexts/ThemeContext';
 import RenderHtml from 'react-native-render-html';
@@ -27,115 +20,62 @@ const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 const MessageDetailModal = ({ visible, message, onClose }) => {
   const { colors } = useTheme();
-  const translateY = useRef(new Animated.Value(0)).current;
-  const [currentHeight, setCurrentHeight] = useState(screenHeight * 0.4); // Start at partial height
 
-  // Height boundaries
-  const minHeight = screenHeight * 0.3;  // Minimum height (partial view)
-  const maxHeight = screenHeight * 0.9;  // Maximum height (full view)
+  // Bottom sheet ref
+  const bottomSheetRef = useRef(null);
 
-  // Track if we're currently dragging
-  const isDragging = useRef(false);
+  // Snap points for the bottom sheet (20%, 50%, 90% of screen height)
+  const snapPoints = useMemo(() => ['20%', '50%', '90%'], []);
 
-  const panResponder = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) => {
-        return Math.abs(gestureState.dy) > 10;
-      },
-      onPanResponderGrant: () => {
-        isDragging.current = true;
-      },
-      onPanResponderMove: (evt, gestureState) => {
-        // Constrain translateY to prevent detachment feeling
-        const constrainedY = Math.max(-50, Math.min(100, gestureState.dy));
-        translateY.setValue(constrainedY);
-      },
-      onPanResponderRelease: (evt, gestureState) => {
-        isDragging.current = false;
+  // Track current snap index for haptic feedback
+  const [currentSnapIndex, setCurrentSnapIndex] = useState(1); // Start at 50%
 
-        // Determine final height based on velocity and position
-        const velocity = gestureState.vy;
-        let targetHeight;
+  // Handle bottom sheet changes with haptic feedback
+  const handleSheetChanges = useCallback((index) => {
+    console.log('Bottom sheet changed to index:', index);
 
-        // If dragging down with significant velocity, close modal
-        if (gestureState.dy > 100 && velocity > 0.5) {
-          onClose();
-          return;
-        }
-
-        // Determine target height based on drag direction, distance, and velocity
-        if (gestureState.dy > 30 || velocity > 0.3) {
-          // Dragging down or fast downward velocity - go to smaller height or close
-          if (currentHeight === maxHeight) {
-            targetHeight = minHeight;
-          } else {
-            // Close if already at minimum and dragging down
-            if (gestureState.dy > 80 || velocity > 0.8) {
-              onClose();
-              return;
-            }
-            targetHeight = minHeight;
-          }
-        } else if (gestureState.dy < -20 || velocity < -0.2) {
-          // Dragging up or fast upward velocity - go to larger height
-          targetHeight = maxHeight;
-        } else {
-          // Small drag - snap back to current height
-          targetHeight = currentHeight;
-        }
-
-        // Animate translateY back to 0
-        Animated.spring(translateY, {
-          toValue: 0,
-          useNativeDriver: true,
-          tension: 100,
-          friction: 8,
-        }).start();
-
-        // Update height with smooth transition
-        if (targetHeight !== currentHeight) {
-          // Configure smooth animation with different settings for expand vs collapse
-          const isExpanding = targetHeight > currentHeight;
-
-          LayoutAnimation.configureNext({
-            duration: isExpanding ? 400 : 300,
-            create: { type: 'easeInEaseOut', property: 'opacity' },
-            update: {
-              type: 'spring',
-              springDamping: isExpanding ? 0.9 : 0.7,
-              initialVelocity: isExpanding ? 0.1 : 0.3
-            },
-            delete: { type: 'easeInEaseOut', property: 'opacity' }
-          });
-
-          setCurrentHeight(targetHeight);
-        }
-      },
-    })
-  ).current;
-
-  // Handle tap on handle bar to toggle between partial and full
-  const handleTap = () => {
-    const targetHeight = currentHeight < maxHeight ? maxHeight : minHeight;
-
-    // Configure smooth animation
-    LayoutAnimation.configureNext({
-      duration: 300,
-      create: { type: 'easeInEaseOut', property: 'opacity' },
-      update: { type: 'spring', springDamping: 0.8 },
-      delete: { type: 'easeInEaseOut', property: 'opacity' }
-    });
-
-    setCurrentHeight(targetHeight);
-  };
-
-  // Reset modal height when opening
-  useEffect(() => {
-    if (visible) {
-      setCurrentHeight(minHeight); // Start at partial height
-      translateY.setValue(0);
+    // Provide haptic feedback on snap
+    if (index !== currentSnapIndex) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      setCurrentSnapIndex(index);
     }
-  }, [visible]);
+
+    // Close modal if swiped down past the first snap point
+    if (index === -1) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      onClose();
+    }
+  }, [currentSnapIndex, onClose]);
+
+  // Handle bottom sheet close
+  const handleClose = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    bottomSheetRef.current?.close();
+  }, []);
+
+  // Handle snap to specific index
+  const snapToIndex = useCallback((index) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    bottomSheetRef.current?.snapToIndex(index);
+  }, []);
+
+  // Handle tap on handle bar to cycle through snap points
+  const handleTap = useCallback(() => {
+    const nextIndex = currentSnapIndex === 2 ? 1 : currentSnapIndex + 1;
+    snapToIndex(nextIndex);
+  }, [currentSnapIndex, snapToIndex]);
+
+  // Open/close bottom sheet based on visible prop
+  useEffect(() => {
+    if (visible && message) {
+      // Open to middle snap point (50%)
+      bottomSheetRef.current?.snapToIndex(1);
+      setCurrentSnapIndex(1);
+    } else {
+      // Close the bottom sheet
+      bottomSheetRef.current?.close();
+    }
+  }, [visible, message]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -153,6 +93,103 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
   const isInternalNote = message?.message_type === 'notification';
   const isAuditNote = message?.tracking_value_ids && message.tracking_value_ids.length > 0;
 
+  // Memoized content to prevent re-renders during animations
+  const messageContent = useMemo(() => {
+    if (!message) return null;
+
+    return (
+      <BottomSheetScrollView
+        style={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.messageDetails}>
+          <Text style={[styles.dateText, { color: colors.textSecondary }]}>
+            {formatDate(message.date || message.create_date)}
+          </Text>
+
+          {message.subject && (
+            <Text style={[styles.subjectText, { color: colors.text }]}>
+              {message.subject}
+            </Text>
+          )}
+
+          {message.email_from && currentSnapIndex === 2 && (
+            <Text style={[styles.emailText, { color: colors.textSecondary }]}>
+              From: {message.email_from}
+            </Text>
+          )}
+
+          {/* Show tracking changes if available */}
+          {message.tracking_value_ids && message.tracking_value_ids.length > 0 && (
+            <View style={styles.trackingContainer}>
+              {message.tracking_value_ids.map((tracking, index) => {
+                const fieldName = tracking.field_desc || tracking.field;
+                const oldValue = tracking.old_value_text || tracking.old_value || '';
+                const newValue = tracking.new_value_text || tracking.new_value || '';
+
+                return (
+                  <View key={index} style={styles.trackingItem}>
+                    <Text style={[styles.trackingLabel, { color: colors.text }]}>
+                      {fieldName}:
+                    </Text>
+                    <Text style={[styles.trackingChange, { color: colors.textSecondary }]}>
+                      {oldValue && newValue ? `${oldValue} → ${newValue}` : newValue || oldValue}
+                    </Text>
+                  </View>
+                );
+              })}
+            </View>
+          )}
+
+          {/* Show body content based on snap index */}
+          {message.body && message.body.trim() ? (
+            <View style={styles.bodyContainer}>
+              {currentSnapIndex < 2 ? (
+                // Show preview when not fully expanded
+                <Text style={[styles.bodyPreview, { color: colors.text }]} numberOfLines={currentSnapIndex === 0 ? 1 : 3}>
+                  {message.body.replace(/<[^>]*>/g, '').trim()}
+                </Text>
+              ) : (
+                // Show full content when fully expanded
+                <RenderHtml
+                  contentWidth={screenWidth - 64}
+                  source={{
+                    html: message.body
+                      .replace(/<img[^>]*src="cid:[^"]*"[^>]*>/gi, '<p style="color: #666; font-style: italic;">[Image attachment]</p>')
+                      .replace(/<img[^>]*src="[^"]*cid:[^"]*"[^>]*>/gi, '<p style="color: #666; font-style: italic;">[Image attachment]</p>')
+                  }}
+                  tagsStyles={{
+                    body: { margin: 0, padding: 0, color: colors.text },
+                    div: { margin: 0, padding: 0 },
+                    p: { marginBottom: 8, color: colors.text },
+                    a: { color: colors.primary },
+                    img: { maxWidth: '100%', height: 'auto' }
+                  }}
+                  defaultTextProps={{
+                    style: { fontSize: 16, color: colors.text }
+                  }}
+                />
+              )}
+            </View>
+          ) : (
+            <Text style={[styles.noContentText, { color: colors.textSecondary }]}>
+              No content
+            </Text>
+          )}
+
+          {message.attachment_ids && message.attachment_ids.length > 0 && (
+            <View style={styles.attachmentsInfo}>
+              <Text style={[styles.attachmentsLabel, { color: colors.text }]}>
+                Attachments ({message.attachment_ids.length})
+              </Text>
+            </View>
+          )}
+        </View>
+      </BottomSheetScrollView>
+    );
+  }, [message, colors, currentSnapIndex, screenWidth]);
+
   if (!visible || !message) return null;
 
   return (
@@ -160,144 +197,59 @@ const MessageDetailModal = ({ visible, message, onClose }) => {
       visible={visible}
       transparent
       animationType="none"
-      onRequestClose={onClose}
+      onRequestClose={handleClose}
     >
-      <View style={styles.overlay}>
+      <GestureHandlerRootView style={styles.overlay}>
         <TouchableOpacity
           style={styles.backdrop}
           activeOpacity={1}
-          onPress={onClose}
+          onPress={handleClose}
         />
 
-        <Animated.View
-          style={[
-            styles.modalContainer,
-            {
-              backgroundColor: colors.surface,
-              height: currentHeight,
-              transform: [{ translateY: translateY }],
-            },
-          ]}
-          {...panResponder.panHandlers}
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={1}
+          snapPoints={snapPoints}
+          onChange={handleSheetChanges}
+          enablePanDownToClose={true}
+          backgroundStyle={[styles.bottomSheetBackground, { backgroundColor: colors.surface }]}
+          handleIndicatorStyle={[styles.handleIndicator, { backgroundColor: colors.textSecondary }]}
         >
-          {/* Handle bar - tappable */}
-          <TouchableOpacity style={styles.handleContainer} onPress={handleTap} activeOpacity={0.7}>
-            <View style={[styles.handle, { backgroundColor: colors.textSecondary }]} />
-            <Text style={[styles.handleHint, { color: colors.textSecondary }]}>
-              {currentHeight < maxHeight ? 'Drag up or tap for full view' : 'Drag down or tap to collapse'}
-            </Text>
-          </TouchableOpacity>
-
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.headerLeft}>
-              <Text style={[styles.authorName, { color: colors.text }]}>
-                {getAuthorName(message)}
-              </Text>
-              {isInternalNote && (
-                <Text style={[styles.messageTypeLabel, { color: colors.warning }]}>
-                  Internal Note
+          <BottomSheetView style={styles.bottomSheetContent}>
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={styles.headerLeft}>
+                <Text style={[styles.authorName, { color: colors.text }]}>
+                  {getAuthorName(message)}
                 </Text>
-              )}
-              {isAuditNote && (
-                <Text style={[styles.messageTypeLabel, { color: colors.info }]}>
-                  Audit Log
-                </Text>
-              )}
-            </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Icon name="close" size={24} color={colors.textSecondary} />
-            </TouchableOpacity>
-          </View>
-
-          {/* Content based on modal height */}
-          <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
-            <View style={styles.messageDetails}>
-              <Text style={[styles.dateText, { color: colors.textSecondary }]}>
-                {formatDate(message.date || message.create_date)}
-              </Text>
-
-              {message.subject && (
-                <Text style={[styles.subjectText, { color: colors.text }]}>
-                  {message.subject}
-                </Text>
-              )}
-
-              {message.email_from && currentHeight > (minHeight + maxHeight) / 2 && (
-                <Text style={[styles.emailText, { color: colors.textSecondary }]}>
-                  From: {message.email_from}
-                </Text>
-              )}
-
-              {/* Show tracking changes if available */}
-              {message.tracking_value_ids && message.tracking_value_ids.length > 0 && (
-                <View style={styles.trackingContainer}>
-                  {message.tracking_value_ids.map((tracking, index) => {
-                    const fieldName = tracking.field_desc || tracking.field;
-                    const oldValue = tracking.old_value_text || tracking.old_value || '';
-                    const newValue = tracking.new_value_text || tracking.new_value || '';
-
-                    return (
-                      <View key={index} style={styles.trackingItem}>
-                        <Text style={[styles.trackingLabel, { color: colors.text }]}>
-                          {fieldName}:
-                        </Text>
-                        <Text style={[styles.trackingChange, { color: colors.textSecondary }]}>
-                          {oldValue && newValue ? `${oldValue} → ${newValue}` : newValue || oldValue}
-                        </Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              )}
-
-              {/* Show body content based on height */}
-              {message.body && message.body.trim() ? (
-                <View style={styles.bodyContainer}>
-                  {currentHeight < (minHeight + maxHeight) / 2 ? (
-                    // Show preview when height is closer to minimum
-                    <Text style={[styles.bodyPreview, { color: colors.text }]} numberOfLines={3}>
-                      {message.body.replace(/<[^>]*>/g, '').trim()}
-                    </Text>
-                  ) : (
-                    // Show full content when height is closer to maximum
-                    <RenderHtml
-                      contentWidth={screenWidth - 64}
-                      source={{
-                        html: message.body
-                          .replace(/<img[^>]*src="cid:[^"]*"[^>]*>/gi, '<p style="color: #666; font-style: italic;">[Image attachment]</p>')
-                          .replace(/<img[^>]*src="[^"]*cid:[^"]*"[^>]*>/gi, '<p style="color: #666; font-style: italic;">[Image attachment]</p>')
-                      }}
-                      tagsStyles={{
-                        body: { margin: 0, padding: 0, color: colors.text },
-                        div: { margin: 0, padding: 0 },
-                        p: { marginBottom: 8, color: colors.text },
-                        a: { color: colors.primary },
-                        img: { maxWidth: '100%', height: 'auto' }
-                      }}
-                      defaultTextProps={{
-                        style: { fontSize: 16, color: colors.text }
-                      }}
-                    />
-                  )}
-                </View>
-              ) : (
-                <Text style={[styles.noContentText, { color: colors.textSecondary }]}>
-                  No content
-                </Text>
-              )}
-
-              {message.attachment_ids && message.attachment_ids.length > 0 && (
-                <View style={styles.attachmentsInfo}>
-                  <Text style={[styles.attachmentsLabel, { color: colors.text }]}>
-                    Attachments ({message.attachment_ids.length})
+                {isInternalNote && (
+                  <Text style={[styles.messageTypeLabel, { color: colors.warning }]}>
+                    Internal Note
                   </Text>
-                </View>
-              )}
+                )}
+                {isAuditNote && (
+                  <Text style={[styles.messageTypeLabel, { color: colors.info }]}>
+                    Audit Log
+                  </Text>
+                )}
+              </View>
+              <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+                <Icon name="close" size={24} color={colors.textSecondary} />
+              </TouchableOpacity>
             </View>
-          </ScrollView>
-        </Animated.View>
-      </View>
+
+            {/* Snap indicator */}
+            <TouchableOpacity style={styles.snapIndicator} onPress={handleTap} activeOpacity={0.7}>
+              <Text style={[styles.snapText, { color: colors.textSecondary }]}>
+                {currentSnapIndex === 0 ? 'Tap to expand' : currentSnapIndex === 1 ? 'Tap for full view' : 'Tap to collapse'}
+              </Text>
+            </TouchableOpacity>
+          </BottomSheetView>
+
+          {/* Content */}
+          {messageContent}
+        </BottomSheet>
+      </GestureHandlerRootView>
     </Modal>
   );
 };
@@ -306,33 +258,34 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
   },
   backdrop: {
     flex: 1,
   },
-  modalContainer: {
+  bottomSheetBackground: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 10,
   },
-  handleContainer: {
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  handle: {
+  handleIndicator: {
     width: 40,
     height: 4,
     borderRadius: 2,
-    marginBottom: 4,
   },
-  handleHint: {
+  bottomSheetContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 10,
+  },
+  snapIndicator: {
+    alignItems: 'center',
+    paddingVertical: 8,
+    marginBottom: 8,
+  },
+  snapText: {
     fontSize: 12,
     textAlign: 'center',
   },
@@ -375,6 +328,10 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   messageDetails: {
     gap: 12,

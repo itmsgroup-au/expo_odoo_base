@@ -270,6 +270,9 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         console.log(`HelpdeskInlineAttachments: Setting ${processedAttachments.length} processed attachments`);
         setAttachments(processedAttachments);
         await checkCachedFiles(processedAttachments);
+
+        // Auto-download attachments under 1MB
+        await autoDownloadSmallAttachments(processedAttachments);
       } else if (attachmentsResponse.data && Array.isArray(attachmentsResponse.data)) {
         // This is the format used in the MessageThread component
         console.log(`HelpdeskInlineAttachments: Retrieved ${attachmentsResponse.data.length} attachment details (array format)`);
@@ -321,6 +324,9 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         console.log(`HelpdeskInlineAttachments: Setting ${processedAttachments.length} processed attachments (array format)`);
         setAttachments(processedAttachments);
         await checkCachedFiles(processedAttachments);
+
+        // Auto-download attachments under 1MB
+        await autoDownloadSmallAttachments(processedAttachments);
       } else {
         console.log('HelpdeskInlineAttachments: No attachment details found in the response');
         setAttachments([]);
@@ -359,7 +365,136 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
     return attachmentsDir;
   };
 
-  // Download and cache file using expo-file-system
+  // Auto-download small attachments (under 1MB) in background
+  const autoDownloadSmallAttachments = async (attachmentsList) => {
+    try {
+      const smallAttachments = attachmentsList.filter(att =>
+        att.fileSize <= 1024 * 1024 && // Under 1MB
+        !cachedFiles.has(att.id) && // Not already cached
+        !downloadingItems.has(att.id) // Not currently downloading
+      );
+
+      if (smallAttachments.length === 0) {
+        console.log('HelpdeskInlineAttachments: No small attachments to auto-download');
+        return;
+      }
+
+      console.log(`HelpdeskInlineAttachments: Auto-downloading ${smallAttachments.length} small attachments`);
+
+      // Download them one by one to avoid overwhelming the server
+      for (const attachment of smallAttachments) {
+        try {
+          await downloadFileInBackground(attachment);
+          // Small delay between downloads
+          await new Promise(resolve => setTimeout(resolve, 100));
+        } catch (error) {
+          console.log(`HelpdeskInlineAttachments: Failed to auto-download ${attachment.name}:`, error.message);
+          // Continue with next attachment even if one fails
+        }
+      }
+    } catch (error) {
+      console.error('HelpdeskInlineAttachments: Error in autoDownloadSmallAttachments:', error);
+    }
+  };
+
+  // Background download without UI feedback (for auto-download)
+  const downloadFileInBackground = async (attachment) => {
+    if (downloadingItems.has(attachment.id)) {
+      return; // Already downloading
+    }
+
+    try {
+      setDownloadingItems(prev => new Set([...prev, attachment.id]));
+
+      const attachmentsDir = await ensureAttachmentsDirectory();
+      const filename = `${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const filePath = `${attachmentsDir}${filename}`;
+
+      // Try multiple download URLs with fallback strategy
+      const baseUrl = odooClient.client.defaults.baseURL || '';
+      const downloadUrls = [
+        attachment.downloadUrlWithFilename,
+        attachment.downloadUrl,
+        `${baseUrl}/web/content/${attachment.id}?download=true`,
+        `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,
+        attachment.fullUrl
+      ].filter(Boolean);
+
+      let downloadResult = null;
+      let lastError = null;
+
+      // Try each URL until one works
+      for (let i = 0; i < downloadUrls.length; i++) {
+        const baseUrl = downloadUrls[i];
+
+        // Try different authentication methods for each URL
+        const authMethods = [
+          (url) => {
+            if (accessToken && !url.includes('access_token')) {
+              const separator = url.includes('?') ? '&' : '?';
+              return `${url}${separator}access_token=${encodeURIComponent(accessToken)}`;
+            }
+            return url;
+          },
+          (url) => url
+        ];
+
+        for (let authIndex = 0; authIndex < authMethods.length; authIndex++) {
+          const downloadUrl = authMethods[authIndex](baseUrl);
+
+          try {
+            const downloadOptions = {
+              headers: authIndex === 1 && accessToken ? {
+                'Authorization': `Bearer ${accessToken}`,
+                'Cookie': `session_id=${accessToken}`
+              } : {}
+            };
+
+            downloadResult = await FileSystem.downloadAsync(downloadUrl, filePath, downloadOptions);
+
+            if (downloadResult.status === 200) {
+              break;
+            } else {
+              lastError = new Error(`Download failed with status ${downloadResult.status}`);
+            }
+          } catch (error) {
+            lastError = error;
+            continue;
+          }
+        }
+
+        if (downloadResult && downloadResult.status === 200) {
+          break;
+        }
+      }
+
+      if (!downloadResult || downloadResult.status !== 200) {
+        throw lastError || new Error('All download methods failed');
+      }
+
+      // Success - update cache
+      const fileInfo = await FileSystem.getInfoAsync(filePath);
+      setCachedFiles(prev => new Map([...prev, [attachment.id, {
+        uri: filePath,
+        path: filePath,
+        size: fileInfo.size,
+        modifiedTime: fileInfo.modificationTime,
+        originalName: attachment.name
+      }]]));
+
+      console.log(`HelpdeskInlineAttachments: Auto-downloaded ${attachment.name}`);
+    } catch (error) {
+      console.log(`HelpdeskInlineAttachments: Background download failed for ${attachment.name}:`, error.message);
+    } finally {
+      setDownloadingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(attachment.id);
+        return newSet;
+      });
+    }
+  };
+
+  // Download and cache file using expo-file-system (with UI feedback)
   const downloadFile = async (attachment) => {
     if (attachment.fileSize > 1024 * 1024) {
       Alert.alert('File Too Large', 'Files larger than 1MB cannot be cached to preserve device storage.');
@@ -674,46 +809,121 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
           attachmentInfo: attachment,
           title: attachment.name,
         });
-      } else {
-        // For non-images, try to open cached file or download URL
-        const cachedFile = cachedFiles.get(attachment.id);
+        return;
+      }
 
-        if (cachedFile && cachedFile.path) {
-          const fileInfo = await FileSystem.getInfoAsync(cachedFile.path);
-          if (fileInfo.exists) {
-            // Open cached file with system default app
-            console.log(`Opening cached file: ${cachedFile.path}`);
+      // For non-images, prioritize cached files
+      const cachedFile = cachedFiles.get(attachment.id);
 
-            try {
-              await Linking.openURL(cachedFile.uri);
-            } catch (linkingError) {
-              console.log('Linking failed for cached file:', linkingError);
-              // Fallback to web URL
-              let fallbackUrl = attachment.fullUrl;
-              if (accessToken && !fallbackUrl.includes('access_token')) {
-                const separator = fallbackUrl.includes('?') ? '&' : '?';
-                fallbackUrl = `${fallbackUrl}${separator}access_token=${accessToken}`;
+      if (cachedFile && cachedFile.path) {
+        const fileInfo = await FileSystem.getInfoAsync(cachedFile.path);
+        if (fileInfo.exists) {
+          console.log(`Opening cached file: ${cachedFile.path}`);
+
+          try {
+            // For PDFs and documents, use Sharing API which is more reliable in Expo Go
+            if (attachment.mimetype?.includes('pdf') ||
+                attachment.mimetype?.includes('document') ||
+                attachment.mimetype?.includes('text') ||
+                attachment.mimetype?.includes('application')) {
+
+              console.log(`Using Sharing API for ${attachment.mimetype}: ${attachment.name}`);
+
+              if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(cachedFile.uri, {
+                  mimeType: attachment.mimetype,
+                  dialogTitle: `Open ${attachment.name}`,
+                  UTI: attachment.mimetype,
+                });
+              } else {
+                // Fallback to Linking
+                await Linking.openURL(cachedFile.uri);
               }
-              await Linking.openURL(fallbackUrl);
+            } else {
+              // For other file types, try Linking first
+              await Linking.openURL(cachedFile.uri);
             }
             return;
+          } catch (linkingError) {
+            console.log('Failed to open cached file:', linkingError);
+            // Don't fallback to web URL for cached files - show error instead
+            Alert.alert(
+              'Cannot Open File',
+              `The cached file ${attachment.name} cannot be opened on this device. You can try sharing it to another app instead.`,
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Share', onPress: () => shareFile(attachment) }
+              ]
+            );
+            return;
           }
+        } else {
+          // Cached file doesn't exist anymore, remove from cache
+          console.log(`Cached file no longer exists: ${cachedFile.path}`);
+          setCachedFiles(prev => {
+            const newMap = new Map(prev);
+            newMap.delete(attachment.id);
+            return newMap;
+          });
         }
+      }
 
-        // Open web URL directly
-        console.log(`Opening web URL: ${attachment.name}`);
-
-        let openUrl = attachment.fullUrl;
-        if (accessToken && !openUrl.includes('access_token')) {
-          const separator = openUrl.includes('?') ? '&' : '?';
-          openUrl = `${openUrl}${separator}access_token=${accessToken}`;
-        }
-
-        await Linking.openURL(openUrl);
+      // File not cached - offer to download or open web URL
+      if (attachment.fileSize <= 1024 * 1024) {
+        // Small file - offer to download first
+        Alert.alert(
+          'File Not Cached',
+          `${attachment.name} is not cached locally. Would you like to download it first or open it from the server?`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Download', onPress: () => downloadFile(attachment) },
+            { text: 'Open Online', onPress: () => openWebUrl(attachment) }
+          ]
+        );
+      } else {
+        // Large file - go directly to web URL
+        await openWebUrl(attachment);
       }
     } catch (error) {
       console.error('Open attachment error:', error);
       Alert.alert('Open Failed', 'Could not open the file. Please try again.');
+    }
+  };
+
+  // Helper function to open web URL with authentication
+  const openWebUrl = async (attachment) => {
+    try {
+      console.log(`Opening web URL: ${attachment.name}`);
+
+      // Try the same fallback URLs as download
+      const baseUrl = odooClient.client.defaults.baseURL || '';
+      const webUrls = [
+        attachment.downloadUrl,
+        `${baseUrl}/web/content/${attachment.id}?download=true`,
+        `${baseUrl}/web/content?model=ir.attachment&id=${attachment.id}&download=true`,
+        attachment.fullUrl
+      ].filter(Boolean);
+
+      for (const url of webUrls) {
+        try {
+          let openUrl = url;
+          if (accessToken && !openUrl.includes('access_token')) {
+            const separator = openUrl.includes('?') ? '&' : '?';
+            openUrl = `${openUrl}${separator}access_token=${encodeURIComponent(accessToken)}`;
+          }
+
+          await Linking.openURL(openUrl);
+          return; // Success, exit
+        } catch (error) {
+          console.log(`Failed to open ${url}:`, error.message);
+          continue; // Try next URL
+        }
+      }
+
+      throw new Error('All web URLs failed');
+    } catch (error) {
+      console.error('Web URL open error:', error);
+      Alert.alert('Open Failed', 'Could not open the file from the server. Please check your internet connection.');
     }
   };
 

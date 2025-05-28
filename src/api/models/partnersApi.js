@@ -1,164 +1,58 @@
-// API for res.partner model - OPTIMIZED to bypass salesperson restrictions
+// Clean, simple API for res.partner model - like the discuss feature
 
 import { createModelAPI } from './modelApiTemplate';
-import { odooAPI, createOdooClient } from '../odooClient';
+import { createOdooClient } from '../odooClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { syncManager } from './syncManager';
-import logger from '../../utils/logger';
-
-// Use the safe error logging function to prevent errors from showing on screen
-const safeErrorLog = logger.safeErrorLog;
 
 // Use the existing odooClient from the codebase
 const api = createOdooClient();
 
 export const partnersAPI = createModelAPI('res.partner');
 
-// Utility function to safely log errors without displaying them on screen
-const safeLogError = (message, error) => {
-  // Create a sanitized error object that won't cause rendering issues
-  const errorMessage = error?.message || 'Unknown error';
-  const errorCode = error?.response?.status || 'N/A';
-
-  // Log to console in a way that won't trigger screen display
-  const prefix = `Error (${errorCode}): `;
-  console.log(prefix, `${message} - ${errorMessage}`);
-};
-
-// Cache configuration
+// Cache configuration - simple and clean
 const CACHE_CONFIG = {
-  PARTNERS_CACHE_KEY: 'partners_cache',
-  PARTNERS_IDS_CACHE_KEY: 'partners_ids_cache',
-  PARTNERS_TIMESTAMP_KEY: 'partners_timestamp',
-  CACHE_VERSION_KEY: 'partners_cache_version',
+  CONTACTS_CACHE_KEY: 'contacts_cache',
+  CACHE_TIMESTAMP_KEY: 'contacts_cache_timestamp',
   CACHE_EXPIRY: 1000 * 60 * 60 * 24, // 24 hours
-  BATCH_SIZE: 100,
-  FULL_SYNC_BATCH_SIZE: 2500,
-  CACHE_VERSION: '2.1', // Updated version for optimized fetching
-  SYNC_INTERVAL: 1000 * 60 * 5, // 5 minutes
-  MAX_CONTACTS: 5000,
-  TIMEOUT: 30000, // 30 seconds timeout
-  BULK_TIMEOUT: 60000, // 60 seconds timeout for bulk operations
+  TIMEOUT: 30000, // 30 seconds
 };
 
-// Cache management functions
+// Simple cache manager
 const cacheManager = {
-  // Save partners to cache
-  savePartnersToCache: async (partners, cacheKey = CACHE_CONFIG.PARTNERS_CACHE_KEY) => {
+  // Get contacts from cache
+  getContactsFromCache: async () => {
     try {
-      if (!Array.isArray(partners)) {
-        console.error('Cannot save non-array data to partners cache');
-        return false;
-      }
-
-      let partnersToSave = partners;
-      if (partners.length > CACHE_CONFIG.MAX_CONTACTS) {
-        console.log(`Limiting cached partners to ${CACHE_CONFIG.MAX_CONTACTS} (from ${partners.length})`);
-        partnersToSave = partners.slice(0, CACHE_CONFIG.MAX_CONTACTS);
-      }
-
-      await AsyncStorage.setItem(CACHE_CONFIG.CACHE_VERSION_KEY, CACHE_CONFIG.CACHE_VERSION);
-      await AsyncStorage.setItem(cacheKey, JSON.stringify(partnersToSave));
-      await AsyncStorage.setItem(CACHE_CONFIG.PARTNERS_TIMESTAMP_KEY, Date.now().toString());
-
-      console.log(`Saved ${partnersToSave.length} partners to cache (version ${CACHE_CONFIG.CACHE_VERSION})`);
-      return true;
-    } catch (error) {
-      console.error('Error saving partners to cache:', error);
-      return false;
-    }
-  },
-
-  // Save partner IDs to cache
-  savePartnerIdsToCache: async (ids) => {
-    try {
-      await AsyncStorage.setItem(CACHE_CONFIG.PARTNERS_IDS_CACHE_KEY, JSON.stringify(ids));
-      console.log(`Saved ${ids.length} partner IDs to cache`);
-      return true;
-    } catch (error) {
-      console.error('Error saving partner IDs to cache:', error);
-      return false;
-    }
-  },
-
-  // Get partners from cache
-  getPartnersFromCache: async (cacheKey = CACHE_CONFIG.PARTNERS_CACHE_KEY) => {
-    try {
-      const cacheVersion = await AsyncStorage.getItem(CACHE_CONFIG.CACHE_VERSION_KEY);
-      if (cacheVersion !== CACHE_CONFIG.CACHE_VERSION) {
-        console.log(`Cache version mismatch (stored: ${cacheVersion}, current: ${CACHE_CONFIG.CACHE_VERSION})`);
-        await AsyncStorage.setItem(CACHE_CONFIG.CACHE_VERSION_KEY, CACHE_CONFIG.CACHE_VERSION);
-        return null;
-      }
-
-      const cachedData = await AsyncStorage.getItem(cacheKey);
-      if (!cachedData) {
-        console.log('No cached data found');
-        return null;
-      }
-
-      const timestamp = await AsyncStorage.getItem(CACHE_CONFIG.PARTNERS_TIMESTAMP_KEY);
-      const now = Date.now();
-
-      if (timestamp && now - parseInt(timestamp) > CACHE_CONFIG.CACHE_EXPIRY) {
-        console.log(`Cache expired (${Math.round((now - parseInt(timestamp)) / (1000 * 60))} minutes old)`);
-        return null;
-      }
-
-      let partners;
-      try {
-        partners = JSON.parse(cachedData);
-        if (!Array.isArray(partners)) {
-          console.log('Cached data is not an array, resetting cache');
-          await cacheManager.clearCache();
-          return null;
-        }
-      } catch (parseError) {
-        console.error('Error parsing cached data:', parseError);
-        await cacheManager.clearCache();
-        return null;
-      }
-
-      const cacheAge = timestamp ? Math.round((now - parseInt(timestamp)) / (1000 * 60)) : 'unknown';
-      const cacheSize = Math.round(cachedData.length / 1024);
-
-      console.log(`Retrieved ${partners.length} partners from cache (${cacheSize}KB, ${cacheAge} minutes old)`);
-      return partners;
-    } catch (error) {
-      console.error('Error getting partners from cache:', error);
-      try {
-        await cacheManager.clearCache();
-      } catch (clearError) {
-        console.error('Error clearing cache after retrieval error:', clearError);
-      }
-      return null;
-    }
-  },
-
-  // Get partner IDs from cache
-  getPartnerIdsFromCache: async () => {
-    try {
-      const cachedData = await AsyncStorage.getItem(CACHE_CONFIG.PARTNERS_IDS_CACHE_KEY);
+      const cachedData = await AsyncStorage.getItem(CACHE_CONFIG.CONTACTS_CACHE_KEY);
       if (!cachedData) return null;
-
-      const ids = JSON.parse(cachedData);
-      console.log(`Retrieved ${ids.length} partner IDs from cache`);
-      return ids;
+      const contacts = JSON.parse(cachedData);
+      console.log(`Retrieved ${contacts.length} contacts from cache`);
+      return contacts;
     } catch (error) {
-      console.error('Error getting partner IDs from cache:', error);
+      console.error('Error getting contacts from cache:', error);
       return null;
+    }
+  },
+
+  // Save contacts to cache
+  saveContactsToCache: async (contacts) => {
+    try {
+      if (!contacts || !Array.isArray(contacts)) return false;
+      await AsyncStorage.setItem(CACHE_CONFIG.CONTACTS_CACHE_KEY, JSON.stringify(contacts));
+      await AsyncStorage.setItem(CACHE_CONFIG.CACHE_TIMESTAMP_KEY, Date.now().toString());
+      console.log(`Saved ${contacts.length} contacts to cache`);
+      return true;
+    } catch (error) {
+      console.error('Error saving contacts to cache:', error);
+      return false;
     }
   },
 
   // Clear cache
   clearCache: async () => {
     try {
-      await AsyncStorage.removeItem(CACHE_CONFIG.PARTNERS_CACHE_KEY);
-      await AsyncStorage.removeItem(CACHE_CONFIG.PARTNERS_IDS_CACHE_KEY);
-      await AsyncStorage.removeItem(CACHE_CONFIG.PARTNERS_TIMESTAMP_KEY);
-      await AsyncStorage.setItem(CACHE_CONFIG.CACHE_VERSION_KEY, CACHE_CONFIG.CACHE_VERSION);
-
-      console.log('Cache cleared and version updated to', CACHE_CONFIG.CACHE_VERSION);
+      await AsyncStorage.removeItem(CACHE_CONFIG.CONTACTS_CACHE_KEY);
+      await AsyncStorage.removeItem(CACHE_CONFIG.CACHE_TIMESTAMP_KEY);
+      console.log('Cleared contacts cache');
       return true;
     } catch (error) {
       console.error('Error clearing cache:', error);
@@ -166,211 +60,160 @@ const cacheManager = {
     }
   },
 
-  // Save a single partner to cache
-  saveSinglePartnerToCache: async (partner) => {
+  // Check if cache is expired
+  isCacheExpired: async () => {
     try {
-      const existingPartners = await cacheManager.getPartnersFromCache() || [];
-      const index = existingPartners.findIndex(p => p.id === partner.id);
-
-      if (index !== -1) {
-        existingPartners[index] = partner;
-      } else {
-        existingPartners.push(partner);
-      }
-
-      await cacheManager.savePartnersToCache(existingPartners);
-      console.log(`Saved/updated partner ${partner.id} in cache`);
-      return true;
+      const timestamp = await AsyncStorage.getItem(CACHE_CONFIG.CACHE_TIMESTAMP_KEY);
+      if (!timestamp) return true;
+      const cacheAge = Date.now() - parseInt(timestamp);
+      return cacheAge > CACHE_CONFIG.CACHE_EXPIRY;
     } catch (error) {
-      console.error('Error saving single partner to cache:', error);
-      return false;
+      console.error('Error checking cache expiry:', error);
+      return true;
     }
   }
 };
 
-// 🔑 KEY METHOD: Get all contact IDs bypassing salesperson restrictions
-partnersAPI.getAllPartnerIds = async (forceRefresh = false, maxIds = CACHE_CONFIG.MAX_CONTACTS) => {
+// Main function to get all contacts - simple and fast like discuss feature
+partnersAPI.getAllContacts = async (forceRefresh = false) => {
   try {
+    console.log(`Fetching ALL res.partner records with domain: ["|", ["is_company", "=", true], ["parent_id", "=", false]]`);
+    console.log(`Using direct search_read endpoint like helpdesk/discuss - expecting ~2130 contacts`);
+    console.log(`Fields: ["id","name","email","phone","mobile","image_128","street","city","country_id","is_company","parent_id"]`);
+
     // Check cache first if not forcing refresh
     if (!forceRefresh) {
-      const cachedIds = await cacheManager.getPartnerIdsFromCache();
-      if (cachedIds && cachedIds.length > 2000) { // Expecting around 2130 contacts
-        console.log(`✅ Using ${cachedIds.length} cached contact IDs`);
-        return cachedIds.slice(0, maxIds);
+      const cachedContacts = await cacheManager.getContactsFromCache();
+      if (cachedContacts && cachedContacts.length > 0) {
+        const isExpired = await cacheManager.isCacheExpired();
+        if (!isExpired) {
+          console.log(`Using ${cachedContacts.length} cached contacts`);
+          return cachedContacts;
+        }
       }
     }
 
-    console.log('🚀 Getting ALL contact IDs with BYPASS method (avoiding salesperson restrictions)...');
-
-    // THE SOLUTION: Use this domain filter to bypass salesperson restrictions
-    // ["|", ["is_company", "=", true], ["parent_id", "=", false]]
-    // This gets: Companies OR top-level contacts (no parent)
-    // This bypasses the user/salesperson assignment filtering that limits your results
+    // Fetch from API using the working domain filter
     const domain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
+    const fields = [
+      "id", "name", "email", "phone", "mobile", "image_128",
+      "street", "city", "country_id", "is_company", "parent_id"
+    ];
 
-    console.log('🔑 Using BYPASS domain filter:', JSON.stringify(domain));
-    console.log('This should get ALL 2130+ contacts, not just assigned ones!');
-
-    // Use search endpoint to get all IDs in one call
-    const response = await api.get('/api/v2/search/res.partner', {
+    const response = await api.get('/api/v2/search_read/res.partner', {
       params: {
         domain: JSON.stringify(domain),
-        limit: 5000, // High limit to ensure we get all contacts
-        offset: 0
+        fields: JSON.stringify(fields)
+        // No limit/offset - get ALL contacts at once like your curl example
+      },
+      timeout: 60000 // Longer timeout for bulk download
+    });
+
+    if (response.data && Array.isArray(response.data)) {
+      console.log(`Successfully fetched ${response.data.length} res.partner records (should be ~2130)`);
+
+      // Save to cache
+      await cacheManager.saveContactsToCache(response.data);
+
+      return response.data;
+    }
+
+    return [];
+  } catch (error) {
+    console.error('Error fetching contacts:', error);
+
+    // Try to return cached data as fallback
+    const cachedContacts = await cacheManager.getContactsFromCache();
+    if (cachedContacts && cachedContacts.length > 0) {
+      console.log(`API failed, using ${cachedContacts.length} cached contacts as fallback`);
+      return cachedContacts;
+    }
+
+    return [];
+  }
+};
+
+// Get contacts from cache only
+partnersAPI.getContactsFromCache = cacheManager.getContactsFromCache;
+
+// Save contacts to cache
+partnersAPI.saveContactsToCache = cacheManager.saveContactsToCache;
+
+// Clear cache
+partnersAPI.clearCache = cacheManager.clearCache;
+
+// Get a single contact by ID
+partnersAPI.getById = async (id, fields = [], forceRefresh = false) => {
+  try {
+    console.log(`Getting contact with ID: ${id}`);
+
+    // Check cache first if not forcing refresh
+    if (!forceRefresh) {
+      const cachedContacts = await cacheManager.getContactsFromCache();
+      if (cachedContacts) {
+        const cachedContact = cachedContacts.find(c => c.id === parseInt(id));
+        if (cachedContact) {
+          console.log(`Found contact ${id} in cache: ${cachedContact.name}`);
+          return cachedContact;
+        }
+      }
+    }
+
+    // Fetch from API
+    const response = await api.get('/api/v2/read/res.partner', {
+      params: {
+        ids: JSON.stringify([parseInt(id)]),
+        fields: JSON.stringify(fields.length > 0 ? fields : [
+          'id', 'name', 'email', 'phone', 'mobile', 'image_128',
+          'street', 'city', 'country_id', 'is_company', 'parent_id'
+        ])
+      },
+      timeout: CACHE_CONFIG.TIMEOUT
+    });
+
+    if (response.data && response.data.length > 0) {
+      const contact = response.data[0];
+      console.log(`Fetched contact: ${contact.name}`);
+      return contact;
+    }
+
+    return null;
+  } catch (error) {
+    console.error(`Error getting contact ${id}:`, error);
+    return null;
+  }
+};
+
+// Override the default getList method to use our domain filter
+partnersAPI.getList = async (domain = [], fields = [], limit = 50, offset = 0, forceRefresh = false) => {
+  try {
+    console.log(`getList called with domain: ${JSON.stringify(domain)}, limit: ${limit}, offset: ${offset}`);
+
+    // If no specific domain is provided, use our working domain
+    let searchDomain = domain;
+    if (domain.length === 0) {
+      searchDomain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
+      console.log('Using working domain to get ALL contacts');
+    }
+
+    // Use default fields if none provided
+    const searchFields = fields.length > 0 ? fields : [
+      'id', 'name', 'email', 'phone', 'mobile', 'image_128',
+      'street', 'city', 'country_id', 'is_company', 'parent_id'
+    ];
+
+    const response = await api.get('/api/v2/search_read/res.partner', {
+      params: {
+        domain: JSON.stringify(searchDomain),
+        fields: JSON.stringify(searchFields),
+        limit: limit,
+        offset: offset
       },
       timeout: CACHE_CONFIG.TIMEOUT
     });
 
     if (response.data && Array.isArray(response.data)) {
-      const contactCount = response.data.length;
-      console.log(`🎉 SUCCESS! Got ${contactCount} contact IDs (BYPASSED RESTRICTIONS!)`);
-      
-      if (contactCount >= 2130) {
-        console.log(`✨ EXCELLENT! Expected ~2130, got ${contactCount} - restriction bypassed!`);
-      } else if (contactCount > 1000) {
-        console.log(`✅ Good! Got ${contactCount} contacts - much better than before!`);
-      } else {
-        console.log(`⚠️ Only got ${contactCount} contacts - may still be restricted`);
-      }
-
-      // Cache the IDs for future use
-      await cacheManager.savePartnerIdsToCache(response.data);
-      console.log(`💾 Cached ${contactCount} contact IDs`);
-
-      return response.data.slice(0, maxIds);
-    } else {
-      console.error('❌ Invalid response format for contact IDs:', response);
-      return [];
-    }
-  } catch (error) {
-    console.error('❌ Error getting contact IDs with bypass method:', error);
-    return [];
-  }
-};
-
-// 🔑 KEY METHOD: Get ALL contacts with complete data bypassing restrictions
-partnersAPI.getAllContactsOptimal = async (forceRefresh = false) => {
-  try {
-    console.log('🚀 Getting ALL contacts with OPTIMAL bypass method...');
-
-    // Check cache first if not forcing refresh
-    if (!forceRefresh) {
-      const cachedPartners = await cacheManager.getPartnersFromCache();
-      if (cachedPartners && cachedPartners.length > 2000) {
-        console.log(`✅ Using ${cachedPartners.length} cached contacts`);
-        return cachedPartners;
-      }
-    }
-
-    // THE KEY: This domain bypasses salesperson assignment restrictions
-    // ["|", ["is_company", "=", true], ["parent_id", "=", false]]
-    // Gets: Companies OR top-level contacts (no parent)
-    const domain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
-
-    console.log('🔑 Using BYPASS domain:', JSON.stringify(domain));
-    console.log('This should get ALL 2130+ contacts!');
-
-    const response = await api.get('/api/v2/search_read/res.partner', {
-      params: {
-        domain: JSON.stringify(domain),
-        fields: JSON.stringify([
-          'id', 'name', 'email', 'phone', 'mobile', 'image_128', 'image_1920',
-          'street', 'street2', 'city', 'state_id', 'zip', 'country_id',
-          'website', 'function', 'title', 'comment', 'is_company',
-          'parent_id', 'child_ids', 'category_id', 'user_id', 'active'
-        ]),
-        limit: 5000, // High limit to get all contacts
-        offset: 0
-      },
-      timeout: 60000 // 60 second timeout for large download
-    });
-
-    if (response.data && Array.isArray(response.data)) {
-      const contactCount = response.data.length;
-      console.log(`🎉 SUCCESS! Downloaded ${contactCount} contacts in ONE call!`);
-      
-      if (contactCount >= 2130) {
-        console.log(`🌟 PERFECT! Got ${contactCount} contacts - restriction BYPASSED!`);
-      } else if (contactCount > 1000) {
-        console.log(`✅ Much better! Got ${contactCount} contacts vs previous limited results`);
-      }
-
-      // Cache the contacts and IDs
-      await cacheManager.savePartnersToCache(response.data);
-      const allIds = response.data.map(contact => contact.id);
-      await cacheManager.savePartnerIdsToCache(allIds);
-
-      console.log(`💾 Cached ${contactCount} contacts and ${allIds.length} IDs`);
-      return response.data;
-    } else {
-      console.error('❌ Invalid response format:', response);
-      return [];
-    }
-  } catch (error) {
-    console.error('❌ Error with optimal method:', error);
-    return [];
-  }
-};
-
-// Method that lists records efficiently with pagination and caching - OPTIMIZED
-partnersAPI.getList = async (domain = [], fields = [], limit = 50, offset = 0, forceRefresh = false) => {
-  try {
-    console.log(`📋 getList called with domain: ${JSON.stringify(domain)}, limit: ${limit}, offset: ${offset}`);
-
-    // If no specific domain is provided, use the bypass one
-    let searchDomain = domain;
-    if (domain.length === 0) {
-      searchDomain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
-      console.log('🔑 Using BYPASS domain to get ALL contacts');
-    }
-
-    // For first page, try to get all contacts at once with the optimal method
-    if (offset === 0 && domain.length === 0) {
-      console.log('🚀 Using getAllContactsOptimal for first page');
-      const allContacts = await partnersAPI.getAllContactsOptimal(forceRefresh);
-      
-      if (allContacts && allContacts.length > 0) {
-        console.log(`✅ Got ${allContacts.length} contacts from optimal method`);
-        
-        // Return the requested page from all contacts
-        const paginatedContacts = allContacts.slice(offset, offset + limit);
-        console.log(`📄 Returning ${paginatedContacts.length} contacts for current page`);
-        
-        return paginatedContacts;
-      }
-    }
-
-    // Check cache first if not forcing refresh
-    if (!forceRefresh) {
-      const cachedPartners = await cacheManager.getPartnersFromCache();
-      if (cachedPartners && cachedPartners.length > 0) {
-        console.log(`✅ Using ${cachedPartners.length} cached partners`);
-        
-        // Apply pagination
-        const paginatedPartners = cachedPartners.slice(offset, offset + limit);
-        console.log(`📄 Returning ${paginatedPartners.length} partners from cache (paginated)`);
-        
-        return paginatedPartners;
-      }
-    }
-
-    // Fallback to API fetch with smaller timeout and batch size
-    console.log('📡 Fetching from API as fallback');
-    const response = await api.get('/api/v2/search_read/res.partner', {
-      params: {
-        domain: JSON.stringify(searchDomain),
-        fields: JSON.stringify(fields.length > 0 ? fields : [
-          'id', 'name', 'email', 'phone', 'mobile', 'image_128', 
-          'street', 'city', 'country_id', 'is_company'
-        ]),
-        limit: Math.min(limit, 100), // Limit batch size to prevent timeouts
-        offset: offset
-      },
-      timeout: 15000 // Shorter timeout to prevent hanging
-    });
-
-    if (response.data && Array.isArray(response.data)) {
-      console.log(`📦 Fetched ${response.data.length} partners from API`);
+      console.log(`Fetched ${response.data.length} contacts from API`);
       return response.data;
     }
 
@@ -381,102 +224,43 @@ partnersAPI.getList = async (domain = [], fields = [], limit = 50, offset = 0, f
   }
 };
 
-// Other existing methods remain the same...
-partnersAPI.getById = async (id, fields = [], forceRefresh = false) => {
-  try {
-    console.log('Getting partner with ID:', id);
+// Add compatibility methods for existing code
+partnersAPI.getAllContactsOptimal = partnersAPI.getAllContacts;
+partnersAPI.getPartnersFromCache = partnersAPI.getContactsFromCache;
+partnersAPI.savePartnersToCache = partnersAPI.saveContactsToCache;
 
-    if (!forceRefresh) {
-      const cachedPartners = await cacheManager.getPartnersFromCache();
-      if (cachedPartners) {
-        const cachedPartner = cachedPartners.find(p => p.id === parseInt(id));
-        if (cachedPartner) {
-          console.log(`Found partner ${id} in cache:`, cachedPartner.name);
-          return cachedPartner;
-        }
-      }
-    }
-
-    const response = await api.get('/api/v2/read/res.partner', {
-      params: {
-        ids: JSON.stringify([parseInt(id)]),
-        fields: JSON.stringify(fields.length > 0 ? fields : [
-          'id', 'name', 'email', 'phone', 'mobile', 'image_128', 
-          'street', 'city', 'country_id', 'is_company'
-        ])
-      },
-      timeout: CACHE_CONFIG.TIMEOUT
-    });
-
-    if (response.data && response.data.length > 0) {
-      const partner = response.data[0];
-      await cacheManager.saveSinglePartnerToCache(partner);
-      return partner;
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Error in getById:', error);
-    return null;
-  }
-};
-
-// Count method using bypass domain
+// Get count of contacts
 partnersAPI.getCount = async (forceRefresh = false) => {
   try {
+    // Try to get count from cache first
     if (!forceRefresh) {
-      const cachedIds = await cacheManager.getPartnerIdsFromCache();
-      if (cachedIds && cachedIds.length > 0) {
-        console.log(`Using cached count: ${cachedIds.length}`);
-        return cachedIds.length;
+      const cachedContacts = await cacheManager.getContactsFromCache();
+      if (cachedContacts && cachedContacts.length > 0) {
+        console.log(`Using cached count: ${cachedContacts.length}`);
+        return cachedContacts.length;
       }
     }
 
-    // Use bypass domain for count
+    // Get count from API
     const domain = ["|", ["is_company", "=", true], ["parent_id", "=", false]];
-    
+
     const response = await api.post('/api/v2/call', {
       model: 'res.partner',
       method: 'search_count',
       args: [domain],
       kwargs: {}
     });
-    
+
     if (response.data && typeof response.data === 'number') {
-      console.log(`📊 Bypass domain count: ${response.data} contacts`);
+      console.log(`API count: ${response.data} contacts`);
       return response.data;
     }
-    
+
     return 0;
   } catch (error) {
-    console.error('Error getting partner count:', error);
+    console.error('Error getting count:', error);
     return 0;
   }
-};
-
-// Alias methods for backward compatibility
-partnersAPI.getAllContacts = partnersAPI.getAllContactsOptimal;
-
-// Clear cache method
-partnersAPI.clearCache = async () => {
-  return cacheManager.clearCache();
-};
-
-// Expose cache manager methods
-partnersAPI.getPartnersFromCache = cacheManager.getPartnersFromCache;
-partnersAPI.savePartnersToCache = cacheManager.savePartnersToCache;
-partnersAPI.getPartnerIdsFromCache = cacheManager.getPartnerIdsFromCache;
-partnersAPI.savePartnerIdsToCache = cacheManager.savePartnerIdsToCache;
-
-// Add any custom methods for this specific model
-export const getCustomerPartners = (limit = 20, offset = 0, forceRefresh = false) => {
-  return partnersAPI.getList(
-    [['customer_rank', '>', 0]], // Domain to filter customers
-    ['id', 'name', 'email', 'phone', 'street', 'city', 'country_id'], // Fields
-    limit,
-    offset,
-    forceRefresh
-  );
 };
 
 export default partnersAPI;

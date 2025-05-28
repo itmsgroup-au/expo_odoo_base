@@ -661,16 +661,34 @@ const MessageThread = ({ model, recordId, recordName, ...props }) => {
               <View style={styles.htmlContentWrapper}>
                 <RenderHtml
                   contentWidth={screenWidth - 64} // Account for padding and margins
-                  source={{ html: item.body }}
+                  source={{
+                    html: item.body
+                      // Remove problematic cid: image references that cause crashes
+                      .replace(/<img[^>]*src="cid:[^"]*"[^>]*>/gi, '<p style="color: #666; font-style: italic;">[Image attachment - view in attachments tab]</p>')
+                      // Also handle any other problematic image sources
+                      .replace(/<img[^>]*src="[^"]*cid:[^"]*"[^>]*>/gi, '<p style="color: #666; font-style: italic;">[Image attachment - view in attachments tab]</p>')
+                  }}
                   tagsStyles={{
                     body: { margin: 0, padding: 0 },
                     div: { margin: 0, padding: 0 },
                     span: { margin: 0, padding: 0 },
                     p: { margin: 0, padding: 0 },
-                    a: { color: '#3498db' }
+                    a: { color: '#3498db' },
+                    img: { maxWidth: '100%', height: 'auto' }
                   }}
                   defaultTextProps={{
                     style: { fontSize: 16, color: '#333' }
+                  }}
+                  // Add custom renderers to handle problematic content
+                  renderersProps={{
+                    img: {
+                      enableExperimentalPercentWidth: true,
+                      // Custom image renderer to handle problematic URLs
+                      onError: (error) => {
+                        console.log('Image loading error in message (handled):', error);
+                        return null; // Don't render problematic images
+                      }
+                    }
                   }}
                 />
                 {/* Add an empty space element to ensure minimum height */}

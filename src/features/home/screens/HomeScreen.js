@@ -38,6 +38,14 @@ const HomeScreen = ({ userSession }) => {
             <Text style={styles.tileDescription}>View and manage contacts</Text>
           </TouchableOpacity>
 
+          <TouchableOpacity
+            style={styles.tile}
+            onPress={() => navigation.navigate('Discuss')}
+          >
+            <Text style={styles.tileTitle}>Chat</Text>
+            <Text style={styles.tileDescription}>Team messaging and channels</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity style={styles.tile}>
             <Text style={styles.tileTitle}>Orders</Text>
             <Text style={styles.tileDescription}>Track sales orders</Text>

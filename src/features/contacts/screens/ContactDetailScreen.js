@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { partnersAPI } from '../../../api/models/partnersApi.fixed';
+import { partnersAPI } from '../../../api/models/partnersApi';
 
 // Import MessageThread component
 import MessageThread from '../../../components/MessageThread';

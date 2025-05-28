@@ -40,7 +40,7 @@ const HomeScreen = () => {
 
   // Mock data for quick access
   const quickAccessItems = [
-    { id: 'chat', name: 'Chat', icon: <Ionicons name="chatbubbles" size={20} color="white" />, color: '#8B5CF6', route: 'Chat' },
+    { id: 'chat', name: 'Chat', icon: <Ionicons name="chatbubbles" size={20} color="white" />, color: '#8B5CF6', route: 'Discuss' },
     { id: 'contacts', name: 'Contacts', icon: <Ionicons name="people" size={20} color="white" />, color: '#3B82F6', route: 'ContactsList' },
     { id: 'inventory', name: 'Inventory', icon: <Ionicons name="cube" size={20} color="white" />, color: '#10B981', route: 'InventoryList' },
     { id: 'helpdesk', name: 'Helpdesk', icon: <Ionicons name="notifications" size={20} color="white" />, color: '#EF4444', route: 'HelpdeskList' }
@@ -275,7 +275,7 @@ const HomeScreen = () => {
           <Ionicons name="bar-chart-outline" size={24} color="#3B82F6" />
           <Text style={[styles.bottomNavText, styles.bottomNavActive]}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomNavItem} onPress={() => navigateTo('Chat')}>
+        <TouchableOpacity style={styles.bottomNavItem} onPress={() => navigateTo('Discuss')}>
           <Ionicons name="chatbubble-outline" size={24} color="#666" />
           <Text style={styles.bottomNavText}>Chat</Text>
         </TouchableOpacity>

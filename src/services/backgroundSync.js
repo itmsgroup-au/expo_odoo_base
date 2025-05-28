@@ -3,7 +3,7 @@ import { AppState, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 import { syncManager } from '../api/models/syncManager';
-import { partnersAPI } from '../api/models/partnersApi.fixed';
+import { partnersAPI } from '../api/models/partnersApi';
 import * as FileSystem from 'expo-file-system';
 import { refreshOAuthToken } from '../api/odooClient';
 
@@ -204,7 +204,7 @@ class BackgroundSyncService {
       // Only sync if we're online and app is active, and cache is small
       if (this._isOnline && this._appState === 'active') {
         // Check cache size first to avoid unnecessary syncing
-        partnersAPI.getPartnersFromCache().then(cachedContacts => {
+        partnersAPI.getContactsFromCache().then(cachedContacts => {
           const cacheSize = cachedContacts ? cachedContacts.length : 0;
           if (cacheSize < 1000) {
             // Only sync if cache is insufficient
@@ -260,7 +260,7 @@ class BackgroundSyncService {
   async syncContactsIfNeeded() {
     try {
       // Always check if we have a good cache first
-      const cachedContacts = await partnersAPI.getPartnersFromCache();
+      const cachedContacts = await partnersAPI.getContactsFromCache();
       const cacheSize = cachedContacts ? cachedContacts.length : 0;
 
       console.log(`Current cache size: ${cacheSize} contacts`);
@@ -336,7 +336,7 @@ class BackgroundSyncService {
 
     try {
       // Just return success since we have all contacts cached
-      const cachedContacts = await partnersAPI.getPartnersFromCache();
+      const cachedContacts = await partnersAPI.getContactsFromCache();
       const cacheSize = cachedContacts ? cachedContacts.length : 0;
 
       console.log(`Using ${cacheSize} cached contacts instead of incremental sync`);

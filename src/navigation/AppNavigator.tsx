@@ -15,6 +15,10 @@ import SettingsScreen from '../features/settings/screens/SettingsScreen';
 import ContactsNavigator from '../features/contacts/ContactsNavigator';
 import HelpdeskNavigator from '../features/helpdesk/navigation/HelpdeskNavigator';
 
+// Import discuss screens
+import DiscussScreen from '../features/discuss/screens/DiscussScreen';
+import DiscussChatScreen from '../features/discuss/screens/DiscussChatScreen';
+
 // Import types
 import { RootStackParamList } from './types';
 
@@ -40,6 +44,7 @@ const DrawerContent = ({ navigation }) => {
         {/* Menu items would go here */}
         <Text style={styles.menuItem} onPress={() => navigation.navigate('Home')}>Dashboard</Text>
         <Text style={styles.menuItem} onPress={() => navigation.navigate('ContactsList')}>Contacts</Text>
+        <Text style={styles.menuItem} onPress={() => navigation.navigate('Discuss')}>Chat</Text>
         <Text style={styles.menuItem} onPress={() => navigation.navigate('InventoryList')}>Inventory</Text>
         <Text style={styles.menuItem} onPress={() => navigation.navigate('HelpdeskList')}>Helpdesk</Text>
         <Text style={styles.menuItem} onPress={() => navigation.navigate('CalendarView')}>Calendar</Text>
@@ -111,6 +116,25 @@ const MainStackNavigator = () => {
         }}
       />
 
+      {/* Discuss/Chat screens */}
+      <Stack.Screen
+        name="Discuss"
+        component={DiscussScreen}
+        options={{
+          headerShown: true,
+          title: 'Chat',
+          gestureEnabled: false,
+        }}
+      />
+      <Stack.Screen
+        name="DiscussChat"
+        component={DiscussChatScreen}
+        options={{
+          headerShown: true,
+          gestureEnabled: false,
+        }}
+      />
+
       {/* These would be actual screens in a full implementation */}
       <Stack.Screen name="InventoryList" component={PlaceholderScreen} options={{ headerShown: true, title: 'Inventory' }} />
       <Stack.Screen name="InventoryDetail" component={PlaceholderScreen} options={{ headerShown: true, title: 'Inventory Item' }} />
@@ -132,7 +156,6 @@ const MainStackNavigator = () => {
       />
       <Stack.Screen name="CalendarView" component={PlaceholderScreen} options={{ headerShown: true, title: 'Calendar' }} />
       <Stack.Screen name="CalendarDetail" component={PlaceholderScreen} options={{ headerShown: true, title: 'Event Details' }} />
-      <Stack.Screen name="Chat" component={PlaceholderScreen} options={{ headerShown: true, title: 'Chat' }} />
       <Stack.Screen name="ActivityList" component={PlaceholderScreen} options={{ headerShown: true, title: 'All Activity' }} />
       <Stack.Screen name="SalesDetail" component={PlaceholderScreen} options={{ headerShown: true, title: 'Sale Details' }} />
       <Stack.Screen name="TicketDetail" component={PlaceholderScreen} options={{ headerShown: true, title: 'Ticket Details' }} />

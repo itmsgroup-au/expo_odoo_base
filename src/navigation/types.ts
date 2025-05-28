@@ -22,8 +22,11 @@ export type RootStackParamList = {
   CalendarView: undefined;
   CalendarDetail: { id: number };
 
+  // Discuss/Chat screens
+  Discuss: undefined;
+  DiscussChat: { channelId: number; channelName: string; channelType: string };
+
   // Activity-related screens
-  Chat: undefined;
   ActivityList: undefined;
   SalesDetail: { id: number };
   TicketDetail: { id: number };

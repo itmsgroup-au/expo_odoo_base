@@ -59,6 +59,7 @@ const ContactsListScreen = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [filterType, setFilterType] = useState('all'); // 'all', 'companies', 'contacts'
 
   const PAGE_SIZE = 100; // Increased number of contacts to fetch per page
 
@@ -96,7 +97,7 @@ const ContactsListScreen = () => {
     }
   }, []);
 
-  // Simplified fetch method using the optimal API
+  // Clean, simple fetch method using the new API
   const fetchContacts = useCallback(async (pageNumber = 0, forceRefresh = false) => {
     if (!isLoggedIn) {
       navigation.navigate('Login');
@@ -109,7 +110,7 @@ const ContactsListScreen = () => {
       }
       setError(null);
 
-      console.log(`🚀 Fetching contacts page ${pageNumber} with OPTIMAL method...`);
+      console.log(`Fetching contacts page ${pageNumber}...`);
 
       // For related contacts mode
       if (filterMode === 'related' && relatedIds && relatedIds.length > 0) {
@@ -118,14 +119,14 @@ const ContactsListScreen = () => {
         return relatedContacts;
       }
 
-      // For first page, use the optimal method that gets ALL contacts
+      // For first page, get ALL contacts at once
       if (pageNumber === 0) {
-        console.log('🎯 Using getAllContactsOptimal to get ALL contacts at once...');
+        console.log('Getting ALL contacts at once...');
 
-        const allContacts = await partnersAPI.getAllContactsOptimal(forceRefresh);
+        const allContacts = await partnersAPI.getAllContacts(forceRefresh);
 
         if (allContacts && allContacts.length > 0) {
-          console.log(`🎉 SUCCESS! Got ${allContacts.length} contacts with optimal method`);
+          console.log(`SUCCESS! Got ${allContacts.length} contacts`);
 
           // Add index property for stable keys
           const indexedContacts = allContacts.map((contact, index) => ({
@@ -145,7 +146,7 @@ const ContactsListScreen = () => {
       // Fallback for subsequent pages (shouldn't be needed)
       console.log('Using fallback pagination method');
       const response = await partnersAPI.getList(
-        [], // Empty domain uses bypass automatically
+        [], // Empty domain uses our working domain automatically
         ['id', 'name', 'email', 'phone', 'mobile', 'image_128', 'street', 'city', 'country_id', 'is_company'],
         PAGE_SIZE,
         pageNumber * PAGE_SIZE,
@@ -172,7 +173,7 @@ const ContactsListScreen = () => {
 
       return [];
     } catch (err) {
-      console.error('❌ Error fetching contacts:', err);
+      console.error('Error fetching contacts:', err);
       setError(`Failed to load contacts: ${err.message}`);
       return [];
     } finally {
@@ -199,25 +200,17 @@ const ContactsListScreen = () => {
     }
   }, [loadingMore, hasMore, refreshing, contacts.length, fetchContacts]);
 
-  // Simplified refresh function using optimal method
+  // SIMPLE refresh function like helpdesk/discuss
   const onRefresh = useCallback(async () => {
-    console.log('🔄 Refreshing contacts with optimal method...');
+    console.log('Refreshing contacts - SIMPLE method');
     setRefreshing(true);
-    setPage(0);
 
     try {
-      // For related contacts
-      if (filterMode === 'related' && relatedIds && relatedIds.length > 0) {
-        await fetchContacts(0, true);
-        return;
-      }
-
-      // Use the optimal method to get all contacts
-      console.log('🎯 Using getAllContactsOptimal for refresh...');
-      const allContacts = await partnersAPI.getAllContactsOptimal(true); // Force refresh
+      // Get all contacts with force refresh - FAST like helpdesk/discuss
+      const allContacts = await partnersAPI.getAllContacts(true);
 
       if (allContacts && allContacts.length > 0) {
-        console.log(`🎉 Refreshed with ${allContacts.length} contacts`);
+        console.log(`Refreshed with ${allContacts.length} contacts`);
 
         const indexedContacts = allContacts.map((contact, index) => ({
           ...contact,
@@ -227,144 +220,55 @@ const ContactsListScreen = () => {
         setContacts(indexedContacts);
         setFilteredContacts(indexedContacts);
         setTotalCount(allContacts.length);
-        setHasMore(false); // No pagination needed
-
-        // Save last refresh time
-        await AsyncStorage.setItem('contacts_last_refresh_time', Date.now().toString());
-      } else {
-        console.log('No contacts from optimal method, falling back');
-        await fetchContacts(0, true);
+        setHasMore(false);
       }
     } catch (error) {
       console.error('Error refreshing contacts:', error);
-      await fetchContacts(0, true);
+      setError('Failed to refresh contacts. Please try again.');
     } finally {
       setRefreshing(false);
     }
-  }, [fetchContacts, filterMode, relatedIds]);
+  }, []);
 
-  // Fast, debounced search with better filtering
-  const [searchTimeout, setSearchTimeout] = useState(null);
-
-  const performSearch = useCallback((searchTerm) => {
-    console.log(`=== SEARCH DEBUG START ===`);
-    console.log(`Search term: "${searchTerm}"`);
-    console.log(`Total contacts available: ${contacts.length}`);
-
-    if (searchTerm.trim() === '') {
-      console.log(`Empty search, showing all ${contacts.length} contacts`);
-      setFilteredContacts(contacts);
-      return;
-    }
-
-    const term = searchTerm.toLowerCase().trim();
-    const startTime = Date.now();
-
-    // Debug: Show some sample contact names to verify data
-    if (contacts.length > 0) {
-      const sampleNames = contacts.slice(0, 10).map(c => c.name || 'NO_NAME').join(', ');
-      console.log(`Sample contact names: ${sampleNames}`);
-
-      // Show last 10 contacts too (to see if we have Z names)
-      const lastSampleNames = contacts.slice(-10).map(c => c.name || 'NO_NAME').join(', ');
-      console.log(`Last 10 contact names: ${lastSampleNames}`);
-
-      // Check if we have contacts starting with the search term
-      const contactsStartingWith = contacts.filter(c => c.name && c.name.toLowerCase().startsWith(term.toLowerCase()));
-      console.log(`Contacts starting with "${term}": ${contactsStartingWith.length}`);
-
-      // Check for exact matches
-      const exactMatches = contacts.filter(c => c.name && c.name.toLowerCase() === term.toLowerCase());
-      console.log(`Exact matches for "${term}": ${exactMatches.length}`);
-
-      // Check for partial matches (contains)
-      const partialMatches = contacts.filter(c => c.name && c.name.toLowerCase().includes(term.toLowerCase()));
-      console.log(`Partial matches for "${term}": ${partialMatches.length}`);
-      if (partialMatches.length > 0) {
-        console.log(`First few partial matches:`, partialMatches.slice(0, 5).map(c => c.name));
-      }
-    } else {
-      console.log(`NO CONTACTS AVAILABLE FOR SEARCH!`);
-    }
-
-    const filtered = contacts.filter(contact => {
-      // Only skip contacts with truly invalid names (be much less aggressive)
-      if (!contact.name ||
-          contact.name.trim() === '' ||
-          contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
-        return false;
-      }
-
-      // Fast name search (most common)
-      if (contact.name.toLowerCase().includes(term)) {
-        return true;
-      }
-
-      // Email search
-      if (contact.email && contact.email.toLowerCase().includes(term)) {
-        return true;
-      }
-
-      // Phone search (simplified)
-      if (contact.phone && contact.phone.includes(term)) {
-        return true;
-      }
-
-      // Mobile search (simplified)
-      if (contact.mobile && contact.mobile.includes(term)) {
-        return true;
-      }
-
-      return false;
-    });
-
-    const searchTime = Date.now() - startTime;
-    console.log(`Search "${searchTerm}" found ${filtered.length} results in ${searchTime}ms`);
-
-    // Debug: Show first few results
-    if (filtered.length > 0) {
-      const resultNames = filtered.slice(0, 5).map(c => c.name).join(', ');
-      console.log(`First few results: ${resultNames}`);
-    } else {
-      console.log(`NO RESULTS FOUND for "${searchTerm}"`);
-    }
-
-    console.log(`=== SEARCH DEBUG END ===`);
-    setFilteredContacts(filtered);
-  }, [contacts]);
-
+  // Simple search handler
   const handleSearch = useCallback((text) => {
     setSearchQuery(text);
+  }, []);
 
-    // Clear existing timeout
-    if (searchTimeout) {
-      clearTimeout(searchTimeout);
-    }
-
-    // Debounce search for better performance
-    const timeout = setTimeout(() => {
-      performSearch(text);
-    }, 150); // 150ms debounce
-
-    setSearchTimeout(timeout);
-  }, [searchTimeout, performSearch]);
-
-  // Ensure filteredContacts is updated when contacts change
+  // Apply filters when contacts or filter type changes
   useEffect(() => {
-    if (contacts.length > 0 && filteredContacts.length === 0 && !searchQuery) {
-      console.log(`Updating filteredContacts with ${contacts.length} contacts (was empty)`);
-      setFilteredContacts(contacts);
-    }
-  }, [contacts, filteredContacts.length, searchQuery]);
+    if (contacts.length > 0) {
+      let filtered = contacts;
 
-  // Cleanup search timeout on unmount
-  useEffect(() => {
-    return () => {
-      if (searchTimeout) {
-        clearTimeout(searchTimeout);
+      // Apply type filter
+      if (filterType === 'companies') {
+        filtered = contacts.filter(contact => contact.is_company);
+      } else if (filterType === 'contacts') {
+        filtered = contacts.filter(contact => !contact.is_company);
       }
-    };
-  }, [searchTimeout]);
+
+      // Apply search filter if there's a search query
+      if (searchQuery.trim() !== '') {
+        const term = searchQuery.toLowerCase().trim();
+        filtered = filtered.filter(contact => {
+          if (!contact.name || contact.name.trim() === '') return false;
+
+          // Search in name, email, phone, mobile
+          return (
+            contact.name.toLowerCase().includes(term) ||
+            (contact.email && contact.email.toLowerCase().includes(term)) ||
+            (contact.phone && contact.phone.includes(term)) ||
+            (contact.mobile && contact.mobile.includes(term))
+          );
+        });
+      }
+
+      console.log(`Applied filters: type=${filterType}, search="${searchQuery}", result=${filtered.length}/${contacts.length}`);
+      setFilteredContacts(filtered);
+    }
+  }, [contacts, filterType, searchQuery]);
+
+
 
   // Initialize data on first load
   useEffect(() => {
@@ -413,175 +317,61 @@ const ContactsListScreen = () => {
 
 
 
-  // Super simplified useFocusEffect that just loads contacts directly from the API
+  // SIMPLE useFocusEffect like helpdesk/discuss - just load data directly
   useFocusEffect(
     useCallback(() => {
       const loadContacts = async () => {
         try {
-          // For related contacts, we need to fetch them when the filter changes
-          if (filterMode === 'related' && relatedIds && relatedIds.length > 0) {
-            console.log('Loading related contacts...');
-            setInitialLoading(true);
-            fetchContacts(0, false); // Use cache if available
-            return;
-          }
+          console.log('Loading contacts using SIMPLE method like helpdesk/discuss');
+          setInitialLoading(true);
 
-          // Debug: Check user access and permissions
-          try {
-            const userInfo = await partnersAPI.default.getCurrentUserInfo();
-            console.log('Current user info:', userInfo);
+          // Get all contacts at once - FAST like helpdesk/discuss
+          const allContacts = await partnersAPI.getAllContacts(false);
 
-            // Check access rights for res.partner model
-            const accessRights = await partnersAPI.default.checkAccessRights('res.partner', 'read');
-            console.log('User access rights for res.partner:', accessRights);
-          } catch (error) {
-            console.log('Could not check user permissions:', error.message);
-          }
+          if (allContacts && Array.isArray(allContacts) && allContacts.length > 0) {
+            console.log(`SUCCESS! Got ${allContacts.length} contacts instantly`);
 
-          // First, check if we have a valid cache - NO LOADING SPINNER
-          const cachedContacts = await partnersAPI.getPartnersFromCache();
-          if (cachedContacts && cachedContacts.length > 100) {
-            console.log(`Found ${cachedContacts.length} contacts in cache, using them directly`);
-
-            // Remove duplicates and filter out only truly garbage contacts (be much less aggressive)
-            const uniqueContacts = cachedContacts.filter((contact, index, array) => {
-              // Only remove contacts with truly invalid names (be less aggressive)
-              if (!contact.name ||
-                  contact.name.trim() === '' ||
-                  contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
-                return false;
-              }
-
-              // Remove duplicates by ID (keep first occurrence)
-              return array.findIndex(c => c.id === contact.id) === index;
-            });
-
-            // Separate companies and contacts, then sort each group
-            const companies = uniqueContacts.filter(contact => contact.is_company);
-            const individuals = uniqueContacts.filter(contact => !contact.is_company);
-
-            // Sort each group alphabetically
-            const sortedCompanies = companies.sort((a, b) => {
-              const nameA = (a.name || '').toLowerCase();
-              const nameB = (b.name || '').toLowerCase();
-              return nameA.localeCompare(nameB);
-            });
-
-            const sortedIndividuals = individuals.sort((a, b) => {
-              const nameA = (a.name || '').toLowerCase();
-              const nameB = (b.name || '').toLowerCase();
-              return nameA.localeCompare(nameB);
-            });
-
-            // Combine with companies first, then individuals
-            const sortedContacts = [...sortedCompanies, ...sortedIndividuals];
-
-            console.log(`Filtered ${cachedContacts.length} contacts down to ${sortedContacts.length} unique, clean contacts`);
-            console.log(`Companies: ${sortedCompanies.length}, Individuals: ${sortedIndividuals.length}`);
-
-            // Add index property to each contact for stable keys
-            const indexedContacts = sortedContacts.map((contact, index) => ({
+            // Simple processing - just add index and set state
+            const indexedContacts = allContacts.map((contact, index) => ({
               ...contact,
               index: index
             }));
 
-            // Update state immediately - no loading spinner
-            console.log(`Setting contacts state with ${indexedContacts.length} contacts (sorted alphabetically)`);
-
-            // Debug: Show contact name distribution
-            const namesByLetter = {};
-            indexedContacts.forEach(contact => {
-              if (contact.name) {
-                const firstLetter = contact.name.charAt(0).toUpperCase();
-                namesByLetter[firstLetter] = (namesByLetter[firstLetter] || 0) + 1;
-              }
-            });
-            console.log('Contact distribution by first letter:', JSON.stringify(namesByLetter, null, 2));
-
-            // Check for specific names
-            const zulContacts = indexedContacts.filter(c => c.name && c.name.toLowerCase().includes('zul'));
-            console.log(`Contacts containing "zul": ${zulContacts.length}`, zulContacts.map(c => c.name));
-
+            // Update state immediately
             setContacts(indexedContacts);
             setFilteredContacts(indexedContacts);
-            setTotalCount(cachedContacts.length);
+            setTotalCount(indexedContacts.length);
             setHasMore(false);
-            console.log(`State updated: contacts=${indexedContacts.length}, filteredContacts=${indexedContacts.length}, totalCount=${cachedContacts.length}`);
 
-            // Check if we need to do a background sync based on time
-            const needsSync = await shouldRefreshContacts();
-            if (needsSync) {
-              console.log('Cache is valid but outdated, triggering background sync');
-              // Trigger sync in background
-              backgroundSyncService.syncContactsIfNeeded()
-                .catch(error => {
-                  console.error('Background sync error:', error);
-                });
-            }
+            console.log(`Contacts loaded instantly: ${indexedContacts.length} total`);
           } else {
-            // If cache is empty or has too few contacts, use the API's getAllContacts method directly
-            console.log('Cache is empty or has too few contacts, fetching all contacts from API');
-            setInitialLoading(true);
+            console.log('No contacts returned, trying force refresh');
+            const refreshedContacts = await partnersAPI.getAllContacts(true);
 
-            // Get all contacts at once - this will continue until all contacts are downloaded
-            const allContacts = await partnersAPI.getAllContacts(true);
-
-            if (allContacts && Array.isArray(allContacts) && allContacts.length > 0) {
-              console.log(`Successfully fetched ${allContacts.length} contacts from API`);
-
-              // Remove duplicates and filter out only truly garbage contacts (be much less aggressive)
-              const uniqueContacts = allContacts.filter((contact, index, array) => {
-                // Only remove contacts with truly invalid names (be less aggressive)
-                if (!contact.name ||
-                    contact.name.trim() === '' ||
-                    contact.name.includes('geztamjqga4dombtgeztamjqgbp7sfe4o5f2skpzlekrpzq2kackh3wrwafd26o4waultzowjcmlw')) {
-                  return false;
-                }
-
-                // Remove duplicates by ID (keep first occurrence)
-                return array.findIndex(c => c.id === contact.id) === index;
-              });
-
-              // Sort contacts alphabetically by name
-              const sortedContacts = uniqueContacts.sort((a, b) => {
-                const nameA = (a.name || '').toLowerCase();
-                const nameB = (b.name || '').toLowerCase();
-                return nameA.localeCompare(nameB);
-              });
-
-              console.log(`Filtered ${allContacts.length} contacts down to ${sortedContacts.length} unique, clean contacts`);
-
-              // Add index property to each contact for stable keys
-              const indexedContacts = sortedContacts.map((contact, index) => ({
+            if (refreshedContacts && refreshedContacts.length > 0) {
+              const indexedContacts = refreshedContacts.map((contact, index) => ({
                 ...contact,
                 index: index
               }));
 
-              // Update state
               setContacts(indexedContacts);
               setFilteredContacts(indexedContacts);
               setTotalCount(indexedContacts.length);
               setHasMore(false);
 
-              // Save last refresh time
-              saveLastRefreshTime();
-            } else {
-              console.log('No contacts returned from API, falling back to pagination');
-              fetchContacts(0, true);
+              console.log(`Force refresh got ${indexedContacts.length} contacts`);
             }
-
-            setInitialLoading(false);
           }
         } catch (error) {
           console.error('Error loading contacts:', error);
+          setError('Failed to load contacts. Please try again.');
+        } finally {
           setInitialLoading(false);
-          // Fall back to standard pagination approach
-          fetchContacts(0, true);
         }
       };
 
       loadContacts();
-    }, [fetchContacts, shouldRefreshContacts, saveLastRefreshTime, filterMode, relatedIds])
+    }, [])
   );
 
   // Navigate to contact detail screen
@@ -845,6 +635,56 @@ const ContactsListScreen = () => {
         />
       </View>
 
+      {/* Elegant Filter Boxes */}
+      <View style={styles.filterBoxContainer}>
+        <TouchableOpacity
+          style={[styles.filterBox, filterType === 'companies' && styles.filterBoxActive]}
+          onPress={() => setFilterType('companies')}
+        >
+          <View style={styles.filterBoxIcon}>
+            <Icon name="domain" size={24} color={filterType === 'companies' ? '#fff' : '#3498db'} />
+          </View>
+          <View style={styles.filterBoxContent}>
+            <Text style={[styles.filterBoxTitle, filterType === 'companies' && styles.filterBoxTitleActive]}>
+              Companies
+            </Text>
+            <Text style={[styles.filterBoxCount, filterType === 'companies' && styles.filterBoxCountActive]}>
+              {contacts.filter(c => c.is_company).length} companies
+            </Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.filterBox, filterType === 'contacts' && styles.filterBoxActive]}
+          onPress={() => setFilterType('contacts')}
+        >
+          <View style={styles.filterBoxIcon}>
+            <Icon name="account" size={24} color={filterType === 'contacts' ? '#fff' : '#3498db'} />
+          </View>
+          <View style={styles.filterBoxContent}>
+            <Text style={[styles.filterBoxTitle, filterType === 'contacts' && styles.filterBoxTitleActive]}>
+              Contacts
+            </Text>
+            <Text style={[styles.filterBoxCount, filterType === 'contacts' && styles.filterBoxCountActive]}>
+              {contacts.filter(c => !c.is_company).length} contacts
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+
+      {/* Show All Button */}
+      {filterType !== 'all' && (
+        <View style={styles.showAllContainer}>
+          <TouchableOpacity
+            style={styles.showAllButton}
+            onPress={() => setFilterType('all')}
+          >
+            <Icon name="view-list" size={16} color="#666" />
+            <Text style={styles.showAllText}>Show All ({contacts.length})</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Contacts List */}
       <View style={styles.listContainer}>
         <FlatList
@@ -968,6 +808,84 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
     color: '#333',
+  },
+  filterBoxContainer: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    gap: 12,
+  },
+  filterBox: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 2,
+    borderColor: '#e8f4fd',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  filterBoxActive: {
+    backgroundColor: '#3498db',
+    borderColor: '#3498db',
+  },
+  filterBoxIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#e8f4fd',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  filterBoxContent: {
+    flex: 1,
+  },
+  filterBoxTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 2,
+  },
+  filterBoxTitleActive: {
+    color: '#fff',
+  },
+  filterBoxCount: {
+    fontSize: 12,
+    color: '#666',
+    fontWeight: '500',
+  },
+  filterBoxCountActive: {
+    color: '#e8f4fd',
+  },
+  showAllContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 8,
+    alignItems: 'center',
+  },
+  showAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  showAllText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 6,
+    fontWeight: '500',
   },
   listContainer: {
     flex: 1,

@@ -3,13 +3,14 @@ import {
   View,
   Text,
   StyleSheet,
-  FlatList,
+  SectionList,
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
   Alert,
   ScrollView,
-  SectionList,
+  Modal,
+  TextInput,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -26,207 +27,501 @@ import SwipeableTicketItem from '../components/SwipeableTicketItem';
 import UserSelectionModal from '../components/UserSelectionModal';
 import { getCurrentUser } from '../../../api/models/usersApi';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Component for ticket list by team
+// Cache keys for local storage
+const TEAMS_CACHE_KEY = 'helpdesk_teams_cache';
+const STAGES_CACHE_KEY = 'helpdesk_stages_cache';
+const TICKETS_CACHE_KEY = 'helpdesk_tickets_cache';
+const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+// Cache helper functions
+const getCachedData = async (key) => {
+  try {
+    const cachedItem = await AsyncStorage.getItem(key);
+    if (cachedItem) {
+      const { data, timestamp } = JSON.parse(cachedItem);
+      const isExpired = Date.now() - timestamp > CACHE_EXPIRATION_MS;
+      if (!isExpired) {
+        console.log(`Cache hit for ${key}`);
+        return data;
+      } else {
+        console.log(`Cache expired for ${key}`);
+        await AsyncStorage.removeItem(key);
+      }
+    }
+  } catch (error) {
+    console.error(`Error reading cache for ${key}:`, error);
+  }
+  return null;
+};
+
+const setCachedData = async (key, data) => {
+  try {
+    const cacheItem = {
+      data,
+      timestamp: Date.now()
+    };
+    await AsyncStorage.setItem(key, JSON.stringify(cacheItem));
+    console.log(`Data cached for ${key}`);
+  } catch (error) {
+    console.error(`Error caching data for ${key}:`, error);
+  }
+};
+
+// Dropdown component for team selection
+const TeamDropdown = ({ title, options, selectedValue, onSelect, icon, colors }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  const selectedOption = options.find(option => option.id === selectedValue);
+  const displayTitle = selectedOption ? selectedOption.name : title;
+
+  return (
+    <>
+      <TouchableOpacity
+        style={[
+          styles.dropdownButton,
+          {
+            backgroundColor: selectedValue ? colors.primary : colors.surface,
+            borderColor: colors.border
+          }
+        ]}
+        onPress={() => setIsVisible(true)}
+      >
+        <Icon
+          name={icon}
+          size={18}
+          color={selectedValue ? colors.onPrimary : colors.text}
+          style={styles.dropdownIcon}
+        />
+        <Text
+          style={[
+            styles.dropdownText,
+            { color: selectedValue ? colors.onPrimary : colors.text }
+          ]}
+          numberOfLines={1}
+        >
+          {displayTitle}
+        </Text>
+        <Icon
+          name="chevron-down"
+          size={18}
+          color={selectedValue ? colors.onPrimary : colors.text}
+        />
+      </TouchableOpacity>
+
+      <Modal
+        visible={isVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setIsVisible(false)}
+        >
+          <View style={[styles.dropdownModal, { backgroundColor: colors.surface }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                Select {title}
+              </Text>
+              <TouchableOpacity onPress={() => setIsVisible(false)}>
+                <Icon name="close" size={24} color={colors.text} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.optionsList}>
+              {/* Clear selection option */}
+              <TouchableOpacity
+                style={[
+                  styles.option,
+                  !selectedValue && { backgroundColor: colors.primaryLight }
+                ]}
+                onPress={() => {
+                  onSelect(null);
+                  setIsVisible(false);
+                }}
+              >
+                <Text style={[styles.optionText, { color: colors.text }]}>
+                  All {title}
+                </Text>
+              </TouchableOpacity>
+
+              {/* Options */}
+              {options.map(option => (
+                <TouchableOpacity
+                  key={option.id}
+                  style={[
+                    styles.option,
+                    selectedValue === option.id && { backgroundColor: colors.primaryLight }
+                  ]}
+                  onPress={() => {
+                    onSelect(option.id);
+                    setIsVisible(false);
+                  }}
+                >
+                  <Text style={[styles.optionText, { color: colors.text }]}>
+                    {option.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </>
+  );
+};
+
+// Stage checkbox dropdown component
+const StageCheckboxDropdown = ({ title, options, selectedValues, onToggle, icon, colors }) => {
+  const [isVisible, setIsVisible] = useState(false);
+
+  const selectedCount = selectedValues.length;
+  const displayTitle = selectedCount === 0 ? title : `${title} (${selectedCount})`;
+
+  return (
+    <>
+      <TouchableOpacity
+        style={[
+          styles.dropdownButton,
+          {
+            backgroundColor: selectedCount > 0 ? colors.primary : colors.surface,
+            borderColor: colors.border
+          }
+        ]}
+        onPress={() => setIsVisible(true)}
+      >
+        <Icon
+          name={icon}
+          size={18}
+          color={selectedCount > 0 ? colors.onPrimary : colors.text}
+          style={styles.dropdownIcon}
+        />
+        <Text
+          style={[
+            styles.dropdownText,
+            { color: selectedCount > 0 ? colors.onPrimary : colors.text }
+          ]}
+          numberOfLines={1}
+        >
+          {displayTitle}
+        </Text>
+        <Icon
+          name="chevron-down"
+          size={18}
+          color={selectedCount > 0 ? colors.onPrimary : colors.text}
+        />
+      </TouchableOpacity>
+
+      <Modal
+        visible={isVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setIsVisible(false)}
+        >
+          <View style={[styles.dropdownModal, { backgroundColor: colors.surface }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                Select {title}
+              </Text>
+              <TouchableOpacity onPress={() => setIsVisible(false)}>
+                <Icon name="close" size={24} color={colors.text} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.optionsList}>
+              {/* Options with checkboxes */}
+              {options.map(option => (
+                <TouchableOpacity
+                  key={option.id}
+                  style={styles.checkboxOption}
+                  onPress={() => onToggle(option.id)}
+                >
+                  <Icon
+                    name={selectedValues.includes(option.id) ? "checkbox-marked" : "checkbox-blank-outline"}
+                    size={24}
+                    color={selectedValues.includes(option.id) ? colors.primary : colors.textSecondary}
+                  />
+                  <Text style={[styles.checkboxOptionText, { color: colors.text }]}>
+                    {option.name}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </>
+  );
+};
+
+// Main component
 const HelpdeskTicketsScreen = () => {
-  const [allTickets, setAllTickets] = useState([]);
+  const navigation = useNavigation();
+  const { colors } = useTheme();
+  const { user } = useAuth();
+
+  // State
+  const [tickets, setTickets] = useState([]);
   const [teams, setTeams] = useState([]);
   const [stages, setStages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState(null);
+
+  // Filter state
   const [selectedTeam, setSelectedTeam] = useState(null);
-  const [selectedStage, setSelectedStage] = useState(null);
-  const [viewMode, setViewMode] = useState('byTeam'); // 'byTeam' or 'flat'
-  const [currentUser, setCurrentUser] = useState(null);
+  const [selectedStages, setSelectedStages] = useState([]); // Changed to array for multiple selection
   const [showMyTickets, setShowMyTickets] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Favorites state
+  const [showFavoritesModal, setShowFavoritesModal] = useState(false);
+  const [favoriteFilters, setFavoriteFilters] = useState({
+    myTickets: false,
+    selectedTeam: null,
+    selectedStages: []
+  });
+
+  // Modal state
   const [userModalVisible, setUserModalVisible] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const [openSwipeableId, setOpenSwipeableId] = useState(null);
 
-  const navigation = useNavigation();
-  const { colors } = useTheme();
-  const { user } = useAuth();
+  // Current user
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Load data when screen comes into focus
-  useFocusEffect(
-    useCallback(() => {
-      loadData();
-    }, [selectedTeam, selectedStage, showMyTickets])
-  );
+  // Refs
+  const searchInputRef = useRef(null);
 
-  // Load current user on component mount
+  // Load current user
   useEffect(() => {
-    const fetchCurrentUser = async () => {
+    const loadCurrentUser = async () => {
       try {
         const userData = await getCurrentUser();
         setCurrentUser(userData);
-        console.log('Current user loaded:', userData);
       } catch (error) {
         console.error('Error loading current user:', error);
       }
     };
-
-    fetchCurrentUser();
+    loadCurrentUser();
   }, []);
 
-  // Organize tickets by team or stage
-  const ticketsByTeam = useMemo(() => {
-    if (!allTickets.length) return [];
+  // Load favorites from AsyncStorage
+  useEffect(() => {
+    const loadFavorites = async () => {
+      try {
+        const savedFilters = await AsyncStorage.getItem('helpdesk_favorite_filters');
+        if (savedFilters) {
+          const parsed = JSON.parse(savedFilters);
+          setFavoriteFilters(parsed);
+          // Apply favorite filters
+          setShowMyTickets(parsed.myTickets);
+          setSelectedTeam(parsed.selectedTeam);
+          setSelectedStages(parsed.selectedStages);
+        }
+      } catch (error) {
+        console.error('Error loading favorite filters:', error);
+      }
+    };
+    loadFavorites();
+  }, []);
 
-    // If showing "My Tickets" and we have stages, group by stage instead of team
-    if (showMyTickets && stages.length > 0) {
-      // Group tickets by stage
-      const sections = stages.map(stage => {
-        const stageTickets = allTickets.filter(ticket =>
-          ticket.stage_id && ticket.stage_id[0] === stage.id
-        );
-
-        return {
-          title: stage.name,
-          stageId: stage.id,
-          data: stageTickets,
-          sequence: stage.sequence || 0
-        };
-      });
-
-      // Sort by stage sequence and filter out empty sections
-      return sections
-        .filter(section => section.data.length > 0)
-        .sort((a, b) => a.sequence - b.sequence);
-    }
-
-    // If not showing "My Tickets", proceed with team grouping
-    if (!teams.length) return [];
-
-    // If a team is selected, only show that team
-    if (selectedTeam) {
-      const team = teams.find(t => t.id === selectedTeam);
-      if (!team) return [];
-
-      const teamTickets = allTickets.filter(ticket =>
-        ticket.team_id && ticket.team_id[0] === selectedTeam &&
-        (!selectedStage || (ticket.stage_id && ticket.stage_id[0] === selectedStage))
-      );
-
-      return [{
-        title: team.name,
-        teamId: team.id,
-        data: teamTickets
-      }];
-    }
-
-    // Group tickets by team
-    const sections = teams.map(team => {
-      const teamTickets = allTickets.filter(ticket =>
-        ticket.team_id && ticket.team_id[0] === team.id &&
-        (!selectedStage || (ticket.stage_id && ticket.stage_id[0] === selectedStage))
-      );
-
-      return {
-        title: team.name,
-        teamId: team.id,
-        data: teamTickets
-      };
-    });
-
-    // Filter out empty sections
-    return sections.filter(section => section.data.length > 0);
-  }, [allTickets, teams, stages, selectedTeam, selectedStage, showMyTickets]);
-
-  // Filtered tickets for flat view
-  const filteredTickets = useMemo(() => {
-    if (!allTickets.length) return [];
-
-    return allTickets.filter(ticket => {
-      // Apply team filter if selected
-      const teamMatch = !selectedTeam || (ticket.team_id && ticket.team_id[0] === selectedTeam);
-
-      // Apply stage filter if selected
-      const stageMatch = !selectedStage || (ticket.stage_id && ticket.stage_id[0] === selectedStage);
-
-      // Apply "My Tickets" filter if enabled
-      const assigneeMatch = !showMyTickets ||
-        (currentUser && ticket.user_id && ticket.user_id[0] === currentUser.id);
-
-      return teamMatch && stageMatch && assigneeMatch;
-    });
-  }, [allTickets, selectedTeam, selectedStage, showMyTickets, currentUser]);
-
-  const loadData = async (forceRefresh = false) => {
+  // Load data with caching
+  const loadData = useCallback(async (forceRefresh = false) => {
     try {
-      setLoading(true);
+      setLoading(!forceRefresh);
       setError(null);
 
-      console.log('Loading helpdesk data with forceRefresh:', forceRefresh);
+      // Load teams and stages from cache first, then API
+      let teamsData = [];
+      let stagesData = [];
 
-      // Load teams first
-      try {
-        console.log('Loading teams...');
-        const teamsData = await getHelpdeskTeams(forceRefresh);
-        console.log('Teams data loaded:', teamsData);
-        setTeams(teamsData || []);
-
-        // Then load stages based on selected team
-        console.log('Loading stages for team:', selectedTeam);
-        const stagesData = await getHelpdeskStages(selectedTeam, forceRefresh);
-        console.log('Stages data loaded:', stagesData);
-        setStages(stagesData || []);
-
-        // Finally load tickets with appropriate filters
-        let domain = [];
-        if (selectedTeam) {
-          domain.push(['team_id', '=', selectedTeam]);
-        }
-        if (selectedStage) {
-          domain.push(['stage_id', '=', selectedStage]);
-        }
-
-        // Add filter for "My Tickets" if enabled
-        if (showMyTickets && currentUser && currentUser.id) {
-          domain.push(['user_id', '=', currentUser.id]);
-          console.log('Filtering for tickets assigned to current user:', currentUser.id);
-        }
-
-        // Filter out "Solved" tickets
-        const solvedStages = stages.filter(stage =>
-          stage.name.toLowerCase().includes('solved') ||
-          stage.name.toLowerCase().includes('done') ||
-          stage.name.toLowerCase().includes('closed')
-        );
-
-        if (solvedStages.length > 0) {
-          const solvedStageIds = solvedStages.map(stage => stage.id);
-          domain.push(['stage_id', 'not in', solvedStageIds]);
-          console.log('Filtering out solved tickets with stage IDs:', solvedStageIds);
-        }
-
-        console.log('Loading tickets with domain:', domain);
-        const ticketsData = await getHelpdeskTickets({
-          domain,
-          limit: 100, // Increase limit to get more tickets
-          forceRefresh
-        });
-        console.log('Tickets data loaded:', ticketsData);
-        setAllTickets(ticketsData || []);
-      } catch (apiError) {
-        console.error('API error:', apiError);
-        setError('Failed to load data from server. Please try again.');
+      if (!forceRefresh) {
+        teamsData = await getCachedData(TEAMS_CACHE_KEY) || [];
+        stagesData = await getCachedData(STAGES_CACHE_KEY) || [];
       }
-    } catch (error) {
-      console.error('Error loading helpdesk data:', error);
-      setError('Failed to load helpdesk tickets. Please try again.');
+
+      // If no cached data or force refresh, fetch from API
+      if (forceRefresh || teamsData.length === 0) {
+        console.log('Fetching teams from API...');
+        teamsData = await getHelpdeskTeams();
+        if (teamsData) {
+          await setCachedData(TEAMS_CACHE_KEY, teamsData);
+        }
+      }
+
+      if (forceRefresh || stagesData.length === 0) {
+        console.log('Fetching stages from API...');
+        stagesData = await getHelpdeskStages();
+        if (stagesData) {
+          // Filter out "Solved" and "Cancelled" stages from the dropdown options (comprehensive)
+          const filteredStages = stagesData.filter(stage => {
+            const stageName = stage.name.toLowerCase();
+            return !stageName.includes('solved') &&
+                   !stageName.includes('solve') &&
+                   !stageName.includes('closed') &&
+                   !stageName.includes('close') &&
+                   !stageName.includes('done') &&
+                   !stageName.includes('complete') &&
+                   !stageName.includes('finished') &&
+                   !stageName.includes('cancelled') &&
+                   !stageName.includes('canceled') &&
+                   !stageName.includes('cancel') &&
+                   !stageName.includes('reject') &&
+                   !stageName.includes('declined');
+          });
+          await setCachedData(STAGES_CACHE_KEY, filteredStages);
+          stagesData = filteredStages;
+        }
+      }
+
+      setTeams(teamsData || []);
+      setStages(stagesData || []);
+
+      // Build domain filter (no search - search is local only)
+      const domain = [
+        // Exclude solved tickets (multiple variations)
+        '!', ['stage_id.name', 'ilike', 'solved'],
+        '!', ['stage_id.name', 'ilike', 'solve'],
+        '!', ['stage_id.name', 'ilike', 'closed'],
+        '!', ['stage_id.name', 'ilike', 'close'],
+        '!', ['stage_id.name', 'ilike', 'done'],
+        '!', ['stage_id.name', 'ilike', 'complete'],
+        '!', ['stage_id.name', 'ilike', 'finished'],
+        // Exclude cancelled tickets (multiple variations)
+        '!', ['stage_id.name', 'ilike', 'cancelled'],
+        '!', ['stage_id.name', 'ilike', 'canceled'],
+        '!', ['stage_id.name', 'ilike', 'cancel'],
+        '!', ['stage_id.name', 'ilike', 'reject'],
+        '!', ['stage_id.name', 'ilike', 'declined']
+      ];
+
+      console.log('Fetching tickets from API with enhanced filtering...');
+      const ticketsData = await getHelpdeskTickets({
+        domain,
+        forceRefresh
+      });
+
+      if (ticketsData) {
+        // Cache tickets for offline use
+        await setCachedData(TICKETS_CACHE_KEY, ticketsData);
+        setTickets(ticketsData);
+      }
+
+    } catch (err) {
+      console.error('Error loading helpdesk data:', err);
+      setError('Failed to load helpdesk data. Please try again.');
+
+      // Try to load from cache as fallback
+      const cachedTickets = await getCachedData(TICKETS_CACHE_KEY);
+      if (cachedTickets) {
+        setTickets(cachedTickets);
+        console.log('Loaded tickets from cache as fallback');
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
 
+  // Load data on focus
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+    }, [loadData])
+  );
+
+  // Handle refresh
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     loadData(true);
-  }, [selectedTeam, selectedStage]);
+  }, [loadData]);
 
+  // Filter and group tickets by stages with local search
+  const groupedTickets = useMemo(() => {
+    if (!tickets.length) return [];
+
+    // First filter tickets based on selected filters
+    const filtered = tickets.filter(ticket => {
+      // Apply team filter
+      const teamMatch = !selectedTeam || (ticket.team_id && ticket.team_id[0] === selectedTeam);
+
+      // Apply stage filter (multiple stages)
+      const stageMatch = selectedStages.length === 0 ||
+        (ticket.stage_id && selectedStages.includes(ticket.stage_id[0]));
+
+      // Apply "My Tickets" filter
+      const assigneeMatch = !showMyTickets ||
+        (currentUser && ticket.user_id && ticket.user_id[0] === currentUser.id);
+
+      // Apply local search filter
+      const searchMatch = !searchQuery.trim() || (
+        (ticket.name && ticket.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (ticket.description && ticket.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (ticket.partner_name && ticket.partner_name.toLowerCase().includes(searchQuery.toLowerCase())) ||
+        (ticket.id && ticket.id.toString().includes(searchQuery))
+      );
+
+      return teamMatch && stageMatch && assigneeMatch && searchMatch;
+    });
+
+    // Group tickets by stage
+    const groupedByStage = {};
+
+    filtered.forEach(ticket => {
+      const stageName = ticket.stage_id ? ticket.stage_id[1] : 'No Stage';
+      if (!groupedByStage[stageName]) {
+        groupedByStage[stageName] = [];
+      }
+      groupedByStage[stageName].push(ticket);
+    });
+
+    // Convert to section list format and sort stages in logical order
+    const stageOrder = ['New', 'In Info', 'Pend Int', 'Pend Cust', 'Hold'];
+    const sections = [];
+
+    // Add stages in preferred order first
+    stageOrder.forEach(stageName => {
+      if (groupedByStage[stageName]) {
+        sections.push({
+          title: stageName,
+          data: groupedByStage[stageName].sort((a, b) => {
+            // Sort by priority (higher first), then by creation date (newer first)
+            if (a.priority !== b.priority) {
+              return (b.priority || 0) - (a.priority || 0);
+            }
+            return new Date(b.create_date) - new Date(a.create_date);
+          })
+        });
+        delete groupedByStage[stageName];
+      }
+    });
+
+    // Add any remaining stages not in the preferred order
+    Object.keys(groupedByStage).sort().forEach(stageName => {
+      sections.push({
+        title: stageName,
+        data: groupedByStage[stageName].sort((a, b) => {
+          // Sort by priority (higher first), then by creation date (newer first)
+          if (a.priority !== b.priority) {
+            return (b.priority || 0) - (a.priority || 0);
+          }
+          return new Date(b.create_date) - new Date(a.create_date);
+        })
+      });
+    });
+
+    return sections;
+  }, [tickets, selectedTeam, selectedStages, showMyTickets, currentUser, searchQuery]);
+
+  // Event handlers
   const handleTicketPress = (ticket) => {
     navigation.navigate('HelpdeskTicketDetail', { ticketId: ticket.id });
   };
@@ -235,305 +530,289 @@ const HelpdeskTicketsScreen = () => {
     navigation.navigate('HelpdeskTicketForm', { teamId: selectedTeam });
   };
 
-  const handleTeamFilter = (teamId) => {
-    setSelectedTeam(teamId === selectedTeam ? null : teamId);
-    setSelectedStage(null); // Reset stage filter when team changes
+  const handleTeamSelect = (teamId) => {
+    setSelectedTeam(teamId);
   };
 
-  const handleStageFilter = (stageId) => {
-    setSelectedStage(stageId === selectedStage ? null : stageId);
+  const handleStageToggle = (stageId) => {
+    setSelectedStages(prev => {
+      if (prev.includes(stageId)) {
+        return prev.filter(id => id !== stageId);
+      } else {
+        return [...prev, stageId];
+      }
+    });
   };
 
   const toggleMyTickets = () => {
     setShowMyTickets(!showMyTickets);
-    // Reset other filters when toggling My Tickets
-    if (!showMyTickets) {
-      setSelectedTeam(null);
+  };
+
+  const handleSearchChange = (text) => {
+    setSearchQuery(text);
+    // Local search - no API calls needed
+  };
+
+  const clearAllFilters = () => {
+    setSelectedTeam(null);
+    setSelectedStages([]);
+    setShowMyTickets(false);
+    setSearchQuery('');
+  };
+
+  const clearFiltersOnly = () => {
+    setSelectedTeam(null);
+    setSelectedStages([]);
+    setShowMyTickets(false);
+  };
+
+  const saveFavoriteFilters = async () => {
+    try {
+      const filters = {
+        myTickets: showMyTickets,
+        selectedTeam,
+        selectedStages
+      };
+      await AsyncStorage.setItem('helpdesk_favorite_filters', JSON.stringify(filters));
+      setFavoriteFilters(filters);
+      setShowFavoritesModal(false);
+      Alert.alert('Success', 'Favorite filters saved!');
+    } catch (error) {
+      console.error('Error saving favorite filters:', error);
+      Alert.alert('Error', 'Failed to save favorite filters');
     }
   };
 
-  // Handle archive action
-  const handleArchiveTicket = async (ticket) => {
-    try {
-      const success = await archiveHelpdeskTicket(ticket.id);
-      if (success) {
-        // Remove the ticket from the list
-        setAllTickets(prev => prev.filter(t => t.id !== ticket.id));
-        Alert.alert('Success', `Ticket ${ticket.ticket_ref || '#' + ticket.id} has been archived.`);
-      } else {
-        Alert.alert('Error', 'Failed to archive the ticket. Please try again.');
+  const loadFavoriteFilters = () => {
+    setShowMyTickets(favoriteFilters.myTickets);
+    setSelectedTeam(favoriteFilters.selectedTeam);
+    setSelectedStages(favoriteFilters.selectedStages);
+    setShowFavoritesModal(false);
+  };
+
+  const handleUserSelected = async (userId) => {
+    if (selectedTicket) {
+      try {
+        await assignHelpdeskTicket(selectedTicket.id, userId);
+        setUserModalVisible(false);
+        setSelectedTicket(null);
+        loadData(true); // Refresh data
+        Alert.alert('Success', 'Ticket assigned successfully');
+      } catch (error) {
+        console.error('Error assigning ticket:', error);
+        Alert.alert('Error', 'Failed to assign ticket');
       }
+    }
+  };
+
+  const handleArchiveTicket = async (ticketId) => {
+    try {
+      await archiveHelpdeskTicket(ticketId);
+      loadData(true); // Refresh data
+      Alert.alert('Success', 'Ticket archived successfully');
     } catch (error) {
       console.error('Error archiving ticket:', error);
-      Alert.alert('Error', 'An error occurred while archiving the ticket.');
+      Alert.alert('Error', 'Failed to archive ticket');
     }
   };
 
-  // Handle delete action
-  const handleDeleteTicket = async (ticket) => {
-    try {
-      const success = await deleteHelpdeskTicket(ticket.id);
-      if (success) {
-        // Remove the ticket from the list
-        setAllTickets(prev => prev.filter(t => t.id !== ticket.id));
-        Alert.alert('Success', `Ticket ${ticket.ticket_ref || '#' + ticket.id} has been deleted.`);
-      } else {
-        Alert.alert('Error', 'Failed to delete the ticket. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error deleting ticket:', error);
-      Alert.alert('Error', 'An error occurred while deleting the ticket.');
-    }
+  const handleDeleteTicket = async (ticketId) => {
+    Alert.alert(
+      'Delete Ticket',
+      'Are you sure you want to delete this ticket? This action cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteHelpdeskTicket(ticketId);
+              loadData(true); // Refresh data
+              Alert.alert('Success', 'Ticket deleted successfully');
+            } catch (error) {
+              console.error('Error deleting ticket:', error);
+              Alert.alert('Error', 'Failed to delete ticket');
+            }
+          }
+        }
+      ]
+    );
   };
 
-  // Handle assign action
   const handleAssignTicket = (ticket) => {
     setSelectedTicket(ticket);
     setUserModalVisible(true);
   };
 
-  // Handle user selection from modal
-  const handleUserSelected = async (user) => {
-    if (!selectedTicket) return;
+  // Render ticket item (memoized)
+  const renderTicketItem = useCallback(({ item }) => (
+    <SwipeableTicketItem
+      ticket={item}
+      onPress={() => handleTicketPress(item)}
+      onArchive={() => handleArchiveTicket(item.id)}
+      onDelete={() => handleDeleteTicket(item.id)}
+      onAssign={() => handleAssignTicket(item)}
+      colors={colors}
+    />
+  ), [colors, handleTicketPress, handleArchiveTicket, handleDeleteTicket, handleAssignTicket]);
 
-    try {
-      const success = await assignHelpdeskTicket(selectedTicket.id, user.id);
-      if (success) {
-        // Update the ticket in the list
-        setAllTickets(prev => prev.map(t => {
-          if (t.id === selectedTicket.id) {
-            return { ...t, user_id: [user.id, user.name] };
-          }
-          return t;
-        }));
-        Alert.alert('Success', `Ticket ${selectedTicket.ticket_ref || '#' + selectedTicket.id} has been assigned to ${user.name}.`);
-      } else {
-        Alert.alert('Error', 'Failed to assign the ticket. Please try again.');
-      }
-    } catch (error) {
-      console.error('Error assigning ticket:', error);
-      Alert.alert('Error', 'An error occurred while assigning the ticket.');
-    } finally {
-      setSelectedTicket(null);
-    }
-  };
-
-  // Handle swipeable open
-  const handleSwipeableOpen = (ticketId, direction) => {
-    // Close any previously opened swipeable
-    if (openSwipeableId && openSwipeableId !== ticketId) {
-      // This would require refs to each swipeable item, which is complex in a list
-      // For simplicity, we'll just track the open swipeable ID
-      setOpenSwipeableId(ticketId);
-    } else {
-      setOpenSwipeableId(ticketId);
-    }
-  };
-
-  // Handle swipeable close
-  const handleSwipeableClose = () => {
-    setOpenSwipeableId(null);
-  };
-
-  const renderTicketItem = ({ item }) => {
-    return (
-      <SwipeableTicketItem
-        ticket={item}
-        onPress={handleTicketPress}
-        onArchive={handleArchiveTicket}
-        onDelete={handleDeleteTicket}
-        onAssign={handleAssignTicket}
-        onSwipeableOpen={(direction) => handleSwipeableOpen(item.id, direction)}
-        onSwipeableClose={handleSwipeableClose}
-      />
-    );
-  };
-
-  // Render section header for team or stage
-  const renderSectionHeader = ({ section }) => (
-    <View style={[styles.sectionHeader, { backgroundColor: colors.background }]}>
-      <Text style={[styles.sectionHeaderText, { color: colors.text }]}>{section.title}</Text>
-      {section.teamId && (
-        <TouchableOpacity
-          style={[styles.sectionHeaderButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate('HelpdeskTicketForm', { teamId: section.teamId })}
-        >
-          <Icon name="plus" size={16} color={colors.onPrimary} />
-          <Text style={[styles.sectionHeaderButtonText, { color: colors.onPrimary }]}>New</Text>
-        </TouchableOpacity>
-      )}
-      {showMyTickets && section.stageId && (
-        <View style={styles.stageIndicator}>
-          <Text style={[styles.stageCount, { color: colors.textSecondary }]}>
-            {section.data.length} {section.data.length === 1 ? 'ticket' : 'tickets'}
+  // Render section header (stage divider) (memoized)
+  const renderSectionHeader = useCallback(({ section: { title, data } }) => (
+    <View style={[styles.sectionHeader, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View style={styles.sectionHeaderContent}>
+        <Text style={[styles.sectionHeaderTitle, { color: colors.text }]}>
+          {title}
+        </Text>
+        <View style={[styles.sectionHeaderBadge, { backgroundColor: colors.primary }]}>
+          <Text style={[styles.sectionHeaderCount, { color: colors.onPrimary }]}>
+            {data.length}
           </Text>
         </View>
+      </View>
+    </View>
+  ), [colors]);
+
+  // Render search bar with clear filters button
+  const renderSearchBar = () => (
+    <View style={[styles.searchContainer, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
+      <View style={[styles.searchInputContainer, { backgroundColor: colors.background, borderColor: colors.border }]}>
+        <Icon name="magnify" size={20} color={colors.textSecondary} style={styles.searchIcon} />
+        <TextInput
+          style={[styles.searchInput, { color: colors.text }]}
+          placeholder="Search tickets by title, description, or ID..."
+          placeholderTextColor={colors.textSecondary}
+          value={searchQuery}
+          onChangeText={handleSearchChange}
+          returnKeyType="search"
+        />
+        {searchQuery.length > 0 && (
+          <TouchableOpacity onPress={() => setSearchQuery('')} style={styles.clearSearchButton}>
+            <Icon name="close-circle-outline" size={18} color={colors.textSecondary} />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Clear Filters Button in Search Bar */}
+      {(selectedTeam || selectedStages.length > 0 || showMyTickets) && (
+        <TouchableOpacity
+          style={[styles.clearAllFiltersButton, { borderColor: colors.border }]}
+          onPress={clearFiltersOnly}
+        >
+          <Icon name="filter-off" size={18} color={colors.textSecondary} />
+          <Text style={[styles.clearAllText, { color: colors.textSecondary }]}>Clear</Text>
+        </TouchableOpacity>
       )}
     </View>
   );
 
-  // Render filters for teams and stages
+  // Render compact filter bar (single row)
   const renderFilters = () => (
-    <View style={styles.filtersContainer}>
-      {/* My Tickets Filter */}
+    <View style={[styles.filtersContainer, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
       <View style={styles.filterRow}>
+        {/* Favorites Button */}
+        <TouchableOpacity
+          style={[
+            styles.favoritesButton,
+            {
+              borderColor: colors.border,
+              backgroundColor: colors.background,
+            }
+          ]}
+          onPress={() => setShowFavoritesModal(true)}
+        >
+          <Icon name="star" size={16} color={colors.primary} />
+        </TouchableOpacity>
+
+        {/* My Tickets Button */}
         <TouchableOpacity
           style={[
             styles.myTicketsButton,
             {
-              backgroundColor: showMyTickets ? colors.primary : colors.surface,
-              borderColor: colors.border
+              backgroundColor: showMyTickets ? colors.primary : colors.background,
+              borderColor: showMyTickets ? colors.primary : colors.border,
             }
           ]}
           onPress={toggleMyTickets}
         >
           <Icon
-            name="account-check"
-            size={18}
-            color={showMyTickets ? colors.onPrimary : colors.text}
-            style={styles.myTicketsIcon}
+            name="account-heart"
+            size={14}
+            color={showMyTickets ? colors.onPrimary : colors.primary}
+            style={styles.buttonIcon}
           />
           <Text
             style={[
-              styles.myTicketsText,
+              styles.buttonText,
               { color: showMyTickets ? colors.onPrimary : colors.text }
             ]}
           >
             My Tickets
           </Text>
         </TouchableOpacity>
-      </View>
 
-      {/* Teams Filter - Only show if not in My Tickets mode */}
-      {!showMyTickets && (
-        <View style={styles.filterRow}>
-          <View style={styles.filterContainer}>
-            <Text style={[styles.filterTitle, { color: colors.text }]}>Teams:</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-              {teams.map(team => (
-                <TouchableOpacity
-                  key={team.id}
-                  style={[
-                    styles.filterChip,
-                    {
-                      backgroundColor: selectedTeam === team.id ? colors.primary : colors.surface,
-                      borderColor: colors.border
-                    }
-                  ]}
-                  onPress={() => handleTeamFilter(team.id)}
-                >
-                  <Text
-                    style={[
-                      styles.filterChipText,
-                      { color: selectedTeam === team.id ? colors.onPrimary : colors.text }
-                    ]}
-                  >
-                    {team.name}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
-      )}
+        {/* Teams Dropdown */}
+        <TeamDropdown
+          title="Teams"
+          options={teams}
+          selectedValue={selectedTeam}
+          onSelect={handleTeamSelect}
+          icon="account-group"
+          colors={colors}
+        />
 
-      {/* Stages Filter */}
-      <View style={styles.filterRow}>
-        <View style={styles.filterContainer}>
-          <Text style={[styles.filterTitle, { color: colors.text }]}>Stages:</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-            {stages.map(stage => (
-              <TouchableOpacity
-                key={stage.id}
-                style={[
-                  styles.filterChip,
-                  {
-                    backgroundColor: selectedStage === stage.id ? colors.primary : colors.surface,
-                    borderColor: colors.border
-                  }
-                ]}
-                onPress={() => handleStageFilter(stage.id)}
-              >
-                <Text
-                  style={[
-                    styles.filterChipText,
-                    { color: selectedStage === stage.id ? colors.onPrimary : colors.text }
-                  ]}
-                >
-                  {stage.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      </View>
-
-      {/* View Mode Toggle */}
-      <View style={styles.viewToggleContainer}>
-        <TouchableOpacity
-          style={[
-            styles.viewToggleButton,
-            {
-              backgroundColor: viewMode === 'byTeam' ? colors.primary : colors.surface,
-              borderColor: colors.border
-            }
-          ]}
-          onPress={() => setViewMode('byTeam')}
-        >
-          <Icon
-            name={showMyTickets ? "format-list-group" : "view-list"}
-            size={16}
-            color={viewMode === 'byTeam' ? colors.onPrimary : colors.text}
-          />
-          <Text
-            style={[
-              styles.viewToggleText,
-              { color: viewMode === 'byTeam' ? colors.onPrimary : colors.text }
-            ]}
-          >
-            {showMyTickets ? "By Stage" : "By Team"}
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.viewToggleButton,
-            {
-              backgroundColor: viewMode === 'flat' ? colors.primary : colors.surface,
-              borderColor: colors.border
-            }
-          ]}
-          onPress={() => setViewMode('flat')}
-        >
-          <Icon
-            name="ticket-outline"
-            size={16}
-            color={viewMode === 'flat' ? colors.onPrimary : colors.text}
-          />
-          <Text
-            style={[
-              styles.viewToggleText,
-              { color: viewMode === 'flat' ? colors.onPrimary : colors.text }
-            ]}
-          >
-            All Tickets
-          </Text>
-        </TouchableOpacity>
+        {/* Stages Checkbox Dropdown */}
+        <StageCheckboxDropdown
+          title="Stages"
+          options={stages}
+          selectedValues={selectedStages}
+          onToggle={handleStageToggle}
+          icon="flag-variant"
+          colors={colors}
+        />
       </View>
     </View>
   );
 
+  // Render empty component
+  const renderEmptyComponent = () => (
+    <View style={styles.emptyContainer}>
+      <Icon name="ticket-outline" size={48} color={colors.textSecondary} />
+      <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+        No tickets found
+      </Text>
+      <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>
+        {showMyTickets ? 'No tickets assigned to you' : 'Create a new ticket to get started'}
+      </Text>
+      <TouchableOpacity
+        style={[styles.createButton, { backgroundColor: colors.primary }]}
+        onPress={handleCreateTicket}
+      >
+        <Text style={[styles.createButtonText, { color: colors.onPrimary }]}>
+          Create New Ticket
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+
+  // Calculate total tickets count for empty check
+  const totalTicketsCount = groupedTickets.reduce((total, section) => total + section.data.length, 0);
+
+  // Loading state
   if (loading && !refreshing) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.text }]}>Loading tickets...</Text>
       </View>
     );
   }
 
+  // Error state
   if (error) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, styles.centered, { backgroundColor: colors.background }]}>
+        <Icon name="alert-circle-outline" size={48} color={colors.error} />
         <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
         <TouchableOpacity
           style={[styles.retryButton, { backgroundColor: colors.primary }]}
@@ -545,67 +824,37 @@ const HelpdeskTicketsScreen = () => {
     );
   }
 
-  // Render empty component
-  const renderEmptyComponent = () => (
-    <View style={styles.emptyContainer}>
-      <Icon name="ticket-outline" size={48} color={colors.textSecondary} />
-      <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-        No tickets found
-      </Text>
-      {!selectedTeam && (
-        <TouchableOpacity
-          style={[styles.createButton, { backgroundColor: colors.primary }]}
-          onPress={() => navigation.navigate('HelpdeskTicketForm')}
-        >
-          <Text style={[styles.createButtonText, { color: colors.onPrimary }]}>
-            Create New Ticket
-          </Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
-
-  // Main render method
+  // Main render
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Search Bar */}
+      {renderSearchBar()}
+
+      {/* Compact Filter Bar */}
       {renderFilters()}
 
-      {viewMode === 'byTeam' ? (
-        <SectionList
-          sections={ticketsByTeam}
-          renderItem={({ item }) => renderTicketItem({ item })}
-          renderSectionHeader={renderSectionHeader}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.listContent}
-          stickySectionHeadersEnabled={true}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[colors.primary]}
-              tintColor={colors.primary}
-            />
-          }
-          ListEmptyComponent={renderEmptyComponent}
-        />
-      ) : (
-        <FlatList
-          data={filteredTickets}
-          renderItem={renderTicketItem}
-          keyExtractor={(item) => item.id.toString()}
-          contentContainerStyle={styles.listContent}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={[colors.primary]}
-              tintColor={colors.primary}
-            />
-          }
-          ListEmptyComponent={renderEmptyComponent}
-        />
-      )}
+      {/* Tickets List with Stage Dividers */}
+      <SectionList
+        sections={groupedTickets}
+        renderItem={renderTicketItem}
+        renderSectionHeader={renderSectionHeader}
+        keyExtractor={(item) => item.id.toString()}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
+        ListEmptyComponent={totalTicketsCount === 0 ? renderEmptyComponent : null}
+        contentContainerStyle={totalTicketsCount === 0 ? styles.emptyListContainer : styles.listContainer}
+        showsVerticalScrollIndicator={false}
+        stickySectionHeadersEnabled={true}
+        ItemSeparatorComponent={() => <View style={[styles.itemSeparator, { backgroundColor: colors.border }]} />}
+      />
 
+      {/* Floating Action Button */}
       <TouchableOpacity
         style={[styles.fab, { backgroundColor: colors.primary }]}
         onPress={handleCreateTicket}
@@ -616,10 +865,80 @@ const HelpdeskTicketsScreen = () => {
       {/* User Selection Modal */}
       <UserSelectionModal
         visible={userModalVisible}
-        onClose={() => setUserModalVisible(false)}
-        onSelectUser={handleUserSelected}
-        ticketId={selectedTicket?.id}
+        onClose={() => {
+          setUserModalVisible(false);
+          setSelectedTicket(null);
+        }}
+        onUserSelected={handleUserSelected}
+        colors={colors}
       />
+
+      {/* Favorites Modal */}
+      <Modal
+        visible={showFavoritesModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowFavoritesModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.favoritesModal, { backgroundColor: colors.surface }]}>
+            <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+              <Text style={[styles.modalTitle, { color: colors.text }]}>
+                Favorite Filters
+              </Text>
+              <TouchableOpacity onPress={() => setShowFavoritesModal(false)}>
+                <Icon name="close" size={24} color={colors.text} />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.favoritesContent}>
+              <Text style={[styles.favoritesSubtitle, { color: colors.textSecondary }]}>
+                Save your current filter settings as favorites
+              </Text>
+
+              <View style={styles.currentFiltersSection}>
+                <Text style={[styles.sectionTitle, { color: colors.text }]}>Current Filters:</Text>
+
+                <View style={styles.filterSummary}>
+                  <Text style={[styles.filterItem, { color: colors.text }]}>
+                    My Tickets: {showMyTickets ? 'Yes' : 'No'}
+                  </Text>
+                  <Text style={[styles.filterItem, { color: colors.text }]}>
+                    Team: {selectedTeam ? teams.find(t => t.id === selectedTeam)?.name || 'Unknown' : 'All'}
+                  </Text>
+                  <Text style={[styles.filterItem, { color: colors.text }]}>
+                    Stages: {selectedStages.length === 0 ? 'All' : `${selectedStages.length} selected`}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.favoritesActions}>
+                <TouchableOpacity
+                  style={[styles.favoriteActionButton, { backgroundColor: colors.primary }]}
+                  onPress={saveFavoriteFilters}
+                >
+                  <Icon name="content-save" size={20} color={colors.onPrimary} />
+                  <Text style={[styles.favoriteActionText, { color: colors.onPrimary }]}>
+                    Save Current Filters
+                  </Text>
+                </TouchableOpacity>
+
+                {(favoriteFilters.myTickets || favoriteFilters.selectedTeam || favoriteFilters.selectedStages.length > 0) && (
+                  <TouchableOpacity
+                    style={[styles.favoriteActionButton, { backgroundColor: colors.secondary || colors.primary }]}
+                    onPress={loadFavoriteFilters}
+                  >
+                    <Icon name="star" size={20} color={colors.onPrimary} />
+                    <Text style={[styles.favoriteActionText, { color: colors.onPrimary }]}>
+                      Load Saved Filters
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -628,262 +947,358 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  listContent: {
-    padding: 16,
-    paddingBottom: 80, // Extra padding for FAB
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
   },
-  // Ticket item styles
-  ticketItem: {
+
+  // Search Bar Styles
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    gap: 12,
+  },
+  searchInputContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
     borderRadius: 8,
-    padding: 16,
-    marginBottom: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  searchIcon: {
+    marginRight: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingVertical: 4,
+  },
+  clearSearchButton: {
+    padding: 4,
+  },
+  clearAllFiltersButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderRadius: 6,
+    gap: 4,
+  },
+  clearAllText: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+
+  // Filter Bar Styles
+  filtersContainer: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
+  filterRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+  },
+
+  // List Container Styles
+  listContainer: {
+    paddingBottom: 100, // Space for FAB
+  },
+  itemSeparator: {
+    height: 1,
+    marginHorizontal: 16,
+  },
+
+  // Section Header Styles
+  sectionHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    elevation: 2,
   },
-  ticketHeader: {
+  sectionHeaderContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
   },
-  ticketNumber: {
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  priorityIndicator: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  ticketTitle: {
+  sectionHeaderTitle: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 8,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
-  ticketMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  ticketMetaLeft: {
-    flex: 1,
-    marginRight: 8,
-  },
-  ticketMetaRight: {
-    flex: 1,
-    alignItems: 'flex-end',
-  },
-  ticketCustomer: {
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  ticketActivity: {
-    fontSize: 12,
-    fontStyle: 'italic',
-  },
-  ticketTeam: {
-    fontSize: 14,
-    marginBottom: 4,
-  },
-  ticketAssignee: {
-    fontSize: 12,
-  },
-  ticketFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  stageTag: {
+  sectionHeaderBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 4,
+    borderRadius: 12,
+    minWidth: 24,
+    alignItems: 'center',
+  },
+  sectionHeaderCount: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+
+  // Favorites Button
+  favoritesButton: {
+    paddingHorizontal: 8,
+    paddingVertical: 6,
     borderWidth: 1,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 36,
+    height: 36,
   },
-  stageText: {
-    fontSize: 12,
-    fontWeight: '500',
+
+  // Compact My Tickets Button
+  compactMyTicketsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    minWidth: 50,
   },
-  ticketDates: {
-    alignItems: 'flex-end',
+
+  // My Tickets Button (legacy - keeping for compatibility)
+  myTicketsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 6,
+    borderWidth: 1,
+    minWidth: 80,
   },
-  ticketDate: {
-    fontSize: 12,
-    marginBottom: 2,
+
+  // Dropdown Button Styles
+  dropdownButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    borderRadius: 6,
+    borderWidth: 1,
+    flex: 1,
+    minWidth: 60,
   },
-  ticketDeadline: {
+  dropdownIcon: {
+    marginRight: 4,
+  },
+  dropdownText: {
+    flex: 1,
     fontSize: 12,
     fontWeight: '500',
   },
 
-  // Section header styles
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    marginBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+  // Button Common Styles
+  buttonIcon: {
+    marginRight: 4,
   },
-  sectionHeaderText: {
-    fontSize: 18,
-    fontWeight: '600',
+  buttonText: {
+    fontSize: 12,
+    fontWeight: '500',
   },
-  sectionHeaderButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-  sectionHeaderButtonText: {
-    fontSize: 14,
+  compactButtonText: {
+    fontSize: 12,
     fontWeight: '500',
     marginLeft: 4,
   },
 
-  // Filter styles
-  filtersContainer: {
-    paddingTop: 8,
-    paddingBottom: 8,
+  // Modal Styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dropdownModal: {
+    width: '80%',
+    maxHeight: '60%',
+    borderRadius: 12,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
   },
-  filterRow: {
-    flexDirection: 'row',
-  },
-  filterContainer: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 4,
-  },
-  filterTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  filterScroll: {
-    flexDirection: 'row',
-  },
-  filterChip: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginRight: 8,
-    borderWidth: 1,
-  },
-  filterChipText: {
-    fontSize: 14,
-  },
-
-  // View toggle styles
-  viewToggleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  viewToggleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginHorizontal: 8,
-    borderWidth: 1,
-  },
-  viewToggleText: {
-    fontSize: 14,
-    fontWeight: '500',
-    marginLeft: 6,
-  },
-  myTicketsButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginHorizontal: 16,
-    marginBottom: 8,
-    alignSelf: 'flex-start',
-  },
-  myTicketsIcon: {
-    marginRight: 8,
-  },
-  myTicketsText: {
-    fontSize: 14,
+  modalTitle: {
+    fontSize: 18,
     fontWeight: '600',
   },
-  stageIndicator: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
+  optionsList: {
+    maxHeight: 300,
   },
-  stageCount: {
-    fontSize: 12,
-    fontWeight: '500',
+  option: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#E5E5E5',
   },
-
-  // Empty state styles
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 32,
-    flex: 1,
-    minHeight: 300,
-  },
-  emptyText: {
+  optionText: {
     fontSize: 16,
-    marginTop: 16,
+  },
+
+  // Checkbox Option Styles
+  checkboxOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#E5E5E5',
+  },
+  checkboxOptionText: {
+    fontSize: 16,
+    marginLeft: 12,
+    flex: 1,
+  },
+
+  // Favorites Modal Styles
+  favoritesModal: {
+    width: '90%',
+    maxHeight: '70%',
+    borderRadius: 12,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  favoritesContent: {
+    padding: 16,
+  },
+  favoritesSubtitle: {
+    fontSize: 14,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  currentFiltersSection: {
     marginBottom: 24,
   },
-  createButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  filterSummary: {
+    backgroundColor: '#F5F5F5',
+    padding: 12,
     borderRadius: 8,
+  },
+  filterItem: {
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  favoritesActions: {
+    gap: 12,
+  },
+  favoriteActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  favoriteActionText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+
+  // Empty State Styles
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  emptyListContainer: {
+    flexGrow: 1,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  createButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 24,
   },
   createButtonText: {
     fontSize: 16,
     fontWeight: '600',
   },
 
-  // Error and retry styles
+  // Loading State Styles
+  loadingText: {
+    fontSize: 16,
+    marginTop: 16,
+  },
+
+  // Error State Styles
   errorText: {
     fontSize: 16,
     textAlign: 'center',
-    margin: 16,
+    marginTop: 16,
+    marginBottom: 24,
   },
   retryButton: {
-    paddingVertical: 12,
     paddingHorizontal: 24,
+    paddingVertical: 12,
     borderRadius: 8,
-    alignSelf: 'center',
   },
   retryButtonText: {
     fontSize: 16,
     fontWeight: '600',
   },
 
-  // FAB styles
+  // Floating Action Button
   fab: {
     position: 'absolute',
-    right: 16,
-    bottom: 16,
+    bottom: 24,
+    right: 24,
     width: 56,
     height: 56,
     borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
+    elevation: 8,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
   },
 });
 

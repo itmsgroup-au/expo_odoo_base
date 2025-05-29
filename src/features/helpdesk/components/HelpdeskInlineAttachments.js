@@ -58,9 +58,12 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       // Check if attachments directory exists
       const dirInfo = await FileSystem.getInfoAsync(attachmentsDir);
       if (!dirInfo.exists) {
+        console.log('HelpdeskInlineAttachments: Attachments directory does not exist');
         setCachedFiles(cacheMap);
         return;
       }
+
+      console.log(`HelpdeskInlineAttachments: Checking cache for ${attachmentsList.length} attachments`);
 
       for (const attachment of attachmentsList) {
         const filename = `${attachment.id}_${attachment.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
@@ -68,22 +71,27 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
 
         try {
           const fileInfo = await FileSystem.getInfoAsync(filePath);
-          if (fileInfo.exists) {
+          if (fileInfo.exists && fileInfo.size > 0) {
             cacheMap.set(attachment.id, {
               uri: filePath,
               path: filePath,
               size: fileInfo.size,
-              modifiedTime: fileInfo.modificationTime
+              modifiedTime: fileInfo.modificationTime,
+              originalName: attachment.name
             });
+            console.log(`HelpdeskInlineAttachments: Found cached file: ${attachment.name} (${fileInfo.size} bytes)`);
+          } else {
+            console.log(`HelpdeskInlineAttachments: File not cached or empty: ${attachment.name}`);
           }
         } catch (error) {
-          console.log(`Error checking cache for ${filename}:`, error);
+          console.log(`HelpdeskInlineAttachments: Error checking cache for ${filename}:`, error.message);
         }
       }
     } catch (error) {
-      console.error('Error checking cached files:', error);
+      console.error('HelpdeskInlineAttachments: Error checking cached files:', error);
     }
 
+    console.log(`HelpdeskInlineAttachments: Found ${cacheMap.size} cached files out of ${attachmentsList.length} total attachments`);
     setCachedFiles(cacheMap);
   }, []);
 
@@ -388,18 +396,43 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
   // Auto-download small attachments (under 1MB) in background
   const autoDownloadSmallAttachments = async (attachmentsList) => {
     try {
+      // First, check which files are actually cached on disk
+      const validCachedFiles = new Map();
+
+      for (const [id, cachedFile] of cachedFiles.entries()) {
+        try {
+          const fileInfo = await FileSystem.getInfoAsync(cachedFile.path);
+          if (fileInfo.exists) {
+            validCachedFiles.set(id, cachedFile);
+          } else {
+            console.log(`HelpdeskInlineAttachments: Cached file no longer exists: ${cachedFile.path}`);
+          }
+        } catch (error) {
+          console.log(`HelpdeskInlineAttachments: Error checking cached file ${id}:`, error.message);
+        }
+      }
+
+      // Update cache state to remove missing files
+      if (validCachedFiles.size !== cachedFiles.size) {
+        setCachedFiles(validCachedFiles);
+      }
+
       const smallAttachments = attachmentsList.filter(att =>
         att.fileSize <= 1024 * 1024 && // Under 1MB
-        !cachedFiles.has(att.id) && // Not already cached
+        !validCachedFiles.has(att.id) && // Not already cached (verified on disk)
         !downloadingItems.has(att.id) // Not currently downloading
       );
 
       if (smallAttachments.length === 0) {
-        console.log('HelpdeskInlineAttachments: No small attachments to auto-download');
+        console.log('HelpdeskInlineAttachments: No small attachments to auto-download (all cached or downloading)');
         return;
       }
 
-      console.log(`HelpdeskInlineAttachments: Auto-downloading ${smallAttachments.length} small attachments`);
+      console.log(`HelpdeskInlineAttachments: Auto-downloading ${smallAttachments.length} small attachments (${validCachedFiles.size} already cached)`);
+      console.log(`HelpdeskInlineAttachments: Access token available: ${accessToken ? 'Yes' : 'No'}`);
+      if (accessToken) {
+        console.log(`HelpdeskInlineAttachments: Access token length: ${accessToken.length}`);
+      }
 
       // Download them one by one to avoid overwhelming the server
       for (const attachment of smallAttachments) {
@@ -453,6 +486,8 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
       let downloadResult = null;
       let lastError = null;
 
+      console.log(`HelpdeskInlineAttachments: Trying ${downloadUrls.length} download URLs for ${attachment.name}`);
+
       // Try each URL until one works
       for (let i = 0; i < downloadUrls.length; i++) {
         const baseUrl = downloadUrls[i];
@@ -472,6 +507,8 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         for (let authIndex = 0; authIndex < authMethods.length; authIndex++) {
           const downloadUrl = authMethods[authIndex](baseUrl);
 
+          console.log(`HelpdeskInlineAttachments: Attempt ${i + 1}.${authIndex + 1}: ${downloadUrl}`);
+
           try {
             const downloadOptions = {
               headers: authIndex === 1 && accessToken ? {
@@ -482,12 +519,16 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
 
             downloadResult = await FileSystem.downloadAsync(downloadUrl, filePath, downloadOptions);
 
+            console.log(`HelpdeskInlineAttachments: Response status ${downloadResult.status} for URL ${i + 1}.${authIndex + 1}`);
+
             if (downloadResult.status === 200) {
+              console.log(`HelpdeskInlineAttachments: Success with URL ${i + 1}.${authIndex + 1}: ${baseUrl}`);
               break;
             } else {
               lastError = new Error(`Download failed with status ${downloadResult.status}`);
             }
           } catch (error) {
+            console.log(`HelpdeskInlineAttachments: Error with URL ${i + 1}.${authIndex + 1}:`, error.message);
             lastError = error;
             continue;
           }

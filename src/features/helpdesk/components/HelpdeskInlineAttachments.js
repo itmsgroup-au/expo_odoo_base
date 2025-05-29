@@ -36,13 +36,26 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
   useEffect(() => {
     const getAccessToken = async () => {
       try {
+        console.log('HelpdeskInlineAttachments: Retrieving access token from AsyncStorage...');
         const tokenData = await AsyncStorage.getItem('odooTokenData');
+        console.log('HelpdeskInlineAttachments: Raw token data from AsyncStorage:', tokenData ? 'Found' : 'Not found');
+
         if (tokenData) {
           const parsedToken = JSON.parse(tokenData);
-          setAccessToken(parsedToken.accessToken);
+          console.log('HelpdeskInlineAttachments: Parsed token keys:', Object.keys(parsedToken));
+          console.log('HelpdeskInlineAttachments: Access token available in parsed data:', parsedToken.accessToken ? 'Yes' : 'No');
+
+          if (parsedToken.accessToken) {
+            setAccessToken(parsedToken.accessToken);
+            console.log('HelpdeskInlineAttachments: Access token set successfully, length:', parsedToken.accessToken.length);
+          } else {
+            console.log('HelpdeskInlineAttachments: No accessToken field in parsed data');
+          }
+        } else {
+          console.log('HelpdeskInlineAttachments: No odooTokenData found in AsyncStorage');
         }
       } catch (err) {
-        console.error('Error getting token data:', err);
+        console.error('HelpdeskInlineAttachments: Error getting token data:', err);
       }
     };
     getAccessToken();
@@ -72,14 +85,28 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
         try {
           const fileInfo = await FileSystem.getInfoAsync(filePath);
           if (fileInfo.exists && fileInfo.size > 0) {
-            cacheMap.set(attachment.id, {
-              uri: filePath,
-              path: filePath,
-              size: fileInfo.size,
-              modifiedTime: fileInfo.modificationTime,
-              originalName: attachment.name
-            });
-            console.log(`HelpdeskInlineAttachments: Found cached file: ${attachment.name} (${fileInfo.size} bytes)`);
+            // Check if file size is suspiciously small (likely an error page)
+            // Files that are exactly 1616 bytes are often error pages from the server
+            const isSuspiciousSize = fileInfo.size === 1616 || fileInfo.size < 100;
+
+            if (isSuspiciousSize) {
+              console.log(`HelpdeskInlineAttachments: Suspicious file size for ${attachment.name} (${fileInfo.size} bytes) - likely error page, removing from cache`);
+              // Remove the suspicious file
+              try {
+                await FileSystem.deleteAsync(filePath);
+              } catch (deleteError) {
+                console.log(`HelpdeskInlineAttachments: Error deleting suspicious file:`, deleteError.message);
+              }
+            } else {
+              cacheMap.set(attachment.id, {
+                uri: filePath,
+                path: filePath,
+                size: fileInfo.size,
+                modifiedTime: fileInfo.modificationTime,
+                originalName: attachment.name
+              });
+              console.log(`HelpdeskInlineAttachments: Found cached file: ${attachment.name} (${fileInfo.size} bytes)`);
+            }
           } else {
             console.log(`HelpdeskInlineAttachments: File not cached or empty: ${attachment.name}`);
           }
@@ -349,12 +376,15 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
 
         console.log(`HelpdeskInlineAttachments: Setting ${processedAttachments.length} processed attachments (array format)`);
         setAttachments(processedAttachments);
+
+        // Check cache first, then auto-download based on actual cache state
         await checkCachedFiles(processedAttachments);
 
         // Auto-download attachments under 1MB in background (non-blocking)
+        // Wait a bit longer to ensure cache state is updated
         setTimeout(() => {
           autoDownloadSmallAttachments(processedAttachments);
-        }, 500); // Small delay to let UI render first
+        }, 1000); // Longer delay to let cache checking complete
       } else {
         console.log('HelpdeskInlineAttachments: No attachment details found in the response');
         setAttachments([]);
@@ -396,42 +426,35 @@ const HelpdeskInlineAttachments = ({ ticketId, ticketName }) => {
   // Auto-download small attachments (under 1MB) in background
   const autoDownloadSmallAttachments = async (attachmentsList) => {
     try {
-      // First, check which files are actually cached on disk
-      const validCachedFiles = new Map();
-
-      for (const [id, cachedFile] of cachedFiles.entries()) {
-        try {
-          const fileInfo = await FileSystem.getInfoAsync(cachedFile.path);
-          if (fileInfo.exists) {
-            validCachedFiles.set(id, cachedFile);
-          } else {
-            console.log(`HelpdeskInlineAttachments: Cached file no longer exists: ${cachedFile.path}`);
-          }
-        } catch (error) {
-          console.log(`HelpdeskInlineAttachments: Error checking cached file ${id}:`, error.message);
-        }
-      }
-
-      // Update cache state to remove missing files
-      if (validCachedFiles.size !== cachedFiles.size) {
-        setCachedFiles(validCachedFiles);
-      }
-
-      const smallAttachments = attachmentsList.filter(att =>
-        att.fileSize <= 1024 * 1024 && // Under 1MB
-        !validCachedFiles.has(att.id) && // Not already cached (verified on disk)
-        !downloadingItems.has(att.id) // Not currently downloading
-      );
-
-      if (smallAttachments.length === 0) {
-        console.log('HelpdeskInlineAttachments: No small attachments to auto-download (all cached or downloading)');
-        return;
-      }
-
-      console.log(`HelpdeskInlineAttachments: Auto-downloading ${smallAttachments.length} small attachments (${validCachedFiles.size} already cached)`);
+      console.log(`HelpdeskInlineAttachments: Starting auto-download check for ${attachmentsList.length} attachments`);
+      console.log(`HelpdeskInlineAttachments: Current cache state has ${cachedFiles.size} files`);
       console.log(`HelpdeskInlineAttachments: Access token available: ${accessToken ? 'Yes' : 'No'}`);
       if (accessToken) {
         console.log(`HelpdeskInlineAttachments: Access token length: ${accessToken.length}`);
+      }
+
+      // Use the current cache state (already validated by checkCachedFiles)
+      const smallAttachments = attachmentsList.filter(att => {
+        const isSmall = att.fileSize <= 1024 * 1024;
+        const isCached = cachedFiles.has(att.id);
+        const isDownloading = downloadingItems.has(att.id);
+
+        console.log(`HelpdeskInlineAttachments: ${att.name} - Size: ${att.fileSize}, Cached: ${isCached}, Downloading: ${isDownloading}`);
+
+        return isSmall && !isCached && !isDownloading;
+      });
+
+      if (smallAttachments.length === 0) {
+        console.log(`HelpdeskInlineAttachments: No small attachments to auto-download (${cachedFiles.size} already cached, ${downloadingItems.size} downloading)`);
+        return;
+      }
+
+      console.log(`HelpdeskInlineAttachments: Auto-downloading ${smallAttachments.length} small attachments (${cachedFiles.size} already cached)`);
+
+      // Check if we have access token - if not, skip auto-download
+      if (!accessToken) {
+        console.log('HelpdeskInlineAttachments: No access token available, skipping auto-download');
+        return;
       }
 
       // Download them one by one to avoid overwhelming the server
